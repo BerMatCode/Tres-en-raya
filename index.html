@@ -4,9 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <meta name="theme-color" content="#667eea" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="#667eea" />
   <title>Tres en Raya - BerMatCode</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --primary: #667eea;
@@ -18,14 +17,10 @@
       --bg: #f8f9fc;
       --card: #ffffff;
       --text: #1a1a2e;
-      --text-muted: #6b7280;
       --border: #e5e7eb;
-      --shadow: 0 8px 30px rgba(0,0,0,0.12);
-      --radius: 16px;
-      --radius-sm: 10px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Inter', sans-serif;
       background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
@@ -34,24 +29,15 @@
       flex-direction: column;
       align-items: center;
       padding: 20px;
-      color: var(--text);
-      overflow-x: hidden;
     }
 
-    .app-container {
+    .container {
       background: var(--card);
-      border-radius: var(--radius);
+      border-radius: 20px;
       padding: 24px;
       max-width: 420px;
       width: 100%;
-      box-shadow: var(--shadow);
-      position: relative;
-      animation: slideUp 0.4s ease;
-    }
-
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
     }
 
     h1 {
@@ -60,185 +46,54 @@
       margin-bottom: 24px;
       font-size: 1.8rem;
       font-weight: 700;
-      letter-spacing: -0.5px;
     }
 
-    /* VISTAS */
-    .view { display: none; animation: fadeIn 0.3s ease; }
+    .view { display: none; animation: fadeIn 0.3s; }
     .view.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-    /* INPUTS */
     input {
       width: 100%;
       padding: 14px;
-      margin: 12px 0;
+      margin: 10px 0;
       border: 2px solid var(--border);
-      border-radius: var(--radius-sm);
+      border-radius: 12px;
       font-size: 16px;
       text-align: center;
-      transition: 0.3s;
-      background: var(--bg);
     }
-    input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
-    }
+    input:focus { outline: none; border-color: var(--primary); }
 
-    /* BOTONES */
     button {
       width: 100%;
       padding: 14px;
-      margin: 10px 0;
+      margin: 8px 0;
       border: none;
-      border-radius: var(--radius-sm);
+      border-radius: 12px;
       background: var(--primary);
       color: white;
       font-size: 15px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
-      position: relative;
-      overflow: hidden;
+      transition: 0.2s;
     }
     button:hover { background: var(--primary-dark); transform: translateY(-2px); }
     button:active { transform: translateY(0); }
-    button.secondary { background: var(--text-muted); }
-    button.secondary:hover { background: #5a6275; }
-    button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-    
-    button::after {
-      content: '';
-      position: absolute;
-      top: 50%; left: 50%;
-      width: 0; height: 0;
-      background: rgba(255,255,255,0.3);
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      transition: width 0.4s, height 0.4s;
-    }
-    button:active::after { width: 300px; height: 300px; }
+    button.secondary { background: #95a5a6; }
+    button.success { background: var(--success); }
+    button.danger { background: var(--danger); }
 
-    /* INDICADOR DE CONEXIÓN */
-    .connection-status {
-      position: fixed;
-      top: 20px; right: 20px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(255,255,255,0.9);
-      padding: 8px 14px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 500;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      z-index: 100;
-      backdrop-filter: blur(10px);
-    }
-    .status-dot {
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      background: var(--success);
-      box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.3);
-      animation: pulse 2s infinite;
-    }
-    .status-dot.offline { background: var(--danger); box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.3); animation: none; }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.2); opacity: 0.8; }
-    }
-
-    /* CÓDIGO DE SALA */
     .code-box {
       background: linear-gradient(135deg, var(--primary), var(--secondary));
       color: white;
       padding: 24px;
-      border-radius: var(--radius);
+      border-radius: 16px;
       text-align: center;
       font-size: 28px;
       font-weight: 700;
       letter-spacing: 6px;
       margin: 20px 0;
-      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-      position: relative;
-      overflow: hidden;
     }
-    .code-box::before {
-      content: '';
-      position: absolute;
-      top: -50%; left: -50%;
-      width: 200%; height: 200%;
-      background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
-      animation: shimmer 3s infinite;
-    }
-    @keyframes shimmer { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    /* TABLERO */
-    .board {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin: 24px auto;
-      max-width: 300px;
-    }
-    .cell {
-      aspect-ratio: 1;
-      background: var(--bg);
-      border: 3px solid var(--border);
-      border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.25s;
-      position: relative;
-      overflow: hidden;
-    }
-    .cell:hover:not(.taken) {
-      background: #eef1ff;
-      border-color: var(--primary);
-      transform: scale(1.03);
-    }
-    .cell.x { color: var(--danger); background: #ffeaea; border-color: var(--danger); }
-    .cell.o { color: var(--primary); background: #eaf4ff; border-color: var(--primary); }
-    .cell.taken { cursor: default; }
-    .cell.winner {
-      background: var(--success);
-      color: white;
-      border-color: var(--success);
-      animation: winPop 0.4s ease;
-    }
-    @keyframes winPop {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.15); }
-      100% { transform: scale(1); }
-    }
-    .cell .mark {
-      font-size: 36px;
-      font-weight: 700;
-      opacity: 0;
-      transform: scale(0.5);
-      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .cell.x .mark, .cell.o .mark { opacity: 1; transform: scale(1); }
-
-    /* ESTADO DEL JUEGO */
-    .status-bar {
-      padding: 14px;
-      border-radius: var(--radius-sm);
-      text-align: center;
-      font-weight: 600;
-      margin: 16px 0;
-      transition: all 0.3s;
-      background: var(--bg);
-      color: var(--text-muted);
-    }
-    .status-bar.my-turn { background: var(--success); color: white; animation: pulse 2s infinite; }
-    .status-bar.opponent-turn { background: var(--text-muted); color: white; }
-    .status-bar.finished { background: var(--danger); color: white; }
-
-    /* TARJETAS DE JUGADORES */
     .players {
       display: flex;
       justify-content: space-between;
@@ -248,52 +103,86 @@
     .player-card {
       flex: 1;
       padding: 12px;
-      border-radius: var(--radius-sm);
+      border-radius: 12px;
       background: var(--bg);
       text-align: center;
-      border: 2px solid transparent;
-      transition: all 0.3s;
+      border: 3px solid transparent;
+      transition: 0.3s;
     }
-    .player-card.active { border-color: var(--primary); background: #f0f4ff; transform: scale(1.03); }
-    .player-card.me { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
+    .player-card.active { border-color: var(--primary); background: #f0f4ff; }
+    .player-card.me { background: var(--primary); color: white; }
     .player-name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
-    .player-symbol { font-size: 20px; font-weight: 700; opacity: 0.8; }
+    .player-symbol { font-size: 20px; font-weight: 700; }
 
-    /* SISTEMA DE VENTANAS MODALES */
-    .modal-overlay {
+    .status {
+      padding: 14px;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: 600;
+      margin: 16px 0;
+      background: var(--bg);
+    }
+    .status.my-turn { background: var(--success); color: white; animation: pulse 2s infinite; }
+    .status.their-turn { background: var(--text); color: white; }
+    .status.finished { background: var(--danger); color: white; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 20px auto;
+      max-width: 300px;
+    }
+    .cell {
+      aspect-ratio: 1;
+      background: var(--bg);
+      border: 3px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.25s;
+      font-size: 36px;
+      font-weight: 700;
+    }
+    .cell:hover:not(.taken) { background: #eef1ff; border-color: var(--primary); transform: scale(1.03); }
+    .cell.x { color: var(--danger); background: #ffeaea; border-color: var(--danger); }
+    .cell.o { color: var(--primary); background: #eaf4ff; border-color: var(--primary); }
+    .cell.taken { cursor: default; }
+    .cell.winner { background: var(--success); color: white; border-color: var(--success); animation: winPop 0.4s; }
+    @keyframes winPop { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
+    .modal {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.6);
-      backdrop-filter: blur(8px);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 1000;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.3s;
+      transition: 0.3s;
     }
-    .modal-overlay.active { opacity: 1; pointer-events: all; }
+    .modal.active { opacity: 1; pointer-events: all; }
     .modal-content {
       background: white;
-      border-radius: var(--radius);
+      border-radius: 16px;
       padding: 24px;
       max-width: 320px;
       width: 90%;
       text-align: center;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-      transform: scale(0.9) translateY(20px);
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform: scale(0.9);
+      transition: 0.3s;
     }
-    .modal-overlay.active .modal-content { transform: scale(1) translateY(0); }
-    .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 12px; color: var(--text); }
-    .modal-text { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5; }
-    .modal-actions { display: flex; gap: 10px; }
-    .modal-actions button { flex: 1; margin: 0; }
-    .modal-actions button.accept { background: var(--success); }
-    .modal-actions button.reject { background: var(--danger); }
+    .modal.active .modal-content { transform: scale(1); }
+    .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+    .modal-text { font-size: 14px; color: #666; margin-bottom: 20px; }
+    .modal-buttons { display: flex; gap: 10px; }
+    .modal-buttons button { flex: 1; margin: 0; }
 
-    /* CRÉDITOS */
     .credits {
       font-family: 'Inter', sans-serif;
       font-weight: 700;
@@ -301,118 +190,86 @@
       color: white;
       text-align: center;
       padding: 20px;
-      margin-top: auto;
-      opacity: 0.9;
-      letter-spacing: 1px;
+      margin-top: 20px;
       text-transform: uppercase;
+      letter-spacing: 2px;
     }
 
-    /* UTILIDADES */
     .hidden { display: none !important; }
-    .text-center { text-align: center; }
-    .mt-10 { margin-top: 10px; }
-    .mb-10 { margin-bottom: 10px; }
-    .flex-center { display: flex; align-items: center; justify-content: center; }
-
-    /* RESPONSIVE */
-    @media (max-width: 480px) {
-      .app-container { padding: 20px; border-radius: 12px; }
-      h1 { font-size: 1.5rem; }
-      .board { gap: 8px; max-width: 260px; }
-      .cell { border-radius: 8px; }
-      .code-box { font-size: 24px; letter-spacing: 4px; }
-    }
   </style>
 </head>
 <body>
 
-  <div class="connection-status">
-    <div class="status-dot" id="statusDot"></div>
-    <span id="statusText">Conectado</span>
+<div class="container">
+  <h1>Tres en Raya</h1>
+
+  <!-- MENU -->
+  <div id="view-menu" class="view active">
+    <button onclick="showView('view-create')">Crear Sala</button>
+    <button onclick="showView('view-join')" class="secondary">Unirse a Sala</button>
   </div>
 
-  <div class="app-container">
-    <h1>Tres en Raya</h1>
+  <!-- CREAR -->
+  <div id="view-create" class="view">
+    <input type="text" id="name-create" placeholder="Tu nombre" maxlength="12">
+    <button onclick="createRoom()">Generar Sala</button>
+    <button onclick="showView('view-menu')" class="secondary">Volver</button>
+  </div>
 
-    <!-- MENÚ -->
-    <div id="view-menu" class="view active">
-      <button onclick="showView('view-create')">Crear Sala Nueva</button>
-      <button onclick="showView('view-join')" class="secondary">Unirse a Sala</button>
-    </div>
+  <!-- ESPERANDO -->
+  <div id="view-waiting" class="view">
+    <p style="text-align:center;color:#666;margin-bottom:10px">Comparte este código:</p>
+    <div id="room-code" class="code-box">------</div>
+    <button onclick="copyCode()">Copiar Código</button>
+    <p style="text-align:center;margin:15px 0;color:#666">Esperando jugador...</p>
+    <button onclick="leaveGame()" class="secondary">Cancelar</button>
+  </div>
 
-    <!-- CREAR -->
-    <div id="view-create" class="view">
-      <input type="text" id="input-name-create" placeholder="Tu nombre" maxlength="12">
-      <button onclick="createRoom()">Generar Sala</button>
-      <button onclick="showView('view-menu')" class="secondary">Volver</button>
-    </div>
+  <!-- UNIRSE -->
+  <div id="view-join" class="view">
+    <input type="text" id="name-join" placeholder="Tu nombre" maxlength="12">
+    <input type="text" id="code-join" placeholder="Código (6 letras)" maxlength="6" style="text-transform:uppercase">
+    <button onclick="joinRoom()">Unirse</button>
+    <button onclick="showView('view-menu')" class="secondary">Volver</button>
+  </div>
 
-    <!-- ESPERANDO -->
-    <div id="view-waiting" class="view">
-      <p class="text-center mb-10" style="color: var(--text-muted);">Comparte este código:</p>
-      <div id="display-room-code" class="code-box">------</div>
-      <button onclick="copyCode()">Copiar Código</button>
-      <p class="text-center mt-10" style="color: var(--text-muted); font-size: 14px;">Esperando al segundo jugador...</p>
-      <button onclick="leaveGame()" class="secondary mt-10">Cancelar y Salir</button>
-    </div>
-
-    <!-- UNIRSE -->
-    <div id="view-join" class="view">
-      <input type="text" id="input-name-join" placeholder="Tu nombre" maxlength="12">
-      <input type="text" id="input-code-join" placeholder="Código (6 letras)" maxlength="6" style="text-transform:uppercase">
-      <button onclick="joinRoom()">Unirse a la Sala</button>
-      <button onclick="showView('view-menu')" class="secondary">Volver</button>
-    </div>
-
-    <!-- JUEGO -->
-    <div id="view-game" class="view">
-      <div class="players">
-        <div id="card-p1" class="player-card">
-          <div class="player-name" id="name-p1">Jugador 1</div>
-          <div class="player-symbol">X</div>
-        </div>
-        <div id="card-p2" class="player-card">
-          <div class="player-name" id="name-p2">Jugador 2</div>
-          <div class="player-symbol">O</div>
-        </div>
+  <!-- JUEGO -->
+  <div id="view-game" class="view">
+    <div class="players">
+      <div id="card-p1" class="player-card">
+        <div class="player-name" id="name-p1">Jugador 1</div>
+        <div class="player-symbol">X</div>
       </div>
-      
-      <div id="game-status" class="status-bar">Conectando...</div>
-      <div id="board" class="board"></div>
-      
-      <button id="btn-rematch" onclick="requestRematch()" class="hidden" style="background: var(--warning);">Solicitar Revancha</button>
-      <button onclick="leaveGame()" class="secondary">Salir de la Partida</button>
-    </div>
-  </div>
-
-  <div class="credits">BerMatCode</div>
-
-  <!-- MODAL SISTEMA -->
-  <div class="modal-overlay" id="modal-overlay">
-    <div class="modal-content">
-      <div class="modal-title" id="modal-title">Título</div>
-      <div class="modal-text" id="modal-text">Mensaje</div>
-      <div class="modal-actions" id="modal-actions">
-        <button onclick="closeModal()">Cerrar</button>
+      <div id="card-p2" class="player-card">
+        <div class="player-name" id="name-p2">Jugador 2</div>
+        <div class="player-symbol">O</div>
       </div>
     </div>
+
+    <div id="status" class="status">Conectando...</div>
+    <div id="board" class="board"></div>
+
+    <button id="btn-rematch" onclick="requestRematch()" class="hidden success">Solicitar Revancha</button>
+    <button onclick="leaveGame()" class="secondary">Salir</button>
   </div>
+</div>
+
+<div class="credits">BerMatCode</div>
+
+<!-- MODAL -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <div id="modal-title" class="modal-title">Título</div>
+    <div id="modal-text" class="modal-text">Mensaje</div>
+    <div id="modal-buttons" class="modal-buttons">
+      <button onclick="closeModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
-  import { 
-    getFirestore, 
-    doc, 
-    setDoc, 
-    updateDoc, 
-    onSnapshot,
-    getDoc,
-    deleteDoc,
-    serverTimestamp,
-    enableNetwork,
-    disableNetwork
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { getFirestore, doc, setDoc, updateDoc, onSnapshot, getDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyA-MIB8DbCF3YDAqb2qGRO6sjgUzg-sb-I",
@@ -425,89 +282,57 @@
   };
 
   const app = initializeApp(firebaseConfig);
-  getAnalytics(app);
   const db = getFirestore(app);
 
-  let currentRoomId = null;
+  let roomId = null;
   let myName = "";
-  let myPlayerNumber = null;
+  let myPlayer = null;
   let mySymbol = null;
+  let gameData = null;
   let unsubscribe = null;
-  let currentGameData = null;
-  let isConnected = true;
 
-  // === UTILIDADES ===
   window.showView = (id) => {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById(id).classList.add('active');
   };
 
-  function showModal(title, text, buttons = [{text: 'Cerrar', action: closeModal, class: ''}]) {
+  window.showModal = (title, text, buttons = [{text: 'Cerrar', onclick: closeModal}]) => {
     document.getElementById('modal-title').textContent = title;
     document.getElementById('modal-text').textContent = text;
-    const actions = document.getElementById('modal-actions');
-    actions.innerHTML = '';
+    const btnContainer = document.getElementById('modal-buttons');
+    btnContainer.innerHTML = '';
     buttons.forEach(btn => {
       const b = document.createElement('button');
       b.textContent = btn.text;
       b.className = btn.class || '';
-      b.onclick = btn.action;
-      actions.appendChild(b);
+      b.onclick = btn.onclick;
+      btnContainer.appendChild(b);
     });
-    document.getElementById('modal-overlay').classList.add('active');
-  }
-
-  window.closeModal = () => {
-    document.getElementById('modal-overlay').classList.remove('active');
+    document.getElementById('modal').classList.add('active');
   };
 
-  function updateConnectionStatus(connected) {
-    isConnected = connected;
-    const dot = document.getElementById('statusDot');
-    const text = document.getElementById('statusText');
-    if(connected) {
-      dot.classList.remove('offline');
-      text.textContent = 'Conectado';
-    } else {
-      dot.classList.add('offline');
-      text.textContent = 'Desconectado';
-    }
-  }
+  window.closeModal = () => {
+    document.getElementById('modal').classList.remove('active');
+  };
 
-  // Monitor de conexión
-  enableNetwork(db).then(() => updateConnectionStatus(true));
-  disableNetwork(db).catch(() => {});
-  // Simulación visual de estado (en producción usa onSnapshot de .info/connected si usas Realtime, aquí usamos listener activo)
-  setInterval(() => {
-    if(unsubscribe) updateConnectionStatus(true);
-  }, 5000);
-
-  // === GENERADOR DE CÓDIGO SOLO CON LETRAS DE BERMATCODE ===
-  function generateRoomCode() {
+  function generateCode() {
     const chars = "BERMATCODE";
-    let code = "";
-    for(let i=0; i<6; i++) {
-      code += chars[Math.floor(Math.random() * chars.length)];
-    }
-    return code;
+    return Array.from({length: 6}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
   }
 
-  // === CREAR SALA ===
   window.createRoom = async () => {
-    const nameInput = document.getElementById('input-name-create');
-    myName = nameInput.value.trim();
-    if(!myName) return showModal("Error", "Ingresa tu nombre para continuar.");
-    
-    currentRoomId = generateRoomCode();
-    myPlayerNumber = 1;
+    myName = document.getElementById('name-create').value.trim();
+    if (!myName) return showModal("Error", "Ingresa tu nombre");
+
+    roomId = generateCode();
+    myPlayer = 1;
     mySymbol = 'X';
-    
-    const gameRef = doc(db, "games", currentRoomId);
+
     try {
-      await setDoc(gameRef, {
+      await setDoc(doc(db, "games", roomId), {
         player1: myName,
         player2: null,
-        board: ["","","","","","","","",""],
+        board: ["", "", "", "", "", "", "", "", ""],
         turn: "player1",
         winner: null,
         winningCells: null,
@@ -516,228 +341,224 @@
         rematchStatus: "none",
         createdAt: serverTimestamp()
       });
-      
-      document.getElementById('display-room-code').textContent = currentRoomId;
+
+      document.getElementById('room-code').textContent = roomId;
       showView('view-waiting');
-      
-      unsubscribe = onSnapshot(gameRef, (snap) => {
-        if(snap.exists()) {
-          const d = snap.data();
-          updateConnectionStatus(true);
-          if(d.player2 && d.status === "playing") startGame(d);
-        } else {
-          updateConnectionStatus(false);
-        }
-      });
-    } catch(e) {
-      showModal("Error de red", "No se pudo crear la sala. Verifica tu conexión.");
-      console.error(e);
-    }
-  };
 
-  // === UNIRSE ===
-  window.joinRoom = async () => {
-    const nameInput = document.getElementById('input-name-join');
-    const codeInput = document.getElementById('input-code-join');
-    myName = nameInput.value.trim();
-    const roomCode = codeInput.value.trim().toUpperCase();
-    
-    if(!myName || !roomCode || roomCode.length !== 6) {
-      return showModal("Datos incompletos", "Completa tu nombre y un código válido de 6 letras.");
-    }
-    
-    const gameRef = doc(db, "games", roomCode);
-    try {
-      const snap = await getDoc(gameRef);
-      if(!snap.exists()) return showModal("Sala no encontrada", "El código no existe o ya fue eliminado.");
-      
-      const d = snap.data();
-      if(d.player2) return showModal("Sala llena", "Esta sala ya tiene dos jugadores.");
-      if(d.status !== "waiting") return showModal("No disponible", "La partida ya comenzó o terminó.");
-      
-      currentRoomId = roomCode;
-      myPlayerNumber = 2;
-      mySymbol = 'O';
-      
-      await updateDoc(gameRef, {
-        player2: myName,
-        status: "playing",
-        joinedAt: serverTimestamp()
-      });
-      
-      unsubscribe = onSnapshot(gameRef, (snap) => {
-        if(snap.exists()) {
+      unsubscribe = onSnapshot(doc(db, "games", roomId), (snap) => {
+        if (snap.exists()) {
           const data = snap.data();
-          updateConnectionStatus(true);
-          if(data.status === "playing") startGame(data);
-        } else {
-          updateConnectionStatus(false);
+          if (data.player2 && data.status === "playing") {
+            startGame(data);
+          }
         }
       });
-    } catch(e) {
-      showModal("Error", "No se pudo unir a la sala.");
-      console.error(e);
+    } catch (error) {
+      showModal("Error", "No se pudo crear la sala: " + error.message);
     }
   };
 
-  // === INICIAR JUEGO ===
+  window.joinRoom = async () => {
+    myName = document.getElementById('name-join').value.trim();
+    const code = document.getElementById('code-join').value.trim().toUpperCase();
+
+    if (!myName || !code || code.length !== 6) {
+      return showModal("Error", "Completa nombre y código válido");
+    }
+
+    try {
+      const snap = await getDoc(doc(db, "games", code));
+      if (!snap.exists()) return showModal("Error", "Sala no encontrada");
+
+      const data = snap.data();
+      if (data.player2) return showModal("Error", "Sala llena");
+      if (data.status !== "waiting") return showModal("Error", "Partida no disponible");
+
+      roomId = code;
+      myPlayer = 2;
+      mySymbol = 'O';
+
+      await updateDoc(doc(db, "games", roomId), {
+        player2: myName,
+        status: "playing"
+      });
+
+      unsubscribe = onSnapshot(doc(db, "games", roomId), (snap) => {
+        if (snap.exists()) {
+          startGame(snap.data());
+        }
+      });
+    } catch (error) {
+      showModal("Error", "No se pudo unir: " + error.message);
+    }
+  };
+
   function startGame(data) {
-    if(unsubscribe && typeof unsubscribe === 'function') unsubscribe();
-    
     showView('view-game');
-    const isP1 = myPlayerNumber === 1;
+    gameData = data;
+
+    const isP1 = myPlayer === 1;
     document.getElementById('name-p1').textContent = data.player1;
     document.getElementById('name-p2').textContent = data.player2 || "Esperando...";
-    
-    const c1 = document.getElementById('card-p1');
-    const c2 = document.getElementById('card-p2');
-    c1.classList.remove('me', 'active');
-    c2.classList.remove('me', 'active');
-    if(isP1) c1.classList.add('me'); else c2.classList.add('me');
-    
-    // Suscribirse a cambios en tiempo real
-    const gameRef = doc(db, "games", currentRoomId);
-    unsubscribe = onSnapshot(gameRef, (snap) => {
-      if(snap.exists()) {
-        currentGameData = snap.data();
-        updateGameUI(currentGameData);
-        updateConnectionStatus(true);
-      } else {
-        updateConnectionStatus(false);
+
+    document.getElementById('card-p1').className = 'player-card' + (isP1 ? ' me' : '');
+    document.getElementById('card-p2').className = 'player-card' + (!isP1 ? ' me' : '');
+
+    unsubscribe = onSnapshot(doc(db, "games", roomId), (snap) => {
+      if (snap.exists()) {
+        gameData = snap.data();
+        updateUI();
       }
     });
   }
 
-  // === ACTUALIZAR UI ===
-  function updateGameUI(g) {
+  function updateUI() {
+    if (!gameData) return;
+
     const boardEl = document.getElementById('board');
-    const statusEl = document.getElementById('game-status');
+    const statusEl = document.getElementById('status');
     const rematchBtn = document.getElementById('btn-rematch');
-    const isMyTurn = g.turn === `player${myPlayerNumber}` && !g.winner;
     
-    // Tarjetas activas
-    const c1 = document.getElementById('card-p1');
-    const c2 = document.getElementById('card-p2');
-    c1.classList.remove('active'); c2.classList.remove('active');
-    if(!g.winner) {
-      if(g.turn === 'player1') c1.classList.add('active'); else c2.classList.add('active');
+    const isMyTurn = gameData.turn === `player${myPlayer}` && !gameData.winner;
+    
+    // Actualizar tarjetas
+    document.getElementById('card-p1').classList.remove('active');
+    document.getElementById('card-p2').classList.remove('active');
+    if (!gameData.winner) {
+      document.getElementById(gameData.turn === 'player1' ? 'card-p1' : 'card-p2').classList.add('active');
     }
-    
-    // Tablero
+
+    // Renderizar tablero
     boardEl.innerHTML = '';
-    g.board.forEach((cell, idx) => {
+    gameData.board.forEach((cell, idx) => {
       const div = document.createElement('div');
-      div.className = `cell ${cell ? cell.toLowerCase() : ''} ${cell ? 'taken' : ''}`;
-      if(g.winningCells && g.winningCells.includes(idx)) div.classList.add('winner');
+      div.className = 'cell' + (cell ? ` ${cell.toLowerCase()} taken` : '');
       
-      if(cell) {
-        div.innerHTML = `<span class="mark">${cell}</span>`;
-      } else if(isMyTurn && !g.winner) {
+      if (gameData.winningCells && gameData.winningCells.includes(idx)) {
+        div.classList.add('winner');
+      }
+      
+      div.textContent = cell;
+      
+      if (!cell && isMyTurn && !gameData.winner) {
         div.onclick = () => makeMove(idx);
       }
+      
       boardEl.appendChild(div);
     });
-    
-    // Estado
-    statusEl.className = 'status-bar';
-    if(g.winner) {
+
+    // Actualizar estado
+    statusEl.className = 'status';
+    if (gameData.winner) {
       statusEl.classList.add('finished');
-      if(g.winner === 'draw') statusEl.textContent = 'Empate';
-      else if(g.winner === `player${myPlayerNumber}`) statusEl.textContent = 'Has ganado';
-      else statusEl.textContent = 'Has perdido';
+      if (gameData.winner === 'draw') {
+        statusEl.textContent = 'Empate';
+      } else if (gameData.winner === `player${myPlayer}`) {
+        statusEl.textContent = 'Ganaste';
+      } else {
+        statusEl.textContent = 'Perdiste';
+      }
       rematchBtn.classList.remove('hidden');
-    } else if(isMyTurn) {
+    } else if (isMyTurn) {
       statusEl.classList.add('my-turn');
       statusEl.textContent = 'Tu turno';
       rematchBtn.classList.add('hidden');
     } else {
-      statusEl.classList.add('opponent-turn');
-      statusEl.textContent = `Turno de ${myPlayerNumber===1 ? g.player2 : g.player1}`;
+      statusEl.classList.add('their-turn');
+      statusEl.textContent = `Turno de ${myPlayer === 1 ? gameData.player2 : gameData.player1}`;
       rematchBtn.classList.add('hidden');
     }
-    
-    // Manejo de revancha
-    handleRematchUI(g);
-  }
 
-  // === HACER MOVIMIENTO ===
-  window.makeMove = async (idx) => {
-    if(!currentGameData || currentGameData.board[idx] !== "" || currentGameData.winner || currentGameData.turn !== `player${myPlayerNumber}`) return;
-    
-    const newBoard = [...currentGameData.board];
-    newBoard[idx] = mySymbol;
-    const winInfo = checkWinner(newBoard);
-    const isDraw = !winInfo.winner && !newBoard.includes("");
-    
-    const updateData = {
-      board: newBoard,
-      lastMove: idx,
-      lastMoveTime: serverTimestamp()
-    };
-    
-    if(winInfo.winner) {
-      Object.assign(updateData, { winner: winInfo.winner, winningCells: winInfo.winningCells, status: "finished" });
-    } else if(isDraw) {
-      Object.assign(updateData, { winner: 'draw', status: "finished" });
-    } else {
-      updateData.turn = myPlayerNumber === 1 ? 'player2' : 'player1';
-    }
-    
-    try {
-      await updateDoc(doc(db, "games", currentRoomId), updateData);
-    } catch(e) { console.error(e); }
-  };
-
-  function checkWinner(b) {
-    const patterns = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    for(const p of patterns) {
-      const [a,b2,c] = p;
-      if(b[a] && b[a]===b[b2] && b[a]===b[c]) return { winner: b[a]==='X'?'player1':'player2', winningCells: p };
-    }
-    return { winner: null, winningCells: null };
-  }
-
-  // === REVANCHA ===
-  window.requestRematch = async () => {
-    if(!currentRoomId || !currentGameData) return;
-    try {
-      await updateDoc(doc(db, "games", currentRoomId), {
-        rematchRequestedBy: myPlayerNumber,
-        rematchStatus: "pending"
-      });
-      showModal("Solicitud enviada", "Esperando respuesta del oponente...");
-    } catch(e) { console.error(e); }
-  };
-
-  function handleRematchUI(g) {
-    if(!g.rematchRequestedBy || g.rematchStatus === "none") return;
-    
-    const isRequester = g.rematchRequestedBy === myPlayerNumber;
-    if(isRequester) {
-      if(g.rematchStatus === "accepted") {
-        closeModal();
-        showModal("Revancha aceptada", "La partida se reiniciará en breve.");
-        setTimeout(() => closeModal(), 1500);
-      } else if(g.rematchStatus === "rejected") {
-        showModal("Revancha rechazada", "El oponente no aceptó continuar.");
-        setTimeout(() => closeModal(), 2000);
-      }
-    } else {
-      // Soy el oponente, me pidieron revancha
-      if(g.rematchStatus === "pending") {
-        const requesterName = g.rematchRequestedBy === 1 ? g.player1 : g.player2;
-        showModal("Solicitud de revancha", `${requesterName} quiere jugar otra partida.`, [
-          { text: "Aceptar", action: acceptRematch, class: "accept" },
-          { text: "Rechazar", action: rejectRematch, class: "reject" }
+    // Manejar revancha
+    if (gameData.rematchRequestedBy && gameData.rematchStatus === 'pending') {
+      const requester = gameData.rematchRequestedBy === 1 ? gameData.player1 : gameData.player2;
+      if (gameData.rematchRequestedBy !== myPlayer) {
+        showModal("Revancha", `${requester} quiere revancha`, [
+          { text: "Aceptar", onclick: acceptRematch, class: "success" },
+          { text: "Rechazar", onclick: rejectRematch, class: "danger" }
         ]);
       }
     }
   }
 
-  async function acceptRematch() {
+  window.makeMove = async (idx) => {
+    if (!gameData || gameData.board[idx] || gameData.winner || gameData.turn !== `player${myPlayer}`) {
+      return;
+    }
+
+    const newBoard = [...gameData.board];
+    newBoard[idx] = mySymbol;
+
+    const winner = checkWinner(newBoard);
+    const isDraw = !winner && !newBoard.includes("");
+
+    const updateData = {
+      board: newBoard
+    };
+
+    if (winner) {
+      updateData.winner = winner;
+      updateData.winningCells = getWinningCells(newBoard, winner);
+      updateData.status = "finished";
+    } else if (isDraw) {
+      updateData.winner = 'draw';
+      updateData.status = "finished";
+    } else {
+      updateData.turn = myPlayer === 1 ? 'player2' : 'player1';
+    }
+
     try {
-      await updateDoc(doc(db, "games", currentRoomId), {
-        board: ["","","","","","","","",""],
+      await updateDoc(doc(db, "games", roomId), updateData);
+    } catch (error) {
+      console.error("Error making move:", error);
+    }
+  };
+
+  function checkWinner(board) {
+    const wins = [
+      [0,1,2], [3,4,5], [6,7,8],
+      [0,3,6], [1,4,7], [2,5,8],
+      [0,4,8], [2,4,6]
+    ];
+    
+    for (const [a, b, c] of wins) {
+      if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+        return board[a] === 'X' ? 'player1' : 'player2';
+      }
+    }
+    return null;
+  }
+
+  function getWinningCells(board, winner) {
+    const wins = [
+      [0,1,2], [3,4,5], [6,7,8],
+      [0,3,6], [1,4,7], [2,5,8],
+      [0,4,8], [2,4,6]
+    ];
+    
+    for (const [a, b, c] of wins) {
+      if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+        return [a, b, c];
+      }
+    }
+    return [];
+  }
+
+  window.requestRematch = async () => {
+    try {
+      await updateDoc(doc(db, "games", roomId), {
+        rematchRequestedBy: myPlayer,
+        rematchStatus: "pending"
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  window.acceptRematch = async () => {
+    try {
+      await updateDoc(doc(db, "games", roomId), {
+        board: ["", "", "", "", "", "", "", "", ""],
         turn: "player1",
         winner: null,
         winningCells: null,
@@ -746,42 +567,46 @@
         status: "playing"
       });
       closeModal();
-    } catch(e) { console.error(e); }
-  }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-  async function rejectRematch() {
+  window.rejectRematch = async () => {
     try {
-      await updateDoc(doc(db, "games", currentRoomId), {
+      await updateDoc(doc(db, "games", roomId), {
         rematchRequestedBy: null,
         rematchStatus: "rejected"
       });
       closeModal();
-    } catch(e) { console.error(e); }
-  }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-  // === COPIAR Y SALIR ===
   window.copyCode = () => {
-    navigator.clipboard.writeText(currentRoomId).then(() => {
-      showModal("Código copiado", "Comparte este código con tu oponente para que se una.");
-    }).catch(() => {
-      showModal("Error", "No se pudo copiar automáticamente. Cópialo manualmente.");
+    navigator.clipboard.writeText(roomId).then(() => {
+      showModal("Copiado", "Código copiado al portapapeles");
     });
   };
 
   window.leaveGame = async () => {
-    if(unsubscribe && typeof unsubscribe === 'function') unsubscribe();
-    if(currentRoomId && myPlayerNumber === 1) {
-      try { await deleteDoc(doc(db, "games", currentRoomId)); } catch(e) {}
+    if (unsubscribe) unsubscribe();
+    if (roomId && myPlayer === 1) {
+      try { await deleteDoc(doc(db, "games", roomId)); } catch(e) {}
     }
-    currentRoomId = null; myName = ""; myPlayerNumber = null; mySymbol = null; currentGameData = null;
+    roomId = null;
+    myName = "";
+    myPlayer = null;
+    gameData = null;
     document.getElementById('btn-rematch').classList.add('hidden');
     showView('view-menu');
-    document.getElementById('input-name-create').value = '';
-    document.getElementById('input-name-join').value = '';
-    document.getElementById('input-code-join').value = '';
+    document.getElementById('name-create').value = '';
+    document.getElementById('name-join').value = '';
+    document.getElementById('code-join').value = '';
   };
 
-  // Init board
+  // Inicializar
   document.getElementById('board').innerHTML = Array(9).fill('<div class="cell"></div>').join('');
 </script>
 </body>
