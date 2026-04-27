@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tres en Raya - BerMatCode</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 25px;
+      max-width: 450px;
+      width: 100%;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      margin-bottom: 20px;
+    }
+    h1 { 
+      text-align: center; 
+      color: #667eea; 
+      margin-bottom: 20px;
+      font-size: 2rem;
+    }
+    
+    .view { display: none; animation: fadeIn 0.3s ease; }
+    .view.active { display: block; }
+    
+    @keyframes fadeIn { 
+      from { opacity: 0; transform: translateY(10px); } 
+      to { opacity: 1; transform: translateY(0); } 
+    }
+    
+    input {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      font-size: 16px;
+      text-align: center;
+      transition: 0.3s;
+    }
+    input:focus { 
+      outline: none; 
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    button {
+      width: 100%;
+      padding: 15px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 12px;
+      background: #667eea;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    button:hover { 
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+    button:active { transform: translateY(0); }
+    button.secondary { background: #95a5a6; }
+    button.secondary:hover { background: #7f8c8d; }
+    button:disabled { 
+      background: #ccc; 
+      cursor: not-allowed; 
+      transform: none;
+    }
+    
+    .code-box {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      text-align: center;
+      font-size: 32px;
+      font-weight: bold;
+      letter-spacing: 5px;
+      margin: 20px 0;
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 20px auto;
+      max-width: 300px;
+    }
+    .cell {
+      aspect-ratio: 1;
+      background: #f8f9fa;
+      border: 3px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 40px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .cell:hover:not(.taken) { 
+      background: #eef1ff; 
+      border-color: #667eea;
+      transform: scale(1.05);
+    }
+    .cell.x { color: #e74c3c; background: #ffeaea; }
+    .cell.o { color: #3498db; background: #eaf4ff; }
+    .cell.taken { cursor: not-allowed; }
+    .cell.winner { 
+      background: #2ecc71; 
+      color: white;
+      animation: pulse 0.5s ease;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    .status {
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 16px;
+      margin: 15px 0;
+      background: #f8f9fa;
+      transition: all 0.3s;
+    }
+    .status.my-turn { 
+      background: #2ecc71; 
+      color: white;
+      animation: pulse 2s infinite;
+    }
+    .status.opponent-turn { background: #95a5a6; color: white; }
+    .status.game-over { background: #e74c3c; color: white; }
+    
+    .players {
+      display: flex;
+      justify-content: space-between;
+      margin: 15px 0;
+      gap: 10px;
+    }
+    .player-card {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      background: #f8f9fa;
+      text-align: center;
+      font-weight: 600;
+      border: 3px solid transparent;
+      transition: all 0.3s;
+    }
+    .player-card.active {
+      border-color: #667eea;
+      background: #f0f4ff;
+      transform: scale(1.05);
+    }
+    .player-card.me {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    .player-symbol {
+      font-size: 20px;
+      margin-top: 5px;
+    }
+    
+    .credits {
+      font-family: 'Pacifico', cursive;
+      font-size: 26px;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      margin-top: auto;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .alert {
+      padding: 12px;
+      border-radius: 8px;
+      margin: 10px 0;
+      text-align: center;
+      font-weight: 500;
+    }
+    .alert-error { background: #ffebee; color: #c62828; }
+    .alert-success { background: #e8f5e9; color: #2e7d32; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>♟️ Tres en Raya</h1>
+
+  <!-- MENÚ PRINCIPAL -->
+  <div id="view-menu" class="view active">
+    <button onclick="showView('view-create')">🆕 Crear Sala Nueva</button>
+    <button onclick="showView('view-join')" class="secondary">🔗 Unirse a Sala</button>
+  </div>
+
+  <!-- CREAR SALA -->
+  <div id="view-create" class="view">
+    <input type="text" id="input-name-create" placeholder="Tu nombre" maxlength="12">
+    <button onclick="createRoom()">✨ Generar Sala</button>
+    <button onclick="showView('view-menu')" class="secondary">← Volver</button>
+  </div>
+
+  <!-- ESPERANDO JUGADOR -->
+  <div id="view-waiting" class="view">
+    <p style="text-align:center;color:#666;margin-bottom:10px">Comparte este código con tu oponente:</p>
+    <div id="display-room-code" class="code-box">------</div>
+    <button onclick="copyCode()">📋 Copiar Código</button>
+    <div id="waiting-message" style="text-align:center;margin:15px 0;">
+      <span class="loading"></span>
+      <p style="margin-top:10px;color:#666">Esperando que se una el jugador 2...</p>
+    </div>
+    <button onclick="leaveGame()" class="secondary">❌ Cancelar y Salir</button>
+  </div>
+
+  <!-- UNIRSE A SALA -->
+  <div id="view-join" class="view">
+    <input type="text" id="input-name-join" placeholder="Tu nombre" maxlength="12">
+    <input type="text" id="input-code-join" placeholder="Código (6 letras)" maxlength="6" style="text-transform:uppercase">
+    <button onclick="joinRoom()">🚀 Unirse a la Sala</button>
+    <button onclick="showView('view-menu')" class="secondary">← Volver</button>
+  </div>
+
+  <!-- JUEGO -->
+  <div id="view-game" class="view">
+    <div class="players">
+      <div id="card-p1" class="player-card">
+        <div id="name-p1">Jugador 1</div>
+        <div class="player-symbol">X</div>
+      </div>
+      <div id="card-p2" class="player-card">
+        <div id="name-p2">Jugador 2</div>
+        <div class="player-symbol">O</div>
+      </div>
+    </div>
+    
+    <div id="game-status" class="status">Conectando...</div>
+    
+    <div id="board" class="board"></div>
+    
+    <button onclick="leaveGame()" class="secondary">🏠 Salir de la Partida</button>
+  </div>
+</div>
+
+<div class="credits">BerMatCode</div>
+
+<script type="module">
+  // === FIREBASE FIRESTORE IMPORTS ===
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+  import { 
+    getFirestore, 
+    doc, 
+    setDoc, 
+    updateDoc, 
+    onSnapshot,
+    getDoc,
+    deleteDoc,
+    serverTimestamp 
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA-MIB8DbCF3YDAqb2qGRO6sjgUzg-sb-I",
+    authDomain: "tres-en-raya1.firebaseapp.com",
+    projectId: "tres-en-raya1",
+    storageBucket: "tres-en-raya1.firebasestorage.app",
+    messagingSenderId: "728066446875",
+    appId: "1:728066446875:web:d80726479234f1cf580abe",
+    measurementId: "G-P41C6EYSRT"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const db = getFirestore(app);
+
+  // === VARIABLES GLOBALES ===
+  let currentRoomId = null;
+  let myName = "";
+  let myPlayerNumber = null; // 1 o 2
+  let mySymbol = null; // 'X' o 'O'
+  let unsubscribe = null;
+  let currentGameData = null;
+
+  // === NAVEGACIÓN ===
+  window.showView = (viewId) => {
+    document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+    document.getElementById(viewId).classList.add('active');
+  };
+
+  // === GENERAR CÓDIGO ===
+  function generateRoomCode() {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    let code = "";
+    for (let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+  }
+
+  // === CREAR SALA ===
+  window.createRoom = async () => {
+    const nameInput = document.getElementById('input-name-create');
+    myName = nameInput.value.trim();
+    
+    if (!myName) {
+      alert("✍️ Por favor escribe tu nombre");
+      return;
+    }
+
+    currentRoomId = generateRoomCode();
+    myPlayerNumber = 1;
+    mySymbol = 'X';
+
+    const gameRef = doc(db, "games", currentRoomId);
+    
+    try {
+      await setDoc(gameRef, {
+        player1: myName,
+        player2: null,
+        board: ["", "", "", "", "", "", "", "", ""],
+        turn: "player1",
+        winner: null,
+        winningCells: null,
+        createdAt: serverTimestamp(),
+        status: "waiting"
+      });
+
+      document.getElementById('display-room-code').textContent = currentRoomId;
+      showView('view-waiting');
+
+      // Escuchar cambios en tiempo real
+      unsubscribe = onSnapshot(gameRef, (docSnapshot) => {
+        if (docSnapshot.exists()) {
+          const data = docSnapshot.data();
+          if (data.player2 && data.status === "playing") {
+            startGame(data);
+          }
+        }
+      });
+    } catch (error) {
+      console.error("Error creando sala:", error);
+      alert("❌ Error al crear la sala. Intenta de nuevo.");
+    }
+  };
+
+  // === UNIRSE A SALA ===
+  window.joinRoom = async () => {
+    const nameInput = document.getElementById('input-name-join');
+    const codeInput = document.getElementById('input-code-join');
+    
+    myName = nameInput.value.trim();
+    const roomCode = codeInput.value.trim().toUpperCase();
+
+    if (!myName || !roomCode || roomCode.length !== 6) {
+      alert("✍️ Completa tu nombre y un código válido de 6 letras");
+      return;
+    }
+
+    const gameRef = doc(db, "games", roomCode);
+
+    try {
+      const docSnap = await getDoc(gameRef);
+      
+      if (!docSnap.exists()) {
+        alert("❌ Sala no encontrada. Verifica el código.");
+        return;
+      }
+
+      const data = docSnap.data();
+
+      if (data.player2) {
+        alert("❌ Esta sala ya está llena");
+        return;
+      }
+
+      if (data.status !== "waiting") {
+        alert("❌ La partida ya comenzó o no está disponible");
+        return;
+      }
+
+      currentRoomId = roomCode;
+      myPlayerNumber = 2;
+      mySymbol = 'O';
+
+      // Unirse a la sala
+      await updateDoc(gameRef, {
+        player2: myName,
+        status: "playing",
+        joinedAt: serverTimestamp()
+      });
+
+      // Escuchar cambios
+      unsubscribe = onSnapshot(gameRef, (docSnapshot) => {
+        if (docSnapshot.exists()) {
+          const gameData = docSnapshot.data();
+          if (gameData.status === "playing") {
+            startGame(gameData);
+          }
+        }
+      });
+    } catch (error) {
+      console.error("Error uniéndose:", error);
+      alert("❌ Error al unirse. Intenta de nuevo.");
+    }
+  };
+
+  // === INICIAR JUEGO ===
+  function startGame(gameData) {
+    if (unsubscribe && typeof unsubscribe === 'function') {
+      unsubscribe();
+    }
+
+    const gameRef = doc(db, "games", currentRoomId);
+    
+    showView('view-game');
+    
+    // Actualizar nombres y marcar quién soy yo
+    const isP1 = myPlayerNumber === 1;
+    document.getElementById('name-p1').textContent = gameData.player1;
+    document.getElementById('name-p2').textContent = gameData.player2 || "Esperando...";
+    
+    const cardP1 = document.getElementById('card-p1');
+    const cardP2 = document.getElementById('card-p2');
+    
+    cardP1.classList.remove('me', 'active');
+    cardP2.classList.remove('me', 'active');
+    
+    if (isP1) {
+      cardP1.classList.add('me');
+    } else {
+      cardP2.classList.add('me');
+    }
+
+    // Suscribirse a actualizaciones en tiempo real
+    unsubscribe = onSnapshot(gameRef, (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        currentGameData = docSnapshot.data();
+        updateGameUI(currentGameData);
+      }
+    });
+  }
+
+  // === ACTUALIZAR INTERFAZ ===
+  function updateGameUI(gameData) {
+    const boardEl = document.getElementById('board');
+    const statusEl = document.getElementById('game-status');
+    const isMyTurn = gameData.turn === `player${myPlayerNumber}` && !gameData.winner;
+    
+    // Actualizar tarjetas de jugador activas
+    const cardP1 = document.getElementById('card-p1');
+    const cardP2 = document.getElementById('card-p2');
+    
+    cardP1.classList.remove('active');
+    cardP2.classList.remove('active');
+    
+    if (!gameData.winner) {
+      if (gameData.turn === 'player1') {
+        cardP1.classList.add('active');
+      } else {
+        cardP2.classList.add('active');
+      }
+    }
+
+    // Renderizar tablero
+    boardEl.innerHTML = '';
+    gameData.board.forEach((cell, index) => {
+      const cellDiv = document.createElement('div');
+      cellDiv.className = 'cell';
+      
+      if (cell) {
+        cellDiv.classList.add(cell.toLowerCase(), 'taken');
+        cellDiv.textContent = cell;
+        
+        // Marcar celdas ganadoras
+        if (gameData.winningCells && gameData.winningCells.includes(index)) {
+          cellDiv.classList.add('winner');
+        }
+      } else if (isMyTurn && !gameData.winner) {
+        cellDiv.onclick = () => makeMove(index);
+      }
+      
+      boardEl.appendChild(cellDiv);
+    });
+
+    // Actualizar estado del juego
+    statusEl.className = 'status';
+    
+    if (gameData.winner) {
+      statusEl.classList.add('game-over');
+      if (gameData.winner === 'draw') {
+        statusEl.textContent = '🤝 ¡Empate!';
+      } else if (gameData.winner === `player${myPlayerNumber}`) {
+        statusEl.textContent = '🎉 ¡Ganaste! 🎉';
+      } else {
+        const winnerName = gameData.winner === 'player1' ? gameData.player1 : gameData.player2;
+        statusEl.textContent = `😢 Ganó ${winnerName}`;
+      }
+    } else if (isMyTurn) {
+      statusEl.classList.add('my-turn');
+      statusEl.textContent = '✅ ¡Es tu turno!';
+    } else {
+      statusEl.classList.add('opponent-turn');
+      const opponentName = myPlayerNumber === 1 ? gameData.player2 : gameData.player1;
+      statusEl.textContent = `⏳ Turno de ${opponentName}`;
+    }
+  }
+
+  // === HACER MOVIMIENTO ===
+  window.makeMove = async (index) => {
+    if (!currentGameData) return;
+    
+    const gameData = currentGameData;
+    
+    // Validaciones
+    if (gameData.board[index] !== "") return;
+    if (gameData.winner) return;
+    if (gameData.turn !== `player${myPlayerNumber}`) return;
+
+    const gameRef = doc(db, "games", currentRoomId);
+    const newBoard = [...gameData.board];
+    newBoard[index] = mySymbol;
+
+    // Verificar ganador
+    const winnerInfo = checkWinner(newBoard);
+    
+    const updateData = {
+      board: newBoard,
+      lastMove: index,
+      lastMoveTime: serverTimestamp()
+    };
+
+    if (winnerInfo.winner) {
+      updateData.winner = winnerInfo.winner;
+      updateData.winningCells = winnerInfo.winningCells;
+      updateData.status = "finished";
+    } else if (!newBoard.includes("")) {
+      updateData.winner = 'draw';
+      updateData.status = "finished";
+    } else {
+      updateData.turn = myPlayerNumber === 1 ? 'player2' : 'player1';
+    }
+
+    try {
+      await updateDoc(gameRef, updateData);
+    } catch (error) {
+      console.error("Error haciendo movimiento:", error);
+    }
+  };
+
+  // === VERIFICAR GANADOR ===
+  function checkWinner(board) {
+    const winPatterns = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8], // Filas
+      [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columnas
+      [0, 4, 8], [2, 4, 6]             // Diagonales
+    ];
+
+    for (const pattern of winPatterns) {
+      const [a, b, c] = pattern;
+      if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+        return {
+          winner: board[a] === 'X' ? 'player1' : 'player2',
+          winningCells: pattern
+        };
+      }
+    }
+
+    return { winner: null, winningCells: null };
+  }
+
+  // === COPIAR CÓDIGO ===
+  window.copyCode = () => {
+    navigator.clipboard.writeText(currentRoomId).then(() => {
+      alert("✅ Código copiado: " + currentRoomId);
+    }).catch(() => {
+      // Fallback
+      const textArea = document.createElement("textarea");
+      textArea.value = currentRoomId;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      alert("✅ Código copiado: " + currentRoomId);
+    });
+  };
+
+  // === SALIR DEL JUEGO ===
+  window.leaveGame = async () => {
+    if (unsubscribe && typeof unsubscribe === 'function') {
+      unsubscribe();
+    }
+
+    if (currentRoomId && myPlayerNumber === 1) {
+      try {
+        await deleteDoc(doc(db, "games", currentRoomId));
+      } catch (error) {
+        console.error("Error eliminando sala:", error);
+      }
+    }
+
+    // Resetear variables
+    currentRoomId = null;
+    myName = "";
+    myPlayerNumber = null;
+    mySymbol = null;
+    currentGameData = null;
+
+    // Volver al menú
+    showView('view-menu');
+    
+    // Limpiar inputs
+    document.getElementById('input-name-create').value = '';
+    document.getElementById('input-name-join').value = '';
+    document.getElementById('input-code-join').value = '';
+  };
+
+  // Inicializar tablero vacío
+  document.getElementById('board').innerHTML = Array(9).fill('<div class="cell"></div>').join('');
+</script>
+</body>
+</html>
