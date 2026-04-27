@@ -4,327 +4,254 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <meta name="theme-color" content="#667eea" />
-  <meta name="msapplication-navbutton-color" content="#667eea" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="#667eea" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Tres en Raya - BerMatCode</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  
   <style>
     :root {
       --primary: #667eea;
-      --primary-dark: #5568d3;
       --secondary: #764ba2;
       --success: #2ecc71;
       --danger: #e74c3c;
-      --warning: #f39c12;
       --bg: #f8f9fc;
-      --card: #ffffff;
       --text: #1a1a2e;
       --text-muted: #6b7280;
-      --border: #e5e7eb;
-      --shadow: 0 10px 40px rgba(0,0,0,0.15);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
     
     html, body {
-      height: 100dvh;
-      overflow: hidden;
+      height: 100vh; width: 100vw;
+      overflow: hidden; /* Bloquea el scroll completamente */
       font-family: 'Inter', sans-serif;
       background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+
+    .app-wrapper {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      position: relative;
     }
 
     .container {
-      background: var(--card);
-      border-radius: 24px;
-      padding: 28px 20px;
-      max-width: 420px;
-      width: 100%;
-      height: 92vh;
-      max-height: 700px;
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+      background: white;
+      width: 90%; max-width: 360px; /* Más compacto */
+      border-radius: 20px;
+      padding: 24px 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       position: relative;
-      overflow: hidden;
+      z-index: 10;
+      text-align: center;
     }
 
     h1 {
-      text-align: center;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 20px;
-      font-size: 1.8rem;
-      font-weight: 700;
-      letter-spacing: -0.5px;
+      color: var(--primary); font-size: 1.6rem; font-weight: 800; margin-bottom: 20px;
     }
 
-    .view { display: none; animation: fadeIn 0.4s ease; width: 100%; }
+    .view { display: none; animation: fade 0.3s ease; }
     .view.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fade { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
+    /* Inputs más elegantes y no tan largos */
     input {
-      width: 100%;
-      padding: 14px;
-      margin: 10px 0;
-      border: 2px solid var(--border);
-      border-radius: 14px;
-      font-size: 16px;
-      text-align: center;
-      font-weight: 500;
-      transition: all 0.3s;
-      background: var(--bg);
+      width: 100%; padding: 12px; margin: 10px 0;
+      border: 2px solid #eee; border-radius: 12px;
+      font-size: 16px; text-align: center; outline: none;
+      transition: 0.3s;
     }
-    input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15); background: white; }
+    input:focus { border-color: var(--primary); }
 
     button {
-      width: 100%;
-      padding: 14px;
-      margin: 8px 0;
-      border: none;
-      border-radius: 14px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      width: 100%; padding: 14px; margin: 8px 0;
+      border: none; border-radius: 12px;
+      background: var(--primary); color: white;
+      font-weight: 600; font-size: 15px; cursor: pointer;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
     }
-    button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4); }
-    button:active { transform: translateY(0); }
-    button.secondary { background: linear-gradient(135deg, #95a5a6, #7f8c8d); box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3); }
-    button.success { background: linear-gradient(135deg, var(--success), #27ae60); box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3); }
-    button.danger { background: linear-gradient(135deg, var(--danger), #c0392b); box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3); }
+    button.secondary { background: #95a5a6; box-shadow: none; }
+    button:active { transform: scale(0.98); }
 
     .code-box {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
-      padding: 24px;
-      border-radius: 18px;
-      text-align: center;
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: 6px;
-      margin: 20px 0;
-      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.35);
+      background: var(--bg); padding: 15px; border-radius: 10px;
+      font-size: 24px; font-weight: bold; letter-spacing: 4px; color: var(--primary);
+      margin: 15px 0; border: 2px dashed var(--primary);
     }
 
-    .players { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
-    .player-card {
-      flex: 1; padding: 14px; border-radius: 14px; background: var(--bg);
-      text-align: center; border: 3px solid transparent; transition: all 0.3s;
+    .players { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 15px; }
+    .p-card {
+      flex: 1; padding: 10px; border-radius: 10px; background: var(--bg);
+      font-size: 12px; font-weight: 600; transition: 0.3s;
     }
-    .player-card.active { border-color: var(--primary); background: #f0f4ff; transform: scale(1.03); }
-    .player-card.me { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3); }
-    .player-name { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
-    .player-symbol { font-size: 20px; font-weight: 700; }
+    .p-card.active { background: var(--primary); color: white; transform: scale(1.05); }
+    .p-card.me { border: 2px solid var(--primary); }
 
-    .status {
-      padding: 14px; border-radius: 14px; text-align: center; font-weight: 600; font-size: 14px;
-      margin: 16px 0; transition: all 0.3s; background: var(--bg); color: var(--text-muted);
+    .status-bar {
+      padding: 10px; border-radius: 8px; font-size: 14px; font-weight: 600;
+      margin-bottom: 15px; background: var(--bg); color: var(--text-muted);
     }
-    .status.my-turn { background: linear-gradient(135deg, var(--success), #27ae60); color: white; animation: pulse 2s infinite; }
-    .status.their-turn { background: linear-gradient(135deg, var(--text-muted), #95a5a6); color: white; }
-    .status.finished { background: linear-gradient(135deg, var(--danger), #c0392b); color: white; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.85; } }
+    .status-bar.my-turn { background: var(--success); color: white; animation: pulse 2s infinite; }
+    .status-bar.their-turn { background: var(--text-muted); color: white; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
 
     .board {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-      margin: 16px auto; max-width: 280px; width: 100%;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+      max-width: 260px; margin: 0 auto 15px;
     }
     .cell {
-      aspect-ratio: 1; background: var(--bg); border: 3px solid var(--border); border-radius: 14px;
-      display: flex; align-items: center; justify-content: center; cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 36px; font-weight: 700;
+      aspect-ratio: 1; background: var(--bg); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; font-weight: 800; color: var(--text);
+      cursor: pointer; transition: 0.2s;
     }
-    .cell:hover:not(.taken) { background: #eef1ff; border-color: var(--primary); transform: scale(1.03); }
-    .cell.x { color: var(--danger); background: linear-gradient(135deg, #ffeaea, #ffd6d6); border-color: var(--danger); }
-    .cell.o { color: var(--primary); background: linear-gradient(135deg, #eaf4ff, #d6e8ff); border-color: var(--primary); }
+    .cell:hover:not(.taken) { background: #eef1ff; }
+    .cell.x { color: var(--danger); }
+    .cell.o { color: var(--primary); }
     .cell.taken { cursor: default; }
-    .cell.winner { background: linear-gradient(135deg, var(--success), #27ae60); color: white; border-color: var(--success); animation: winPop 0.5s; box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4); }
-    @keyframes winPop { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+    .cell.winner { background: var(--success); color: white; transform: scale(1.05); }
 
-    /* SISTEMA DE REACCIONES */
+    /* BURBUJA DE REACCIÓN (ARRASTRABLE) */
     .reaction-bubble {
-      position: fixed; right: 20px; top: 50%; transform: translateY(-50%);
-      background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
-      border-radius: 20px; padding: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-      display: none; flex-direction: column; align-items: center; gap: 8px;
-      z-index: 50; transition: all 0.3s; border: 2px solid var(--border);
-      min-width: 140px; text-align: center;
+      position: absolute;
+      width: 80px; height: 80px;
+      background: rgba(255,255,255,0.95);
+      border-radius: 50%;
+      display: none; flex-direction: column; align-items: center; justify-content: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      cursor: grab; z-index: 100;
+      border: 2px solid var(--primary);
+      touch-action: none; /* Crucial para arrastrar en móvil */
+      transition: transform 0.1s;
     }
-    .reaction-emoji { font-size: 36px; line-height: 1; animation: bounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-    @keyframes bounce { 0% { transform: scale(0); } 60% { transform: scale(1.2); } 100% { transform: scale(1); } }
-    .reaction-sender { font-size: 12px; font-weight: 600; color: var(--text-muted); max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .reaction-actions { display: flex; gap: 6px; width: 100%; }
-    .reaction-actions button { padding: 6px; font-size: 11px; margin: 0; border-radius: 8px; }
+    .reaction-bubble:active { cursor: grabbing; transform: scale(1.1); }
+    .reaction-emoji { font-size: 32px; }
+    .reaction-name { font-size: 10px; font-weight: bold; color: var(--primary); margin-top: 2px; max-width: 90%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     
-    .reaction-trigger {
-      position: absolute; bottom: 20px; right: 20px;
-      background: var(--primary); color: white; width: 44px; height: 44px;
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 20px; cursor: pointer; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-      transition: transform 0.2s; z-index: 40;
+    .btn-dismiss {
+      position: absolute; top: -5px; right: -5px;
+      width: 20px; height: 20px; background: var(--danger); color: white;
+      border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; border: 2px solid white;
     }
-    .reaction-trigger:hover { transform: scale(1.1); }
-    
-    .reaction-picker {
-      position: absolute; bottom: 70px; right: 10px;
-      background: white; border-radius: 16px; padding: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      display: none; grid-template-columns: repeat(3, 1fr); gap: 8px;
-      z-index: 60; animation: popUp 0.3s ease;
-    }
-    .reaction-picker.active { display: grid; }
-    @keyframes popUp { from { opacity: 0; transform: scale(0.8) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-    .emoji-btn {
-      width: 40px; height: 40px; border: none; background: var(--bg);
-      border-radius: 10px; font-size: 22px; cursor: pointer; transition: 0.2s;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .emoji-btn:hover { background: #eef1ff; transform: scale(1.1); }
 
-    .modal {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    .emoji-picker {
+      position: absolute; bottom: 20px; right: 20px;
+      background: white; padding: 10px; border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+      display: none; grid-template-columns: repeat(3, 1fr); gap: 5px;
+      z-index: 90;
     }
-    .modal.active { opacity: 1; pointer-events: all; }
-    .modal-content {
-      background: white; border-radius: 24px; padding: 32px 24px;
-      max-width: 320px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    .emoji-picker.active { display: grid; }
+    .emo-btn {
+      width: 36px; height: 36px; border: none; background: var(--bg);
+      border-radius: 8px; font-size: 20px; cursor: pointer;
     }
-    .modal.active .modal-content { transform: scale(1); }
-    .modal-loader { width: 50px; height: 50px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; margin: 0 auto 20px; animation: spin 1s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .modal-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
-    .modal-text { font-size: 14px; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px; }
-    .modal-buttons { display: flex; gap: 10px; }
-    .modal-buttons button { flex: 1; margin: 0; padding: 12px; }
 
     .credits {
-      font-weight: 700; font-size: 16px; color: white; text-align: center;
-      margin-top: 16px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.9;
+      font-family: 'Pacifico', cursive;
+      color: white; font-size: 18px; margin-top: 15px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
 
     .hidden { display: none !important; }
 
-    @media (max-width: 480px) {
-      .container { padding: 24px 16px; border-radius: 20px; height: 94vh; }
-      h1 { font-size: 1.6rem; margin-bottom: 16px; }
-      .board { gap: 8px; max-width: 260px; }
-      .cell { border-radius: 12px; font-size: 32px; }
-      .reaction-bubble { right: 12px; padding: 10px; min-width: 120px; }
-      .reaction-emoji { font-size: 30px; }
-      .reaction-sender { font-size: 11px; max-width: 90px; }
-      .reaction-picker { right: 5px; bottom: 60px; gap: 6px; padding: 10px; }
-      .emoji-btn { width: 36px; height: 36px; font-size: 20px; }
+    /* Modal simple */
+    .modal {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5); z-index: 200;
+      display: none; align-items: center; justify-content: center;
+    }
+    .modal.active { display: flex; }
+    .modal-box {
+      background: white; padding: 20px; border-radius: 15px; width: 80%; max-width: 300px; text-align: center;
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>Tres en Raya</h1>
+  <div class="app-wrapper">
+    <div class="container">
+      <h1>Tres en Raya</h1>
 
-  <!-- MENU -->
-  <div id="view-menu" class="view active">
-    <button onclick="showView('view-create')">Crear Sala Nueva</button>
-    <button onclick="showView('view-join')" class="secondary">Unirse a Sala</button>
-  </div>
-
-  <!-- CREAR -->
-  <div id="view-create" class="view">
-    <input type="text" id="name-create" placeholder="Tu nombre" maxlength="12">
-    <button onclick="createRoom()">Generar Código de Sala</button>
-    <button onclick="showView('view-menu')" class="secondary">Volver al Menú</button>
-  </div>
-
-  <!-- ESPERANDO -->
-  <div id="view-waiting" class="view">
-    <p class="text-center" style="color: var(--text-muted); font-size: 14px; margin-bottom: 8px;">Comparte este código con tu oponente:</p>
-    <div id="room-code" class="code-box">------</div>
-    <button onclick="copyCode()">Copiar Código</button>
-    <p class="text-center" style="color: var(--text-muted); font-size: 13px; margin-top: 12px;">Esperando a que se una el segundo jugador...</p>
-    <button onclick="leaveGame()" class="secondary" style="margin-top: 16px;">Cancelar y Salir</button>
-  </div>
-
-  <!-- UNIRSE -->
-  <div id="view-join" class="view">
-    <input type="text" id="name-join" placeholder="Tu nombre" maxlength="12">
-    <input type="text" id="code-join" placeholder="Código de 6 letras" maxlength="6" style="text-transform:uppercase; letter-spacing: 2px;">
-    <button onclick="joinRoom()">Unirse a la Sala</button>
-    <button onclick="showView('view-menu')" class="secondary">Volver al Menú</button>
-  </div>
-
-  <!-- JUEGO -->
-  <div id="view-game" class="view">
-    <div class="players">
-      <div id="card-p1" class="player-card">
-        <div class="player-name" id="name-p1">Jugador 1</div>
-        <div class="player-symbol">X</div>
+      <!-- MENÚ -->
+      <div id="v-menu" class="view active">
+        <button onclick="showView('v-create')">Crear Sala</button>
+        <button onclick="showView('v-join')" class="secondary">Unirse a Sala</button>
       </div>
-      <div id="card-p2" class="player-card">
-        <div class="player-name" id="name-p2">Jugador 2</div>
-        <div class="player-symbol">O</div>
+
+      <!-- CREAR -->
+      <div id="v-create" class="view">
+        <input type="text" id="in-name-1" placeholder="Tu nombre" maxlength="10">
+        <button onclick="createRoom()">Generar Sala</button>
+        <button onclick="showView('v-menu')" class="secondary">Volver</button>
+      </div>
+
+      <!-- ESPERA -->
+      <div id="v-wait" class="view">
+        <p style="color:var(--text-muted); margin-bottom:10px">Código de Sala:</p>
+        <div id="disp-code" class="code-box">...</div>
+        <button onclick="copyCode()">Copiar</button>
+        <p style="font-size:12px; color:#888; margin:15px 0">Esperando oponente...</p>
+        <button onclick="leaveGame()" class="secondary">Salir</button>
+      </div>
+
+      <!-- UNIRSE -->
+      <div id="v-join" class="view">
+        <input type="text" id="in-name-2" placeholder="Tu nombre" maxlength="10">
+        <input type="text" id="in-code" placeholder="Código" maxlength="6" style="text-transform:uppercase">
+        <button onclick="joinRoom()">Entrar</button>
+        <button onclick="showView('v-menu')" class="secondary">Volver</button>
+      </div>
+
+      <!-- JUEGO -->
+      <div id="v-game" class="view">
+        <div class="players">
+          <div id="card-p1" class="p-card">J1: <span id="n-p1">?</span></div>
+          <div id="card-p2" class="p-card">J2: <span id="n-p2">?</span></div>
+        </div>
+        <div id="status" class="status-bar">Conectando...</div>
+        <div id="board" class="board"></div>
+        <button id="btn-rematch" onclick="requestRematch()" class="hidden" style="background:var(--danger)">Revancha</button>
+        <button onclick="leaveGame()" class="secondary">Salir</button>
       </div>
     </div>
 
-    <div id="status" class="status">Conectando...</div>
-    <div id="board" class="board"></div>
+    <!-- REACCIÓN FLOTANTE (ARRASTRABLE) -->
+    <div id="bubble" class="reaction-bubble" onmousedown="startDrag(event)" ontouchstart="startDrag(event)">
+      <div class="btn-dismiss" onclick="dismissReaction(event)">✕</div>
+      <div class="reaction-emoji" id="b-emoji"></div>
+      <div class="reaction-name" id="b-name"></div>
+    </div>
 
-    <button id="btn-rematch" onclick="requestRematch()" class="hidden success">Solicitar Revancha</button>
-    <button onclick="leaveGame()" class="secondary">Salir de la Partida</button>
+    <!-- PICKER DE EMOJIS -->
+    <div class="emoji-picker" id="picker">
+      <button class="emo-btn" onclick="sendReact('❤️')">❤️</button>
+      <button class="emo-btn" onclick="sendReact('😂')">😂</button>
+      <button class="emo-btn" onclick="sendReact('😖')">😖</button>
+      <button class="emo-btn" onclick="sendReact('😡')">😡</button>
+      <button class="emo-btn" onclick="sendReact('😭')">😭</button>
+      <button class="emo-btn" onclick="sendReact('😲')">😲</button>
+      <button class="emo-btn" onclick="sendReact('😁')">😁</button>
+      <button class="emo-btn" onclick="sendReact('🥰')"></button>
+      <button class="emo-btn" onclick="sendReact('😍')">😍</button>
+    </div>
+    
+    <!-- BOTÓN PARA ABRIR PICKER -->
+    <button id="btn-picker-toggle" onclick="togglePicker()" style="width:50px; height:50px; border-radius:50%; position:fixed; bottom:20px; right:20px; padding:0; font-size:24px; display:none; z-index:95;">💬</button>
 
-    <!-- UI REACCIONES -->
-    <div id="reaction-trigger" class="reaction-trigger hidden" onclick="toggleReactions()">💬</div>
-    <div id="reaction-picker" class="reaction-picker">
-      <button class="emoji-btn" onclick="sendReaction('❤️')">❤️</button>
-      <button class="emoji-btn" onclick="sendReaction('😂')">😂</button>
-      <button class="emoji-btn" onclick="sendReaction('😖')">😖</button>
-      <button class="emoji-btn" onclick="sendReaction('😡')">😡</button>
-      <button class="emoji-btn" onclick="sendReaction('😭')">😭</button>
-      <button class="emoji-btn" onclick="sendReaction('😲')">😲</button>
-      <button class="emoji-btn" onclick="sendReaction('😁')">😁</button>
-      <button class="emoji-btn" onclick="sendReaction('🥰')">🥰</button>
-      <button class="emoji-btn" onclick="sendReaction('😍')">😍</button>
+    <div class="credits">BerMatCode</div>
+  </div>
+
+  <!-- MODAL -->
+  <div id="modal" class="modal">
+    <div class="modal-box">
+      <h3 id="m-title" style="margin-bottom:10px"></h3>
+      <p id="m-text" style="margin-bottom:15px; color:#666"></p>
+      <div id="m-btns"></div>
     </div>
   </div>
-</div>
-
-<!-- BURBUJA DE REACCIÓN (FIJA EN EL COSTADO) -->
-<div id="reaction-bubble" class="reaction-bubble">
-  <div id="reaction-emoji" class="reaction-emoji"></div>
-  <div id="reaction-sender" class="reaction-sender"></div>
-  <div class="reaction-actions">
-    <button id="btn-dismiss-reaction" onclick="dismissReaction()" class="secondary">Quitar</button>
-  </div>
-</div>
-
-<div class="credits">BerMatCode</div>
-
-<!-- MODAL GENÉRICO -->
-<div id="modal" class="modal">
-  <div class="modal-content">
-    <div id="modal-loader" class="modal-loader hidden"></div>
-    <div id="modal-title" class="modal-title">Título</div>
-    <div id="modal-text" class="modal-text">Mensaje</div>
-    <div id="modal-buttons" class="modal-buttons">
-      <button onclick="closeModal()">Cerrar</button>
-    </div>
-  </div>
-</div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -343,288 +270,274 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  let roomId = null;
-  let myName = "";
-  let myPlayer = null;
-  let gameData = null;
-  let unsubscribe = null;
+  let roomId = null, myName = "", myPlayer = 1, game = null, unsub = null;
 
-  // NAVEGACIÓN
+  // SISTEMA DE PERSISTENCIA (NO SE PIERDE LA SALA)
+  function saveSession(id, name, p) {
+    localStorage.setItem('game_room', id);
+    localStorage.setItem('game_name', name);
+    localStorage.setItem('game_p', p);
+  }
+  function loadSession() {
+    const id = localStorage.getItem('game_room');
+    if (id) {
+      myName = localStorage.getItem('game_name');
+      myPlayer = parseInt(localStorage.getItem('game_p'));
+      roomId = id;
+      reconnectGame();
+      return true;
+    }
+    return false;
+  }
+  function clearSession() {
+    localStorage.removeItem('game_room');
+    localStorage.removeItem('game_name');
+    localStorage.removeItem('game_p');
+  }
+
+  // Si hay sesión guardada, entrar directo
+  if (!loadSession()) {
+    showView('v-menu');
+  }
+
+  // VISTAS
   window.showView = (id) => {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById(id).classList.add('active');
   };
 
-  // MODALES
-  window.showLoadingModal = (title, text) => {
-    document.getElementById('modal-loader').classList.remove('hidden');
-    document.getElementById('modal-title').textContent = title;
-    document.getElementById('modal-text').textContent = text;
-    document.getElementById('modal-buttons').classList.add('hidden');
-    document.getElementById('modal').classList.add('active');
-  };
-
-  window.showModal = (title, text, buttons = [{text: 'Cerrar', onclick: closeModal}]) => {
-    document.getElementById('modal-loader').classList.add('hidden');
-    document.getElementById('modal-title').textContent = title;
-    document.getElementById('modal-text').textContent = text;
-    const btnContainer = document.getElementById('modal-buttons');
-    btnContainer.classList.remove('hidden');
-    btnContainer.innerHTML = '';
-    buttons.forEach(btn => {
-      const b = document.createElement('button');
-      b.textContent = btn.text;
-      b.className = btn.class || '';
-      b.onclick = btn.onclick;
-      btnContainer.appendChild(b);
+  // MODAL
+  function showModal(title, text, btns = [{text:'OK', class:''}]) {
+    document.getElementById('m-title').textContent = title;
+    document.getElementById('m-text').textContent = text;
+    const cont = document.getElementById('m-btns');
+    cont.innerHTML = '';
+    btns.forEach(b => {
+      const btn = document.createElement('button');
+      btn.textContent = b.text; btn.className = b.class;
+      btn.onclick = () => document.getElementById('modal').classList.remove('active');
+      cont.appendChild(btn);
     });
     document.getElementById('modal').classList.add('active');
-  };
-
-  window.closeModal = () => {
-    document.getElementById('modal').classList.remove('active');
-  };
-
-  function generateCode() {
-    const chars = "BERMATCODE";
-    return Array.from({length: 6}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
   }
 
-  // CREAR SALA
+  // CREAR
   window.createRoom = async () => {
-    myName = document.getElementById('name-create').value.trim();
-    if (!myName) return showModal("Error", "Ingresa tu nombre para continuar.");
-
-    showLoadingModal("Creando sala", "Generando código único y preparando la partida...");
+    myName = document.getElementById('in-name-1').value.trim() || 'Jugador 1';
+    roomId = Math.random().toString(36).substring(2, 8).toUpperCase(); // Genera letras y números
     
-    setTimeout(async () => {
-      roomId = generateCode();
-      myPlayer = 1;
-
-      try {
-        await setDoc(doc(db, "games", roomId), {
-          player1: myName, player2: null,
-          board: ["","","","","","","","",""],
-          turn: "player1", winner: null, winningCells: null,
-          status: "waiting", rematchRequestedBy: null, rematchStatus: "none",
-          reaction: null, createdAt: serverTimestamp()
-        });
-        closeModal();
-        document.getElementById('room-code').textContent = roomId;
-        showView('view-waiting');
-
-        unsubscribe = onSnapshot(doc(db, "games", roomId), (snap) => {
-          if (snap.exists() && snap.data().player2 && snap.data().status === "playing") {
-            startGame(snap.data());
-          }
-        });
-      } catch (error) {
-        closeModal();
-        showModal("Error", "No se pudo crear la sala. Verifica tu conexión.");
-      }
-    }, 1000);
+    await setDoc(doc(db, "games", roomId), {
+      p1: myName, p2: null,
+      board: Array(9).fill(""), turn: "p1", win: null,
+      rematch: false, reaction: null, created: serverTimestamp()
+    });
+    
+    saveSession(roomId, myName, 1);
+    document.getElementById('disp-code').textContent = roomId;
+    showView('v-wait');
+    listenGame();
   };
 
   // UNIRSE
   window.joinRoom = async () => {
-    myName = document.getElementById('name-join').value.trim();
-    const code = document.getElementById('code-join').value.trim().toUpperCase();
-
-    if (!myName || !code || code.length !== 6) return showModal("Error", "Completa nombre y código válido.");
-
-    showLoadingModal("Uniéndote", "Conectando con la partida...");
+    myName = document.getElementById('in-name-2').value.trim() || 'Jugador 2';
+    roomId = document.getElementById('in-code').value.trim().toUpperCase();
     
-    setTimeout(async () => {
-      try {
-        const snap = await getDoc(doc(db, "games", code));
-        if (!snap.exists()) return closeModal(), showModal("Error", "Sala no encontrada.");
-        const d = snap.data();
-        if (d.player2) return closeModal(), showModal("Error", "Sala llena.");
-        if (d.status !== "waiting") return closeModal(), showModal("Error", "Partida no disponible.");
+    const d = (await getDoc(doc(db, "games", roomId))).data();
+    if (!d) return showModal("Error", "Sala no existe");
+    if (d.p2) return showModal("Error", "Sala llena");
 
-        roomId = code;
-        myPlayer = 2;
-        await updateDoc(doc(db, "games", roomId), { player2: myName, status: "playing" });
-        closeModal();
-
-        unsubscribe = onSnapshot(doc(db, "games", roomId), (snap) => {
-          if (snap.exists()) startGame(snap.data());
-        });
-      } catch (error) {
-        closeModal();
-        showModal("Error", "No se pudo unir a la sala.");
-      }
-    }, 1000);
+    await updateDoc(doc(db, "games", roomId), { p2: myName });
+    saveSession(roomId, myName, 2);
+    showView('v-game');
+    listenGame();
   };
 
-  // INICIAR JUEGO
-  function startGame(data) {
-    showView('view-game');
-    gameData = data;
+  // CONECTAR (Reconectar si se cierra la app)
+  function reconnectGame() {
+    showView('v-game');
+    listenGame();
+  }
 
-    const isP1 = myPlayer === 1;
-    document.getElementById('name-p1').textContent = data.player1;
-    document.getElementById('name-p2').textContent = data.player2 || "Esperando...";
-    document.getElementById('card-p1').className = 'player-card' + (isP1 ? ' me' : '');
-    document.getElementById('card-p2').className = 'player-card' + (!isP1 ? ' me' : '');
+  // ESCUCHAR JUEGO
+  function listenGame() {
+    unsub = onSnapshot(doc(db, "games", roomId), (snap) => {
+      if (!snap.exists()) return;
+      game = snap.data();
+      
+      // UI
+      document.getElementById('n-p1').textContent = game.p1;
+      document.getElementById('n-p2').textContent = game.p2 || "...";
+      
+      const isMe1 = (myPlayer === 1);
+      document.getElementById('card-p1').className = 'p-card' + (isMe1 ? ' me' : '');
+      document.getElementById('card-p2').className = 'p-card' + (!isMe1 ? ' me' : '');
+      
+      if (game.p2) {
+        if (document.getElementById('v-wait').classList.contains('active')) showView('v-game');
+        renderBoard();
+      }
 
-    document.getElementById('reaction-trigger').classList.remove('hidden');
-
-    unsubscribe = onSnapshot(doc(db, "games", roomId), (snap) => {
-      if (snap.exists()) {
-        gameData = snap.data();
-        updateUI();
-        updateReactionUI(gameData.reaction || null);
+      // Reacciones
+      updateReaction(game.reaction);
+      
+      // Rematch
+      if (game.rematch && game.rematchBy !== myPlayer) {
+         showModal("Revancha", `${game.rematchBy === 1 ? game.p1 : game.p2} quiere jugar otra vez.`, [
+           {text:"Aceptar", class:"btn-success", onclick: () => { acceptRematch(); document.getElementById('modal').classList.remove('active'); }},
+           {text:"No", class:"btn-secondary", onclick: () => document.getElementById('modal').classList.remove('active')}
+         ]);
       }
     });
   }
 
-  // ACTUALIZAR UI PRINCIPAL
-  function updateUI() {
-    if (!gameData) return;
-    const boardEl = document.getElementById('board');
-    const statusEl = document.getElementById('status');
-    const rematchBtn = document.getElementById('btn-rematch');
-    const isMyTurn = gameData.turn === `player${myPlayer}` && !gameData.winner;
+  function renderBoard() {
+    const b = document.getElementById('board');
+    b.innerHTML = '';
+    const isMyTurn = !game.win && game.turn === (myPlayer===1 ? 'p1' : 'p2');
     
-    document.getElementById('card-p1').classList.remove('active');
-    document.getElementById('card-p2').classList.remove('active');
-    if (!gameData.winner) document.getElementById(gameData.turn === 'player1' ? 'card-p1' : 'card-p2').classList.add('active');
-
-    boardEl.innerHTML = '';
-    gameData.board.forEach((cell, idx) => {
-      const div = document.createElement('div');
-      div.className = 'cell' + (cell ? ` ${cell.toLowerCase()} taken` : '');
-      if (gameData.winningCells && gameData.winningCells.includes(idx)) div.classList.add('winner');
-      div.textContent = cell;
-      if (!cell && isMyTurn && !gameData.winner) div.onclick = () => makeMove(idx);
-      boardEl.appendChild(div);
+    game.board.forEach((c, i) => {
+      const d = document.createElement('div');
+      d.className = `cell ${c ? c.toLowerCase()+' taken' : ''} ${game.winCells && game.winCells.includes(i) ? 'winner' : ''}`;
+      d.textContent = c;
+      if (isMyTurn && !c) d.onclick = () => move(i);
+      b.appendChild(d);
     });
 
-    statusEl.className = 'status';
-    if (gameData.winner) {
-      statusEl.classList.add('finished');
-      statusEl.textContent = gameData.winner === 'draw' ? '¡Empate!' : (gameData.winner === `player${myPlayer}` ? '¡Ganaste!' : 'Has perdido');
-      rematchBtn.classList.remove('hidden');
+    const st = document.getElementById('status');
+    if (game.win) {
+      st.textContent = game.win === 'draw' ? "¡Empate!" : (game.win === (myPlayer===1?'p1':'p2') ? "¡Ganaste!" : "Perdiste");
+      st.className = 'status-bar ' + (game.win === 'draw' ? '' : (game.win === (myPlayer===1?'p1':'p2') ? 'my-turn' : 'their-turn'));
+      document.getElementById('btn-rematch').classList.remove('hidden');
+      document.getElementById('btn-picker-toggle').style.display = 'block';
     } else if (isMyTurn) {
-      statusEl.classList.add('my-turn');
-      statusEl.textContent = '✓ Tu turno';
-      rematchBtn.classList.add('hidden');
+      st.textContent = "Tu turno"; st.className = 'status-bar my-turn';
+      document.getElementById('btn-rematch').classList.add('hidden');
     } else {
-      statusEl.classList.add('their-turn');
-      statusEl.textContent = `Turno de ${myPlayer === 1 ? gameData.player2 : gameData.player1}`;
-      rematchBtn.classList.add('hidden');
-    }
-
-    if (gameData.rematchRequestedBy && gameData.rematchStatus === 'pending' && gameData.rematchRequestedBy !== myPlayer) {
-      const requester = gameData.rematchRequestedBy === 1 ? gameData.player1 : gameData.player2;
-      showModal("Solicitud de revancha", `${requester} quiere jugar otra partida.`, [
-        { text: "Aceptar", onclick: acceptRematch, class: "success" },
-        { text: "Rechazar", onclick: rejectRematch, class: "danger" }
-      ]);
+      st.textContent = `Turno de ${myPlayer===1?game.p2:game.p1}`; st.className = 'status-bar their-turn';
+      document.getElementById('btn-rematch').classList.add('hidden');
     }
   }
 
-  // MOVIMIENTO
-  window.makeMove = async (idx) => {
-    if (!gameData || gameData.board[idx] || gameData.winner || gameData.turn !== `player${myPlayer}`) return;
-    const newBoard = [...gameData.board]; newBoard[idx] = myPlayer === 1 ? 'X' : 'O';
-    const winner = checkWinner(newBoard);
-    const isDraw = !winner && !newBoard.includes("");
-    const updateData = { board: newBoard };
-    if (winner) Object.assign(updateData, { winner, winningCells: getWinningCells(newBoard, winner), status: "finished" });
-    else if (isDraw) Object.assign(updateData, { winner: 'draw', status: "finished" });
-    else updateData.turn = myPlayer === 1 ? 'player2' : 'player1';
-    try { await updateDoc(doc(db, "games", roomId), updateData); } catch(e) { console.error(e); }
+  window.move = async (i) => {
+    if (!game || game.board[i] || game.win) return;
+    const nb = [...game.board]; nb[i] = myPlayer===1?'X':'O';
+    const w = checkWin(nb);
+    await updateDoc(doc(db, "games", roomId), {
+      board: nb, turn: myPlayer===1?'p2':'p1',
+      win: w ? w : (nb.join('') ? 'draw' : null),
+      winCells: w ? getCells(nb) : null
+    });
   };
 
-  function checkWinner(b) {
-    const w = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    for(const [a,c,d] of w) if(b[a] && b[a]===b[c] && b[a]===b[d]) return b[a]==='X'?'player1':'player2';
+  function checkWin(b) {
+    const p = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    for(let c of p) if(b[c[0]] && b[c[0]]===b[c[1]] && b[c[0]]===b[c[2]]) return b[c[0]]==='X'?'p1':'p2';
     return null;
   }
-  function getWinningCells(b, winner) {
-    const w = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    for(const [a,c,d] of w) if(b[a] && b[a]===b[c] && b[a]===b[d]) return [a,c,d];
+  function getCells(b) {
+    const p = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    for(let c of p) if(b[c[0]] && b[c[0]]===b[c[1]] && b[c[0]]===b[c[2]]) return c;
     return [];
   }
 
   // REVANCHA
-  window.requestRematch = async () => {
-    try {
-      await updateDoc(doc(db, "games", roomId), { rematchRequestedBy: myPlayer, rematchStatus: "pending" });
-      showModal("Solicitud enviada", "Esperando respuesta del oponente...");
-    } catch(e) {}
-  };
-  window.acceptRematch = async () => {
-    try {
-      await updateDoc(doc(db, "games", roomId), { board: ["","","","","","","","",""], turn: "player1", winner: null, winningCells: null, rematchRequestedBy: null, rematchStatus: "none", status: "playing" });
-      closeModal();
-    } catch(e) {}
-  };
-  window.rejectRematch = async () => {
-    try {
-      await updateDoc(doc(db, "games", roomId), { rematchRequestedBy: null, rematchStatus: "rejected" });
-      closeModal();
-    } catch(e) {}
+  window.requestRematch = () => updateDoc(doc(db, "games", roomId), { rematch: true, rematchBy: myPlayer, board: Array(9).fill(""), win: null, turn: "p1" });
+  window.acceptRematch = () => updateDoc(doc(db, "games", roomId), { rematch: false, rematchBy: null });
+
+  // SALIR
+  window.leaveGame = () => {
+    if (unsub) unsub();
+    clearSession();
+    if (myPlayer === 1 && roomId) deleteDoc(doc(db, "games", roomId));
+    location.reload();
   };
 
-  // REACCIONES
-  window.toggleReactions = () => {
-    const picker = document.getElementById('reaction-picker');
-    picker.classList.toggle('active');
-  };
+  // REACCIONES (LÓGICA DE ARRASTRAR)
+  let isDragging = false, curX = 0, curY = 0, initX = 0, initY = 0;
+  const bubble = document.getElementById('bubble');
 
-  window.sendReaction = async (emoji) => {
-    if (!gameData || !myName) return;
-    try {
-      await updateDoc(doc(db, "games", roomId), { reaction: { emoji, sender: myName } });
-      document.getElementById('reaction-picker').classList.remove('active');
-    } catch(e) { console.error(e); }
-  };
-
-  window.dismissReaction = async () => {
-    if (!gameData) return;
-    try { await updateDoc(doc(db, "games", roomId), { reaction: null }); } catch(e) { console.error(e); }
-  };
-
-  function updateReactionUI(reaction) {
-    const bubble = document.getElementById('reaction-bubble');
-    const emojiEl = document.getElementById('reaction-emoji');
-    const senderEl = document.getElementById('reaction-sender');
-    const dismissBtn = document.getElementById('btn-dismiss-reaction');
-
-    if (reaction && reaction.emoji) {
-      bubble.style.display = 'flex';
-      emojiEl.textContent = reaction.emoji;
-      senderEl.textContent = `${reaction.sender} reaccionó`;
-      // Solo el remitente puede quitarla
-      dismissBtn.style.display = (reaction.sender === myName) ? 'block' : 'none';
+  function updateReaction(r) {
+    if (!r || !r.emoji) { bubble.style.display = 'none'; return; }
+    bubble.style.display = 'flex';
+    document.getElementById('b-emoji').textContent = r.emoji;
+    document.getElementById('b-name').textContent = r.name;
+    
+    // Posicionar si hay coordenadas guardadas
+    if (r.x && r.y) {
+      bubble.style.left = r.x + 'px';
+      bubble.style.top = r.y + 'px';
     } else {
-      bubble.style.display = 'none';
+      // Posición por defecto centrada
+      bubble.style.left = (window.innerWidth / 2 - 40) + 'px';
+      bubble.style.top = (window.innerHeight / 2 - 40) + 'px';
     }
   }
 
-  // UTILIDADES
+  window.togglePicker = () => document.getElementById('picker').classList.toggle('active');
+  
+  window.sendReact = async (emoji) => {
+    const x = (window.innerWidth / 2 - 40);
+    const y = (window.innerHeight / 2 - 150);
+    await updateDoc(doc(db, "games", roomId), {
+      reaction: { emoji, name: myName, x, y }
+    });
+    document.getElementById('picker').classList.remove('active');
+  };
+
+  window.dismissReaction = (e) => {
+    e.stopPropagation();
+    if (game.reaction && game.reaction.name === myName) {
+      updateDoc(doc(db, "games", roomId), { reaction: null });
+    }
+  };
+
+  // SISTEMA DRAG AND DROP (Mouse & Touch)
+  window.startDrag = (e) => {
+    if (game.reaction && game.reaction.name !== myName) return; // Solo el creador de la reacción la mueve
+    isDragging = true;
+    const ev = e.type === 'touchstart' ? e.touches[0] : e;
+    initX = ev.clientX - (parseInt(bubble.style.left) || 0);
+    initY = ev.clientY - (parseInt(bubble.style.top) || 0);
+    document.addEventListener('mousemove', onDrag);
+    document.addEventListener('touchmove', onDrag, {passive: false});
+    document.addEventListener('mouseup', endDrag);
+    document.addEventListener('touchend', endDrag);
+  };
+
+  function onDrag(e) {
+    if (!isDragging) return;
+    e.preventDefault(); // Evita scroll
+    const ev = e.type === 'touchmove' ? e.touches[0] : e;
+    curX = ev.clientX - initX;
+    curY = ev.clientY - initY;
+    bubble.style.left = curX + 'px';
+    bubble.style.top = curY + 'px';
+  }
+
+  window.endDrag = async () => {
+    if (!isDragging) return;
+    isDragging = false;
+    document.removeEventListener('mousemove', onDrag);
+    document.removeEventListener('touchmove', onDrag);
+    document.removeEventListener('mouseup', endDrag);
+    document.removeEventListener('touchend', endDrag);
+    
+    // Guardar posición final en Firebase
+    if (game.reaction && game.reaction.name === myName) {
+      await updateDoc(doc(db, "games", roomId), {
+        "reaction.x": curX,
+        "reaction.y": curY
+      });
+    }
+  };
+
   window.copyCode = () => {
-    navigator.clipboard.writeText(roomId).then(() => showModal("¡Copiado!", "Código copiado al portapapeles."));
+    navigator.clipboard.writeText(roomId);
+    showModal("Copiado", "Envía el código a tu novia.");
   };
 
-  window.leaveGame = async () => {
-    if (unsubscribe) unsubscribe();
-    if (roomId && myPlayer === 1) try { await deleteDoc(doc(db, "games", roomId)); } catch(e) {}
-    roomId = null; myName = ""; myPlayer = null; gameData = null;
-    document.getElementById('btn-rematch').classList.add('hidden');
-    document.getElementById('reaction-trigger').classList.add('hidden');
-    document.getElementById('reaction-bubble').style.display = 'none';
-    document.getElementById('reaction-picker').classList.remove('active');
-    showView('view-menu');
-    document.getElementById('name-create').value = '';
-    document.getElementById('name-join').value = '';
-    document.getElementById('code-join').value = '';
-  };
-
-  // Init
+  // Inicializar tablero vacío
   document.getElementById('board').innerHTML = Array(9).fill('<div class="cell"></div>').join('');
 </script>
 </body>
