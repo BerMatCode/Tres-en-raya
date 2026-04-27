@@ -8,10 +8,10 @@
   <title>Tres en Raya - BerMatCode</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  
   <style>
     :root {
       --primary: #667eea;
-      --primary-dark: #5568d3;
       --secondary: #764ba2;
       --success: #2ecc71;
       --danger: #e74c3c;
@@ -112,40 +112,28 @@
     .cell.winner { background: linear-gradient(135deg, var(--success), #27ae60); color: white; border-color: var(--success); animation: winPop 0.4s; box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4); }
     @keyframes winPop { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
 
-    /* BOTONES FLOTANTES SEPARADOS */
-    .btn-chat-wrap { position: fixed; bottom: 25px; right: 25px; z-index: 90; }
-    .btn-chat {
-      width: 52px; height: 52px; border-radius: 50%;
+    /* CONTROLES SEPARADOS */
+    .left-controls {
+      position: fixed; bottom: 25px; left: 25px; z-index: 90; display: none; align-items: center; gap: 10px;
+    }
+    .right-controls {
+      position: fixed; bottom: 25px; right: 25px; z-index: 90; display: none; align-items: center; gap: 10px;
+    }
+    .left-controls.active { display: flex; }
+    .right-controls.active { display: flex; }
+
+    .trigger-btn {
+      width: 50px; height: 50px; border-radius: 50%;
       background: white; color: var(--primary); font-size: 22px;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 5px 18px rgba(0,0,0,0.2); cursor: pointer;
-      border: none; padding: 0; margin: 0; transition: transform 0.2s;
+      transition: transform 0.2s; border: none; padding: 0; margin: 0;
     }
-    .btn-chat:hover { transform: scale(1.1); }
-    
-    .btn-emoji {
-      position: fixed; bottom: 25px; left: 25px;
-      width: 52px; height: 52px; border-radius: 50%;
-      background: white; color: var(--text); font-size: 22px;
-      display: none; align-items: center; justify-content: center;
-      box-shadow: 0 5px 18px rgba(0,0,0,0.2); cursor: pointer;
-      border: none; padding: 0; margin: 0; transition: transform 0.2s; z-index: 90;
-    }
-    .btn-emoji.active { display: flex; }
-    .btn-emoji:hover { transform: scale(1.1); }
+    .trigger-btn:hover { transform: scale(1.1); }
 
-    .chat-badge {
-      position: absolute; top: -5px; right: -5px;
-      width: 22px; height: 22px; background: var(--danger); color: white;
-      border-radius: 50%; font-size: 11px; font-weight: bold;
-      display: flex; align-items: center; justify-content: center;
-      border: 2px solid white; z-index: 91; pointer-events: none;
-    }
-    .hidden { display: none !important; }
-
-    /* CHAT */
+    /* CHAT WINDOW */
     .chat-window {
-      position: fixed; bottom: 85px; right: 20px;
+      position: fixed; bottom: 85px; right: 25px;
       width: 290px; max-height: 350px;
       background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(12px);
       border-radius: 18px; box-shadow: 0 12px 35px rgba(0,0,0,0.25);
@@ -183,6 +171,15 @@
     }
     .chat-input-area input { margin: 0; padding: 10px 14px; font-size: 13px; border-radius: 20px; flex: 1; }
     .chat-input-area button { width: 42px; padding: 0; margin: 0; border-radius: 50%; font-size: 16px; }
+
+    /* CHAT BADGE */
+    .chat-badge {
+      position: absolute; top: -5px; right: -5px;
+      width: 22px; height: 22px; background: var(--danger); color: white;
+      border-radius: 50%; font-size: 11px; font-weight: bold;
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid white; z-index: 91; pointer-events: none;
+    }
 
     /* REACCIONES */
     .emoji-picker {
@@ -244,16 +241,21 @@
     /* CRÉDITOS CON BRILLO */
     .credits {
       font-family: 'Pacifico', cursive;
-      font-size: 22px; color: white; text-align: center;
-      margin-top: 28px; text-transform: uppercase; letter-spacing: 3px;
-      text-shadow: 0 0 10px rgba(255,255,255,0.5), 0 0 20px rgba(102, 126, 234, 0.6), 0 0 30px rgba(118, 75, 162, 0.4);
-      animation: creditGlow 3s ease-in-out infinite alternate;
-      user-select: none;
+      font-size: 22px;
+      color: #ffffff;
+      text-align: center;
+      margin-top: 24px;
+      letter-spacing: 1px;
+      /* Efecto Glow */
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(102, 126, 234, 1), 0 0 30px rgba(118, 75, 162, 0.8);
+      animation: glowPulse 3s infinite alternate;
     }
-    @keyframes creditGlow {
-      0% { text-shadow: 0 0 10px rgba(255,255,255,0.5), 0 0 20px rgba(102, 126, 234, 0.4); transform: translateY(0); }
-      100% { text-shadow: 0 0 15px rgba(255,255,255,0.9), 0 0 35px rgba(102, 126, 234, 0.8), 0 0 50px rgba(118, 75, 162, 0.6); transform: translateY(-2px); }
+    @keyframes glowPulse {
+      from { text-shadow: 0 0 10px rgba(255, 255, 255, 0.6), 0 0 20px rgba(102, 126, 234, 0.8); }
+      to { text-shadow: 0 0 15px rgba(255, 255, 255, 1), 0 0 30px rgba(102, 126, 234, 1), 0 0 40px rgba(118, 75, 162, 1); }
     }
+
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
@@ -312,29 +314,18 @@
   </div>
 </div>
 
-<!-- BOTÓN CHAT (DERECHA) -->
-<div class="btn-chat-wrap">
-  <button class="btn-chat" onclick="toggleChat()">💬</button>
+<!-- CONTROLES IZQUIERDA (REACCIONES) -->
+<div id="reaction-container" class="left-controls">
+  <button class="trigger-btn" onclick="toggleEmojiPicker()" style="background:var(--bg);color:var(--text);">😊</button>
+</div>
+
+<!-- CONTROLES DERECHA (CHAT) -->
+<div id="chat-container" class="right-controls">
+  <button class="trigger-btn" onclick="toggleChat()">💬</button>
   <div id="chat-badge" class="chat-badge hidden">0</div>
 </div>
 
-<!-- BOTÓN EMOJIS (IZQUIERDA) -->
-<button id="btn-emoji" class="btn-emoji" onclick="toggleEmojiPicker()">😊</button>
-
-<!-- CHAT WINDOW -->
-<div id="chat-window" class="chat-window">
-  <div class="chat-header">
-    <span>Chat de Sala</span>
-    <button class="chat-close" onclick="toggleChat()">✕</button>
-  </div>
-  <div id="chat-messages" class="chat-messages"></div>
-  <div class="chat-input-area">
-    <input type="text" id="chat-input" placeholder="Escribe un mensaje..." maxlength="100">
-    <button id="chat-send" onclick="sendChatMessage()">➤</button>
-  </div>
-</div>
-
-<!-- EMOJI PICKER -->
+<!-- PICKER DE EMOJIS (ALINEADO A LA IZQUIERDA) -->
 <div id="emoji-picker" class="emoji-picker">
   <button class="emoji-btn" onclick="sendReaction('❤️')">❤️</button>
   <button class="emoji-btn" onclick="sendReaction('😂')">😂</button>
@@ -345,6 +336,19 @@
   <button class="emoji-btn" onclick="sendReaction('😁')">😁</button>
   <button class="emoji-btn" onclick="sendReaction('🥰')">🥰</button>
   <button class="emoji-btn" onclick="sendReaction('😍')">😍</button>
+</div>
+
+<!-- VENTANA DE CHAT (ALINEADA A LA DERECHA) -->
+<div id="chat-window" class="chat-window">
+  <div class="chat-header">
+    <span>Chat de Sala</span>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+  <div id="chat-messages" class="chat-messages"></div>
+  <div class="chat-input-area">
+    <input type="text" id="chat-input" placeholder="Escribe un mensaje..." maxlength="100">
+    <button id="chat-send" onclick="sendChatMessage()">➤</button>
+  </div>
 </div>
 
 <!-- BURBUJA DE REACCIÓN -->
@@ -481,15 +485,28 @@
     unsub = onSnapshot(doc(db, "games", roomId), (snap) => {
       if (!snap.exists()) return;
       gameData = snap.data();
-      if (gameData.status === "playing" || gameData.p2) {
-        if (document.getElementById('view-wait').classList.contains('active')) showView('view-game');
-        document.getElementById('btn-emoji').classList.add('active'); // Mostrar botón de emojis
+      
+      // VALIDACIÓN DE VISIBILIDAD: Solo aparecen si hay 2 jugadores
+      if (gameData.p2) {
+        document.getElementById('chat-container').classList.add('active');
+        document.getElementById('reaction-container').classList.add('active');
+      } else {
+        document.getElementById('chat-container').classList.remove('active');
+        document.getElementById('reaction-container').classList.remove('active');
       }
+
+      if (gameData.status === "playing") {
+        if (document.getElementById('view-wait').classList.contains('active')) showView('view-game');
+      }
+
       document.getElementById('name-p1').textContent = gameData.p1;
       document.getElementById('name-p2').textContent = gameData.p2 || "Esperando...";
       document.getElementById('card-p1').className = 'player-card' + (myPlayer===1?' me':'');
       document.getElementById('card-p2').className = 'player-card' + (myPlayer===2?' me':'');
-      renderBoard(); updateReactionUI(gameData.reaction || null);
+      
+      renderBoard(); 
+      updateReactionUI(gameData.reaction || null);
+      
       if (gameData.rematchReq && gameData.rematchStat==="pending" && gameData.rematchReq!==myPlayer) {
         const n = gameData.rematchReq===1?gameData.p1:gameData.p2;
         showModal("Solicitud de revancha", `${n} quiere jugar otra vez.`, [
@@ -615,7 +632,8 @@
   window.leaveGame=async()=>{
     if(unsub)unsub();if(chatUnsub)chatUnsub();clearSession();
     if(myPlayer===1&&roomId)try{await deleteDoc(doc(db,"games",roomId));}catch(e){}
-    document.getElementById('btn-emoji').classList.remove('active');
+    document.getElementById('chat-container').classList.remove('active');
+    document.getElementById('reaction-container').classList.remove('active');
     document.getElementById('emoji-picker').classList.remove('active');
     document.getElementById('chat-window').classList.remove('active');
     document.getElementById('bubble').style.display='none';
