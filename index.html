@@ -4,254 +4,320 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <meta name="theme-color" content="#667eea" />
-  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="#667eea" />
   <title>Tres en Raya - BerMatCode</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-  
   <style>
     :root {
       --primary: #667eea;
+      --primary-dark: #5568d3;
       --secondary: #764ba2;
       --success: #2ecc71;
       --danger: #e74c3c;
       --bg: #f8f9fc;
+      --card: #ffffff;
       --text: #1a1a2e;
       --text-muted: #6b7280;
+      --border: #e5e7eb;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     
     html, body {
-      height: 100vh; width: 100vw;
-      overflow: hidden; /* Bloquea el scroll completamente */
+      height: 100dvh;
+      width: 100vw;
+      overflow: hidden;
       font-family: 'Inter', sans-serif;
       background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
-    .app-wrapper {
-      width: 100%; height: 100%;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      position: relative;
-    }
-
-    .container {
-      background: white;
-      width: 90%; max-width: 360px; /* Más compacto */
-      border-radius: 20px;
-      padding: 24px 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    .app-container {
+      background: var(--card);
+      border-radius: 24px;
+      padding: 28px 22px;
+      max-width: 380px;
+      width: 92%;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.2);
       position: relative;
       z-index: 10;
-      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     h1 {
-      color: var(--primary); font-size: 1.6rem; font-weight: 800; margin-bottom: 20px;
+      text-align: center;
+      color: var(--primary);
+      margin-bottom: 24px;
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
     }
 
-    .view { display: none; animation: fade 0.3s ease; }
+    .view { display: none; width: 100%; animation: slideIn 0.3s ease; }
     .view.active { display: block; }
-    @keyframes fade { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Inputs más elegantes y no tan largos */
     input {
-      width: 100%; padding: 12px; margin: 10px 0;
-      border: 2px solid #eee; border-radius: 12px;
-      font-size: 16px; text-align: center; outline: none;
-      transition: 0.3s;
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      font-size: 16px;
+      text-align: center;
+      font-weight: 500;
+      transition: all 0.3s;
+      background: var(--bg);
     }
-    input:focus { border-color: var(--primary); }
+    input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15); background: white; }
 
     button {
-      width: 100%; padding: 14px; margin: 8px 0;
-      border: none; border-radius: 12px;
-      background: var(--primary); color: white;
-      font-weight: 600; font-size: 15px; cursor: pointer;
+      width: 100%;
+      padding: 15px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
       box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
     }
-    button.secondary { background: #95a5a6; box-shadow: none; }
-    button:active { transform: scale(0.98); }
+    button:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(102, 126, 234, 0.4); }
+    button:active { transform: translateY(0); }
+    button.secondary { background: linear-gradient(135deg, #95a5a6, #7f8c8d); box-shadow: 0 4px 12px rgba(149, 165, 166, 0.3); }
+    button.success { background: linear-gradient(135deg, var(--success), #27ae60); box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3); }
+    button.danger { background: linear-gradient(135deg, var(--danger), #c0392b); box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3); }
+    button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
     .code-box {
-      background: var(--bg); padding: 15px; border-radius: 10px;
-      font-size: 24px; font-weight: bold; letter-spacing: 4px; color: var(--primary);
-      margin: 15px 0; border: 2px dashed var(--primary);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 22px;
+      border-radius: 16px;
+      text-align: center;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 5px;
+      margin: 18px 0;
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
     }
 
-    .players { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 15px; }
-    .p-card {
-      flex: 1; padding: 10px; border-radius: 10px; background: var(--bg);
-      font-size: 12px; font-weight: 600; transition: 0.3s;
+    .players { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 16px; width: 100%; }
+    .player-card {
+      flex: 1; padding: 12px; border-radius: 12px; background: var(--bg);
+      text-align: center; border: 2px solid transparent; transition: all 0.3s;
     }
-    .p-card.active { background: var(--primary); color: white; transform: scale(1.05); }
-    .p-card.me { border: 2px solid var(--primary); }
+    .player-card.active { border-color: var(--primary); background: #f0f4ff; transform: scale(1.03); }
+    .player-card.me { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
+    .player-name { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+    .player-symbol { font-size: 18px; font-weight: 700; }
 
-    .status-bar {
-      padding: 10px; border-radius: 8px; font-size: 14px; font-weight: 600;
-      margin-bottom: 15px; background: var(--bg); color: var(--text-muted);
+    .status {
+      padding: 12px; border-radius: 12px; text-align: center; font-weight: 600; font-size: 14px;
+      margin: 14px 0; width: 100%; transition: all 0.3s; background: var(--bg); color: var(--text-muted);
     }
-    .status-bar.my-turn { background: var(--success); color: white; animation: pulse 2s infinite; }
-    .status-bar.their-turn { background: var(--text-muted); color: white; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
+    .status.my-turn { background: linear-gradient(135deg, var(--success), #27ae60); color: white; animation: pulse 2s infinite; }
+    .status.their-turn { background: linear-gradient(135deg, var(--text-muted), #95a5a6); color: white; }
+    .status.finished { background: linear-gradient(135deg, var(--danger), #c0392b); color: white; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.85; } }
 
     .board {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-      max-width: 260px; margin: 0 auto 15px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+      margin: 16px auto; width: 100%; max-width: 260px;
     }
     .cell {
-      aspect-ratio: 1; background: var(--bg); border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 32px; font-weight: 800; color: var(--text);
-      cursor: pointer; transition: 0.2s;
+      aspect-ratio: 1; background: var(--bg); border: 3px solid var(--border); border-radius: 14px;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 34px; font-weight: 700;
     }
-    .cell:hover:not(.taken) { background: #eef1ff; }
-    .cell.x { color: var(--danger); }
-    .cell.o { color: var(--primary); }
+    .cell:hover:not(.taken) { background: #eef1ff; border-color: var(--primary); transform: scale(1.03); }
+    .cell.x { color: var(--danger); background: #ffeaea; border-color: var(--danger); }
+    .cell.o { color: var(--primary); background: #eaf4ff; border-color: var(--primary); }
     .cell.taken { cursor: default; }
-    .cell.winner { background: var(--success); color: white; transform: scale(1.05); }
+    .cell.winner { background: linear-gradient(135deg, var(--success), #27ae60); color: white; border-color: var(--success); animation: winPop 0.4s; box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4); }
+    @keyframes winPop { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
 
-    /* BURBUJA DE REACCIÓN (ARRASTRABLE) */
-    .reaction-bubble {
-      position: absolute;
-      width: 80px; height: 80px;
-      background: rgba(255,255,255,0.95);
-      border-radius: 50%;
-      display: none; flex-direction: column; align-items: center; justify-content: center;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-      cursor: grab; z-index: 100;
-      border: 2px solid var(--primary);
-      touch-action: none; /* Crucial para arrastrar en móvil */
-      transition: transform 0.1s;
+    /* REACCIONES */
+    .reaction-trigger {
+      position: fixed; bottom: 25px; right: 25px;
+      width: 48px; height: 48px; border-radius: 50%;
+      background: white; color: var(--primary); font-size: 22px;
+      display: none; align-items: center; justify-content: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2); cursor: pointer; z-index: 50;
+      transition: transform 0.2s;
     }
-    .reaction-bubble:active { cursor: grabbing; transform: scale(1.1); }
-    .reaction-emoji { font-size: 32px; }
-    .reaction-name { font-size: 10px; font-weight: bold; color: var(--primary); margin-top: 2px; max-width: 90%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .reaction-trigger:hover { transform: scale(1.1); }
     
-    .btn-dismiss {
-      position: absolute; top: -5px; right: -5px;
-      width: 20px; height: 20px; background: var(--danger); color: white;
-      border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center;
-      cursor: pointer; border: 2px solid white;
-    }
-
     .emoji-picker {
-      position: absolute; bottom: 20px; right: 20px;
-      background: white; padding: 10px; border-radius: 15px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-      display: none; grid-template-columns: repeat(3, 1fr); gap: 5px;
-      z-index: 90;
+      position: fixed; bottom: 80px; right: 20px;
+      background: white; border-radius: 16px; padding: 12px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      display: none; grid-template-columns: repeat(3, 1fr); gap: 8px;
+      z-index: 55; animation: popUp 0.25s ease;
     }
     .emoji-picker.active { display: grid; }
-    .emo-btn {
-      width: 36px; height: 36px; border: none; background: var(--bg);
-      border-radius: 8px; font-size: 20px; cursor: pointer;
+    @keyframes popUp { from { opacity: 0; transform: scale(0.8) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    .emoji-btn {
+      width: 40px; height: 40px; border: none; background: var(--bg);
+      border-radius: 10px; font-size: 22px; cursor: pointer; transition: 0.2s;
     }
+    .emoji-btn:hover { background: #eef1ff; transform: scale(1.1); }
+
+    .reaction-bubble {
+      position: fixed; width: 80px; height: 80px;
+      background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px);
+      border-radius: 50%; display: none; flex-direction: column;
+      align-items: center; justify-content: center;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      z-index: 60; cursor: grab; touch-action: none;
+      border: 2px solid var(--primary);
+      transition: transform 0.1s;
+    }
+    .reaction-bubble:active { cursor: grabbing; transform: scale(1.05); }
+    .reaction-emoji { font-size: 32px; pointer-events: none; }
+    .reaction-sender { font-size: 10px; font-weight: 600; color: var(--primary); margin-top: 2px; max-width: 90%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; pointer-events: none; }
+    .bubble-dismiss {
+      position: absolute; top: -4px; right: -4px;
+      width: 20px; height: 20px; background: var(--danger); color: white;
+      border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; border: 2px solid white; z-index: 61;
+    }
+
+    /* MODALES */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    }
+    .modal-overlay.active { opacity: 1; pointer-events: all; }
+    .modal-content {
+      background: white; border-radius: 20px; padding: 28px 24px;
+      max-width: 300px; width: 85%; text-align: center;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+      transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .modal-overlay.active .modal-content { transform: scale(1); }
+    .modal-loader { width: 48px; height: 48px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; margin: 0 auto 18px; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .modal-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+    .modal-text { font-size: 14px; color: var(--text-muted); line-height: 1.5; margin-bottom: 18px; }
+    .modal-buttons { display: flex; gap: 10px; }
+    .modal-buttons button { flex: 1; margin: 0; padding: 12px; }
 
     .credits {
       font-family: 'Pacifico', cursive;
-      color: white; font-size: 18px; margin-top: 15px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      font-size: 18px; color: white; text-align: center;
+      margin-top: 20px; text-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      opacity: 0.95;
     }
 
     .hidden { display: none !important; }
-
-    /* Modal simple */
-    .modal {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5); z-index: 200;
-      display: none; align-items: center; justify-content: center;
-    }
-    .modal.active { display: flex; }
-    .modal-box {
-      background: white; padding: 20px; border-radius: 15px; width: 80%; max-width: 300px; text-align: center;
-    }
   </style>
 </head>
 <body>
 
-  <div class="app-wrapper">
-    <div class="container">
-      <h1>Tres en Raya</h1>
+<div class="app-container">
+  <h1>Tres en Raya</h1>
 
-      <!-- MENÚ -->
-      <div id="v-menu" class="view active">
-        <button onclick="showView('v-create')">Crear Sala</button>
-        <button onclick="showView('v-join')" class="secondary">Unirse a Sala</button>
-      </div>
-
-      <!-- CREAR -->
-      <div id="v-create" class="view">
-        <input type="text" id="in-name-1" placeholder="Tu nombre" maxlength="10">
-        <button onclick="createRoom()">Generar Sala</button>
-        <button onclick="showView('v-menu')" class="secondary">Volver</button>
-      </div>
-
-      <!-- ESPERA -->
-      <div id="v-wait" class="view">
-        <p style="color:var(--text-muted); margin-bottom:10px">Código de Sala:</p>
-        <div id="disp-code" class="code-box">...</div>
-        <button onclick="copyCode()">Copiar</button>
-        <p style="font-size:12px; color:#888; margin:15px 0">Esperando oponente...</p>
-        <button onclick="leaveGame()" class="secondary">Salir</button>
-      </div>
-
-      <!-- UNIRSE -->
-      <div id="v-join" class="view">
-        <input type="text" id="in-name-2" placeholder="Tu nombre" maxlength="10">
-        <input type="text" id="in-code" placeholder="Código" maxlength="6" style="text-transform:uppercase">
-        <button onclick="joinRoom()">Entrar</button>
-        <button onclick="showView('v-menu')" class="secondary">Volver</button>
-      </div>
-
-      <!-- JUEGO -->
-      <div id="v-game" class="view">
-        <div class="players">
-          <div id="card-p1" class="p-card">J1: <span id="n-p1">?</span></div>
-          <div id="card-p2" class="p-card">J2: <span id="n-p2">?</span></div>
-        </div>
-        <div id="status" class="status-bar">Conectando...</div>
-        <div id="board" class="board"></div>
-        <button id="btn-rematch" onclick="requestRematch()" class="hidden" style="background:var(--danger)">Revancha</button>
-        <button onclick="leaveGame()" class="secondary">Salir</button>
-      </div>
-    </div>
-
-    <!-- REACCIÓN FLOTANTE (ARRASTRABLE) -->
-    <div id="bubble" class="reaction-bubble" onmousedown="startDrag(event)" ontouchstart="startDrag(event)">
-      <div class="btn-dismiss" onclick="dismissReaction(event)">✕</div>
-      <div class="reaction-emoji" id="b-emoji"></div>
-      <div class="reaction-name" id="b-name"></div>
-    </div>
-
-    <!-- PICKER DE EMOJIS -->
-    <div class="emoji-picker" id="picker">
-      <button class="emo-btn" onclick="sendReact('❤️')">❤️</button>
-      <button class="emo-btn" onclick="sendReact('😂')">😂</button>
-      <button class="emo-btn" onclick="sendReact('😖')">😖</button>
-      <button class="emo-btn" onclick="sendReact('😡')">😡</button>
-      <button class="emo-btn" onclick="sendReact('😭')">😭</button>
-      <button class="emo-btn" onclick="sendReact('😲')">😲</button>
-      <button class="emo-btn" onclick="sendReact('😁')">😁</button>
-      <button class="emo-btn" onclick="sendReact('🥰')"></button>
-      <button class="emo-btn" onclick="sendReact('😍')">😍</button>
-    </div>
-    
-    <!-- BOTÓN PARA ABRIR PICKER -->
-    <button id="btn-picker-toggle" onclick="togglePicker()" style="width:50px; height:50px; border-radius:50%; position:fixed; bottom:20px; right:20px; padding:0; font-size:24px; display:none; z-index:95;">💬</button>
-
-    <div class="credits">BerMatCode</div>
+  <!-- MENÚ -->
+  <div id="view-menu" class="view active">
+    <button onclick="showView('view-create')">Crear Sala Nueva</button>
+    <button onclick="showView('view-join')" class="secondary">Unirse a Sala</button>
   </div>
 
-  <!-- MODAL -->
-  <div id="modal" class="modal">
-    <div class="modal-box">
-      <h3 id="m-title" style="margin-bottom:10px"></h3>
-      <p id="m-text" style="margin-bottom:15px; color:#666"></p>
-      <div id="m-btns"></div>
+  <!-- CREAR -->
+  <div id="view-create" class="view">
+    <input type="text" id="name-create" placeholder="Tu nombre" maxlength="12">
+    <button onclick="createRoom()">Generar Código</button>
+    <button onclick="showView('view-menu')" class="secondary">Volver</button>
+  </div>
+
+  <!-- ESPERANDO -->
+  <div id="view-wait" class="view">
+    <p style="text-align:center;color:var(--text-muted);margin-bottom:10px;font-size:14px">Comparte este código:</p>
+    <div id="room-code" class="code-box">------</div>
+    <button onclick="copyCode()">Copiar Código</button>
+    <p style="text-align:center;margin:12px 0;color:var(--text-muted);font-size:13px">Esperando al segundo jugador...</p>
+    <button onclick="leaveGame()" class="secondary" style="margin-top:10px">Cancelar y Salir</button>
+  </div>
+
+  <!-- UNIRSE -->
+  <div id="view-join" class="view">
+    <input type="text" id="name-join" placeholder="Tu nombre" maxlength="12">
+    <input type="text" id="code-join" placeholder="Código (6 letras)" maxlength="6" style="text-transform:uppercase;letter-spacing:2px">
+    <button onclick="joinRoom()">Unirse a la Sala</button>
+    <button onclick="showView('view-menu')" class="secondary">Volver</button>
+  </div>
+
+  <!-- JUEGO -->
+  <div id="view-game" class="view">
+    <div class="players">
+      <div id="card-p1" class="player-card">
+        <div class="player-name" id="name-p1">Jugador 1</div>
+        <div class="player-symbol">X</div>
+      </div>
+      <div id="card-p2" class="player-card">
+        <div class="player-name" id="name-p2">Jugador 2</div>
+        <div class="player-symbol">O</div>
+      </div>
+    </div>
+
+    <div id="status" class="status">Conectando...</div>
+    <div id="board" class="board"></div>
+
+    <button id="btn-rematch" onclick="requestRematch()" class="hidden success">Solicitar Revancha</button>
+    <button onclick="leaveGame()" class="secondary">Salir de la Partida</button>
+  </div>
+</div>
+
+<!-- BURBUJA DE REACCIÓN -->
+<div id="bubble" class="reaction-bubble">
+  <div class="bubble-dismiss" onclick="dismissReaction(event)">✕</div>
+  <div class="reaction-emoji" id="b-emoji"></div>
+  <div class="reaction-sender" id="b-sender"></div>
+</div>
+
+<!-- TRIGGER REACCIONES -->
+<div id="react-trigger" class="reaction-trigger" onclick="togglePicker()">💬</div>
+
+<!-- PICKER EMOJIS -->
+<div id="emoji-picker" class="emoji-picker">
+  <button class="emoji-btn" onclick="sendReaction('❤️')">❤️</button>
+  <button class="emoji-btn" onclick="sendReaction('😂')">😂</button>
+  <button class="emoji-btn" onclick="sendReaction('😖')">😖</button>
+  <button class="emoji-btn" onclick="sendReaction('😡')">😡</button>
+  <button class="emoji-btn" onclick="sendReaction('😭')">😭</button>
+  <button class="emoji-btn" onclick="sendReaction('😲')">😲</button>
+  <button class="emoji-btn" onclick="sendReaction('😁')">😁</button>
+  <button class="emoji-btn" onclick="sendReaction('🥰')">🥰</button>
+  <button class="emoji-btn" onclick="sendReaction('😍')">😍</button>
+</div>
+
+<div class="credits">BerMatCode</div>
+
+<!-- MODAL GENÉRICO -->
+<div id="modal" class="modal-overlay">
+  <div class="modal-content">
+    <div id="modal-loader" class="modal-loader hidden"></div>
+    <div id="modal-title" class="modal-title">Título</div>
+    <div id="modal-text" class="modal-text">Mensaje</div>
+    <div id="modal-buttons" class="modal-buttons">
+      <button onclick="closeModal()">Cerrar</button>
     </div>
   </div>
+</div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -270,275 +336,373 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  let roomId = null, myName = "", myPlayer = 1, game = null, unsub = null;
+  let roomId = null;
+  let myName = "";
+  let myPlayer = null;
+  let gameData = null;
+  let unsub = null;
+  let isDragging = false;
 
-  // SISTEMA DE PERSISTENCIA (NO SE PIERDE LA SALA)
+  // === PERSISTENCIA DE SESIÓN ===
   function saveSession(id, name, p) {
-    localStorage.setItem('game_room', id);
-    localStorage.setItem('game_name', name);
-    localStorage.setItem('game_p', p);
+    localStorage.setItem('tic_room', id);
+    localStorage.setItem('tic_name', name);
+    localStorage.setItem('tic_player', p);
+  }
+  function clearSession() {
+    localStorage.removeItem('tic_room');
+    localStorage.removeItem('tic_name');
+    localStorage.removeItem('tic_player');
   }
   function loadSession() {
-    const id = localStorage.getItem('game_room');
+    const id = localStorage.getItem('tic_room');
     if (id) {
-      myName = localStorage.getItem('game_name');
-      myPlayer = parseInt(localStorage.getItem('game_p'));
       roomId = id;
-      reconnectGame();
+      myName = localStorage.getItem('tic_name');
+      myPlayer = parseInt(localStorage.getItem('tic_player'));
       return true;
     }
     return false;
   }
-  function clearSession() {
-    localStorage.removeItem('game_room');
-    localStorage.removeItem('game_name');
-    localStorage.removeItem('game_p');
-  }
 
-  // Si hay sesión guardada, entrar directo
-  if (!loadSession()) {
-    showView('v-menu');
-  }
-
-  // VISTAS
+  // === NAVEGACIÓN ===
   window.showView = (id) => {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById(id).classList.add('active');
   };
 
-  // MODAL
-  function showModal(title, text, btns = [{text:'OK', class:''}]) {
-    document.getElementById('m-title').textContent = title;
-    document.getElementById('m-text').textContent = text;
-    const cont = document.getElementById('m-btns');
-    cont.innerHTML = '';
-    btns.forEach(b => {
+  // === MODALES ===
+  window.showLoading = (title, text) => {
+    document.getElementById('modal-loader').classList.remove('hidden');
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-text').textContent = text;
+    document.getElementById('modal-buttons').classList.add('hidden');
+    document.getElementById('modal').classList.add('active');
+  };
+
+  window.showModal = (title, text, buttons = [{text: 'Cerrar', class: '', onclick: closeModal}]) => {
+    document.getElementById('modal-loader').classList.add('hidden');
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-text').textContent = text;
+    const btns = document.getElementById('modal-buttons');
+    btns.classList.remove('hidden');
+    btns.innerHTML = '';
+    buttons.forEach(b => {
       const btn = document.createElement('button');
-      btn.textContent = b.text; btn.className = b.class;
-      btn.onclick = () => document.getElementById('modal').classList.remove('active');
-      cont.appendChild(btn);
+      btn.textContent = b.text;
+      btn.className = b.class || '';
+      btn.onclick = () => { if(b.onclick) b.onclick(); closeModal(); };
+      btns.appendChild(btn);
     });
     document.getElementById('modal').classList.add('active');
+  };
+
+  window.closeModal = () => {
+    document.getElementById('modal').classList.remove('active');
+  };
+
+  // === GENERAR CÓDIGO ===
+  function generateCode() {
+    const chars = "BERMATCODE";
+    return Array.from({length: 6}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
   }
 
-  // CREAR
+  // === CREAR SALA ===
   window.createRoom = async () => {
-    myName = document.getElementById('in-name-1').value.trim() || 'Jugador 1';
-    roomId = Math.random().toString(36).substring(2, 8).toUpperCase(); // Genera letras y números
+    myName = document.getElementById('name-create').value.trim();
+    if (!myName) return showModal("Error", "Ingresa tu nombre para continuar.");
+
+    showLoading("Creando sala", "Generando código único y preparando la partida...");
     
-    await setDoc(doc(db, "games", roomId), {
-      p1: myName, p2: null,
-      board: Array(9).fill(""), turn: "p1", win: null,
-      rematch: false, reaction: null, created: serverTimestamp()
-    });
-    
-    saveSession(roomId, myName, 1);
-    document.getElementById('disp-code').textContent = roomId;
-    showView('v-wait');
-    listenGame();
+    setTimeout(async () => {
+      roomId = generateCode();
+      myPlayer = 1;
+
+      try {
+        await setDoc(doc(db, "games", roomId), {
+          p1: myName, p2: null,
+          board: ["","","","","","","","",""],
+          turn: "p1", winner: null, winCells: null,
+          status: "waiting", rematchReq: null, rematchStat: "none",
+          reaction: null, created: serverTimestamp()
+        });
+        saveSession(roomId, myName, 1);
+        closeModal();
+        document.getElementById('room-code').textContent = roomId;
+        showView('view-wait');
+        listenGame();
+      } catch (e) {
+        closeModal();
+        showModal("Error", "No se pudo crear la sala. Verifica tu conexión.");
+      }
+    }, 1000);
   };
 
-  // UNIRSE
+  // === UNIRSE ===
   window.joinRoom = async () => {
-    myName = document.getElementById('in-name-2').value.trim() || 'Jugador 2';
-    roomId = document.getElementById('in-code').value.trim().toUpperCase();
-    
-    const d = (await getDoc(doc(db, "games", roomId))).data();
-    if (!d) return showModal("Error", "Sala no existe");
-    if (d.p2) return showModal("Error", "Sala llena");
+    myName = document.getElementById('name-join').value.trim();
+    const code = document.getElementById('code-join').value.trim().toUpperCase();
 
-    await updateDoc(doc(db, "games", roomId), { p2: myName });
-    saveSession(roomId, myName, 2);
-    showView('v-game');
-    listenGame();
+    if (!myName || !code || code.length !== 6) return showModal("Error", "Completa nombre y código válido.");
+
+    showLoading("Uniéndote", "Conectando con la partida...");
+    
+    setTimeout(async () => {
+      try {
+        const snap = await getDoc(doc(db, "games", code));
+        if (!snap.exists()) return closeModal(), showModal("Error", "Sala no encontrada.");
+        const d = snap.data();
+        if (d.p2) return closeModal(), showModal("Error", "Sala llena.");
+        if (d.status !== "waiting") return closeModal(), showModal("Error", "Partida no disponible.");
+
+        roomId = code;
+        myPlayer = 2;
+        await updateDoc(doc(db, "games", roomId), { p2: myName, status: "playing" });
+        saveSession(roomId, myName, 2);
+        closeModal();
+        showView('view-game');
+        listenGame();
+      } catch (e) {
+        closeModal();
+        showModal("Error", "No se pudo unir a la sala.");
+      }
+    }, 1000);
   };
 
-  // CONECTAR (Reconectar si se cierra la app)
-  function reconnectGame() {
-    showView('v-game');
-    listenGame();
-  }
-
-  // ESCUCHAR JUEGO
+  // === ESCUCHAR JUEGO ===
   function listenGame() {
+    if (unsub) unsub();
     unsub = onSnapshot(doc(db, "games", roomId), (snap) => {
       if (!snap.exists()) return;
-      game = snap.data();
+      gameData = snap.data();
       
-      // UI
-      document.getElementById('n-p1').textContent = game.p1;
-      document.getElementById('n-p2').textContent = game.p2 || "...";
-      
-      const isMe1 = (myPlayer === 1);
-      document.getElementById('card-p1').className = 'p-card' + (isMe1 ? ' me' : '');
-      document.getElementById('card-p2').className = 'p-card' + (!isMe1 ? ' me' : '');
-      
-      if (game.p2) {
-        if (document.getElementById('v-wait').classList.contains('active')) showView('v-game');
-        renderBoard();
+      if (gameData.status === "playing" || gameData.p2) {
+        if (document.getElementById('view-wait').classList.contains('active')) showView('view-game');
+        document.getElementById('react-trigger').style.display = 'flex';
       }
 
-      // Reacciones
-      updateReaction(game.reaction);
+      document.getElementById('name-p1').textContent = gameData.p1;
+      document.getElementById('name-p2').textContent = gameData.p2 || "Esperando...";
       
-      // Rematch
-      if (game.rematch && game.rematchBy !== myPlayer) {
-         showModal("Revancha", `${game.rematchBy === 1 ? game.p1 : game.p2} quiere jugar otra vez.`, [
-           {text:"Aceptar", class:"btn-success", onclick: () => { acceptRematch(); document.getElementById('modal').classList.remove('active'); }},
-           {text:"No", class:"btn-secondary", onclick: () => document.getElementById('modal').classList.remove('active')}
-         ]);
+      const isP1 = myPlayer === 1;
+      document.getElementById('card-p1').className = 'player-card' + (isP1 ? ' me' : '');
+      document.getElementById('card-p2').className = 'player-card' + (!isP1 ? ' me' : '');
+
+      renderBoard();
+      updateReactionUI(gameData.reaction || null);
+
+      if (gameData.rematchReq && gameData.rematchStat === "pending" && gameData.rematchReq !== myPlayer) {
+        const reqName = gameData.rematchReq === 1 ? gameData.p1 : gameData.p2;
+        showModal("Solicitud de revancha", `${reqName} quiere jugar otra partida.`, [
+          { text: "Aceptar", class: "success", onclick: acceptRematch },
+          { text: "Rechazar", class: "danger", onclick: rejectRematch }
+        ]);
       }
     });
   }
 
+  // === RENDERIZAR TABLERO ===
   function renderBoard() {
-    const b = document.getElementById('board');
-    b.innerHTML = '';
-    const isMyTurn = !game.win && game.turn === (myPlayer===1 ? 'p1' : 'p2');
+    const boardEl = document.getElementById('board');
+    const statusEl = document.getElementById('status');
+    const rematchBtn = document.getElementById('btn-rematch');
     
-    game.board.forEach((c, i) => {
-      const d = document.createElement('div');
-      d.className = `cell ${c ? c.toLowerCase()+' taken' : ''} ${game.winCells && game.winCells.includes(i) ? 'winner' : ''}`;
-      d.textContent = c;
-      if (isMyTurn && !c) d.onclick = () => move(i);
-      b.appendChild(d);
+    const isMyTurn = !gameData.winner && gameData.turn === (myPlayer === 1 ? 'p1' : 'p2');
+    
+    document.getElementById('card-p1').classList.remove('active');
+    document.getElementById('card-p2').classList.remove('active');
+    if (!gameData.winner) {
+      document.getElementById(gameData.turn === 'p1' ? 'card-p1' : 'card-p2').classList.add('active');
+    }
+
+    boardEl.innerHTML = '';
+    gameData.board.forEach((cell, idx) => {
+      const div = document.createElement('div');
+      div.className = 'cell' + (cell ? ` ${cell.toLowerCase()} taken` : '');
+      if (gameData.winCells && gameData.winCells.includes(idx)) div.classList.add('winner');
+      div.textContent = cell;
+      if (!cell && isMyTurn && !gameData.winner) div.onclick = () => makeMove(idx);
+      boardEl.appendChild(div);
     });
 
-    const st = document.getElementById('status');
-    if (game.win) {
-      st.textContent = game.win === 'draw' ? "¡Empate!" : (game.win === (myPlayer===1?'p1':'p2') ? "¡Ganaste!" : "Perdiste");
-      st.className = 'status-bar ' + (game.win === 'draw' ? '' : (game.win === (myPlayer===1?'p1':'p2') ? 'my-turn' : 'their-turn'));
-      document.getElementById('btn-rematch').classList.remove('hidden');
-      document.getElementById('btn-picker-toggle').style.display = 'block';
+    statusEl.className = 'status';
+    if (gameData.winner) {
+      statusEl.classList.add('finished');
+      statusEl.textContent = gameData.winner === 'draw' ? '¡Empate!' : (gameData.winner === (myPlayer===1?'p1':'p2') ? '¡Ganaste!' : 'Has perdido');
+      rematchBtn.classList.remove('hidden');
     } else if (isMyTurn) {
-      st.textContent = "Tu turno"; st.className = 'status-bar my-turn';
-      document.getElementById('btn-rematch').classList.add('hidden');
+      statusEl.classList.add('my-turn');
+      statusEl.textContent = '✓ Tu turno';
+      rematchBtn.classList.add('hidden');
     } else {
-      st.textContent = `Turno de ${myPlayer===1?game.p2:game.p1}`; st.className = 'status-bar their-turn';
-      document.getElementById('btn-rematch').classList.add('hidden');
+      statusEl.classList.add('their-turn');
+      statusEl.textContent = `Turno de ${myPlayer === 1 ? gameData.p2 : gameData.p1}`;
+      rematchBtn.classList.add('hidden');
     }
   }
 
-  window.move = async (i) => {
-    if (!game || game.board[i] || game.win) return;
-    const nb = [...game.board]; nb[i] = myPlayer===1?'X':'O';
-    const w = checkWin(nb);
-    await updateDoc(doc(db, "games", roomId), {
-      board: nb, turn: myPlayer===1?'p2':'p1',
-      win: w ? w : (nb.join('') ? 'draw' : null),
-      winCells: w ? getCells(nb) : null
-    });
+  // === HACER MOVIMIENTO ===
+  window.makeMove = async (idx) => {
+    if (!gameData || gameData.board[idx] || gameData.winner || gameData.turn !== (myPlayer===1?'p1':'p2')) return;
+    
+    const newBoard = [...gameData.board];
+    newBoard[idx] = myPlayer === 1 ? 'X' : 'O';
+    
+    const win = checkWinner(newBoard);
+    const isDraw = !win && !newBoard.includes("");
+    
+    const updateData = { board: newBoard };
+    if (win) {
+      Object.assign(updateData, { winner: win, winCells: getWinningCells(newBoard, win), status: "finished" });
+    } else if (isDraw) {
+      Object.assign(updateData, { winner: 'draw', status: "finished" });
+    } else {
+      updateData.turn = myPlayer === 1 ? 'p2' : 'p1';
+    }
+    
+    try { await updateDoc(doc(db, "games", roomId), updateData); } catch(e) { console.error(e); }
   };
 
-  function checkWin(b) {
-    const p = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    for(let c of p) if(b[c[0]] && b[c[0]]===b[c[1]] && b[c[0]]===b[c[2]]) return b[c[0]]==='X'?'p1':'p2';
+  function checkWinner(b) {
+    const w = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    for(const [a,c,d] of w) if(b[a] && b[a]===b[c] && b[a]===b[d]) return b[a]==='X'?'p1':'p2';
     return null;
   }
-  function getCells(b) {
-    const p = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    for(let c of p) if(b[c[0]] && b[c[0]]===b[c[1]] && b[c[0]]===b[c[2]]) return c;
+  function getWinningCells(b, winner) {
+    const w = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    for(const [a,c,d] of w) if(b[a] && b[a]===b[c] && b[a]===b[d]) return [a,c,d];
     return [];
   }
 
-  // REVANCHA
-  window.requestRematch = () => updateDoc(doc(db, "games", roomId), { rematch: true, rematchBy: myPlayer, board: Array(9).fill(""), win: null, turn: "p1" });
-  window.acceptRematch = () => updateDoc(doc(db, "games", roomId), { rematch: false, rematchBy: null });
-
-  // SALIR
-  window.leaveGame = () => {
-    if (unsub) unsub();
-    clearSession();
-    if (myPlayer === 1 && roomId) deleteDoc(doc(db, "games", roomId));
-    location.reload();
+  // === REVANCHA ===
+  window.requestRematch = async () => {
+    try {
+      await updateDoc(doc(db, "games", roomId), { rematchReq: myPlayer, rematchStat: "pending" });
+      showModal("Solicitud enviada", "Esperando respuesta del oponente...");
+    } catch(e) {}
+  };
+  window.acceptRematch = async () => {
+    try {
+      await updateDoc(doc(db, "games", roomId), {
+        board: ["","","","","","","","",""], turn: "p1", winner: null, winCells: null,
+        rematchReq: null, rematchStat: "none", status: "playing"
+      });
+    } catch(e) {}
+  };
+  window.rejectRematch = async () => {
+    try {
+      await updateDoc(doc(db, "games", roomId), { rematchReq: null, rematchStat: "rejected" });
+    } catch(e) {}
   };
 
-  // REACCIONES (LÓGICA DE ARRASTRAR)
-  let isDragging = false, curX = 0, curY = 0, initX = 0, initY = 0;
-  const bubble = document.getElementById('bubble');
+  // === REACCIONES ===
+  window.togglePicker = () => {
+    document.getElementById('emoji-picker').classList.toggle('active');
+  };
 
-  function updateReaction(r) {
+  window.sendReaction = async (emoji) => {
+    if (!gameData) return;
+    const x = (window.innerWidth / 2) - 40;
+    const y = (window.innerHeight / 2) - 150;
+    try {
+      await updateDoc(doc(db, "games", roomId), {
+        reaction: { emoji, sender: myName, x, y }
+      });
+      document.getElementById('emoji-picker').classList.remove('active');
+    } catch(e) { console.error(e); }
+  };
+
+  window.dismissReaction = async (e) => {
+    e.stopPropagation();
+    if (gameData.reaction && gameData.reaction.sender === myName) {
+      try { await updateDoc(doc(db, "games", roomId), { reaction: null }); } catch(e) {}
+    }
+  };
+
+  function updateReactionUI(r) {
+    const bubble = document.getElementById('bubble');
     if (!r || !r.emoji) { bubble.style.display = 'none'; return; }
     bubble.style.display = 'flex';
     document.getElementById('b-emoji').textContent = r.emoji;
-    document.getElementById('b-name').textContent = r.name;
-    
-    // Posicionar si hay coordenadas guardadas
-    if (r.x && r.y) {
+    document.getElementById('b-sender').textContent = r.sender;
+    if (r.x !== undefined && r.y !== undefined) {
       bubble.style.left = r.x + 'px';
       bubble.style.top = r.y + 'px';
     } else {
-      // Posición por defecto centrada
-      bubble.style.left = (window.innerWidth / 2 - 40) + 'px';
-      bubble.style.top = (window.innerHeight / 2 - 40) + 'px';
+      bubble.style.left = (window.innerWidth/2 - 40) + 'px';
+      bubble.style.top = (window.innerHeight/2 - 150) + 'px';
     }
   }
 
-  window.togglePicker = () => document.getElementById('picker').classList.toggle('active');
+  // === ARRASTRAR REACCIÓN (SOLO REMITENTE) ===
+  const bubble = document.getElementById('bubble');
   
-  window.sendReact = async (emoji) => {
-    const x = (window.innerWidth / 2 - 40);
-    const y = (window.innerHeight / 2 - 150);
-    await updateDoc(doc(db, "games", roomId), {
-      reaction: { emoji, name: myName, x, y }
-    });
-    document.getElementById('picker').classList.remove('active');
-  };
-
-  window.dismissReaction = (e) => {
-    e.stopPropagation();
-    if (game.reaction && game.reaction.name === myName) {
-      updateDoc(doc(db, "games", roomId), { reaction: null });
-    }
-  };
-
-  // SISTEMA DRAG AND DROP (Mouse & Touch)
-  window.startDrag = (e) => {
-    if (game.reaction && game.reaction.name !== myName) return; // Solo el creador de la reacción la mueve
+  bubble.addEventListener('pointerdown', (e) => {
+    if (!gameData.reaction || gameData.reaction.sender !== myName) return;
     isDragging = true;
-    const ev = e.type === 'touchstart' ? e.touches[0] : e;
-    initX = ev.clientX - (parseInt(bubble.style.left) || 0);
-    initY = ev.clientY - (parseInt(bubble.style.top) || 0);
-    document.addEventListener('mousemove', onDrag);
-    document.addEventListener('touchmove', onDrag, {passive: false});
-    document.addEventListener('mouseup', endDrag);
-    document.addEventListener('touchend', endDrag);
-  };
+    bubble.setPointerCapture(e.pointerId);
+    bubble.style.transition = 'none';
+  });
 
-  function onDrag(e) {
+  bubble.addEventListener('pointermove', (e) => {
     if (!isDragging) return;
-    e.preventDefault(); // Evita scroll
-    const ev = e.type === 'touchmove' ? e.touches[0] : e;
-    curX = ev.clientX - initX;
-    curY = ev.clientY - initY;
-    bubble.style.left = curX + 'px';
-    bubble.style.top = curY + 'px';
-  }
+    e.preventDefault();
+    const x = e.clientX - 40;
+    const y = e.clientY - 40;
+    bubble.style.left = x + 'px';
+    bubble.style.top = y + 'px';
+  });
 
-  window.endDrag = async () => {
+  bubble.addEventListener('pointerup', async (e) => {
     if (!isDragging) return;
     isDragging = false;
-    document.removeEventListener('mousemove', onDrag);
-    document.removeEventListener('touchmove', onDrag);
-    document.removeEventListener('mouseup', endDrag);
-    document.removeEventListener('touchend', endDrag);
+    bubble.style.transition = 'transform 0.1s';
+    bubble.releasePointerCapture(e.pointerId);
     
-    // Guardar posición final en Firebase
-    if (game.reaction && game.reaction.name === myName) {
-      await updateDoc(doc(db, "games", roomId), {
-        "reaction.x": curX,
-        "reaction.y": curY
-      });
+    if (gameData.reaction && gameData.reaction.sender === myName) {
+      try {
+        await updateDoc(doc(db, "games", roomId), {
+          "reaction.x": parseInt(bubble.style.left),
+          "reaction.y": parseInt(bubble.style.top)
+        });
+      } catch(e) {}
     }
-  };
+  });
 
+  // === UTILIDADES ===
   window.copyCode = () => {
-    navigator.clipboard.writeText(roomId);
-    showModal("Copiado", "Envía el código a tu novia.");
+    navigator.clipboard.writeText(roomId).then(() => {
+      showModal("¡Copiado!", "El código se ha copiado. Compártelo con tu oponente.");
+    });
   };
 
-  // Inicializar tablero vacío
-  document.getElementById('board').innerHTML = Array(9).fill('<div class="cell"></div>').join('');
+  window.leaveGame = async () => {
+    if (unsub) unsub();
+    clearSession();
+    if (myPlayer === 1 && roomId) {
+      try { await deleteDoc(doc(db, "games", roomId)); } catch(e) {}
+    }
+    document.getElementById('react-trigger').style.display = 'none';
+    document.getElementById('emoji-picker').classList.remove('active');
+    document.getElementById('bubble').style.display = 'none';
+    document.getElementById('btn-rematch').classList.add('hidden');
+    showView('view-menu');
+    document.getElementById('name-create').value = '';
+    document.getElementById('name-join').value = '';
+    document.getElementById('code-join').value = '';
+  };
+
+  // === INICIALIZACIÓN ===
+  (function init() {
+    document.getElementById('board').innerHTML = Array(9).fill('<div class="cell"></div>').join('');
+    
+    if (loadSession()) {
+      showView('view-game');
+      listenGame();
+    } else {
+      showView('view-menu');
+    }
+  })();
 </script>
 </body>
 </html>
