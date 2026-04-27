@@ -3,23 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <meta name="theme-color" content="#667eea" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="#667eea" />
-  <title>Tres en Raya - BerMatCode</title>
+  <meta name="theme-color" content="#764ba2" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="#764ba2" />
+  <title>Tic Tac Toe - BerMatCode</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
   
   <style>
     :root {
-      --primary: #667eea;
-      --secondary: #764ba2;
+      --primary: #764ba2;
+      --primary-dark: #663d91;
+      --primary-light: #9b7ebd;
+      --accent: #a855f7;
       --success: #2ecc71;
       --danger: #e74c3c;
-      --bg: #f8f9fc;
-      --card: #ffffff;
-      --text: #1a1a2e;
-      --text-muted: #6b7280;
-      --border: #e5e7eb;
+      --bg-glass: rgba(255, 255, 255, 0.15);
+      --bg-glass-strong: rgba(255, 255, 255, 0.25);
+      --text: #ffffff;
+      --text-muted: rgba(255, 255, 255, 0.8);
+      --border: rgba(255, 255, 255, 0.3);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -28,246 +30,371 @@
       height: 100dvh; width: 100vw;
       overflow: hidden;
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      /* IMAGEN DE FONDO VISIBLE */
+      background: url('https://raw.githubusercontent.com/BerMatCode/Tres-en-raya/main/Fondo%20principal.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
     }
 
+    /* Overlay morado suave para mejorar legibilidad SIN tapar la imagen */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(135deg, rgba(118, 75, 162, 0.4) 0%, rgba(168, 85, 247, 0.4) 100%);
+      z-index: -1;
+      pointer-events: none;
+    }
+    
     .app-container {
-      background: var(--card);
-      border-radius: 24px;
-      padding: 28px 22px;
-      max-width: 380px; width: 92%;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+      background: rgba(118, 75, 162, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 28px;
+      padding: 32px 26px;
+      max-width: 390px; width: 94%;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
       position: relative; z-index: 10;
       display: flex; flex-direction: column; align-items: center;
     }
 
-    h1 { text-align: center; color: var(--primary); margin-bottom: 24px; font-size: 1.8rem; font-weight: 700; }
+    h1 { 
+      text-align: center; 
+      color: var(--text); 
+      margin-bottom: 28px; 
+      font-size: 1.9rem; 
+      font-weight: 700; 
+      text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
 
-    .view { display: none; width: 100%; animation: slideIn 0.3s ease; }
+    .view { display: none; width: 100%; animation: slideIn 0.35s ease; }
     .view.active { display: block; }
-    @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
     input {
-      width: 100%; padding: 14px; margin: 10px 0;
-      border: 2px solid var(--border); border-radius: 14px;
+      width: 100%; padding: 15px; margin: 12px 0;
+      border: 2px solid var(--border); border-radius: 16px;
       font-size: 16px; text-align: center; font-weight: 500;
-      transition: all 0.3s; background: var(--bg);
+      transition: all 0.3s; background: rgba(255,255,255,0.2);
+      color: var(--text);
     }
-    input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15); background: white; }
+    input::placeholder { color: rgba(255,255,255,0.7); }
+    input:focus { 
+      outline: none; 
+      border-color: var(--primary-light); 
+      box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.3); 
+      background: rgba(255,255,255,0.3); 
+    }
 
     button {
-      width: 100%; padding: 15px; margin: 8px 0; border: none; border-radius: 14px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      width: 100%; padding: 16px; margin: 10px 0; 
+      border: none; border-radius: 16px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
       color: white; font-size: 15px; font-weight: 600; cursor: pointer;
-      transition: all 0.2s; position: relative; overflow: hidden;
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      transition: all 0.25s; position: relative; overflow: hidden;
+      box-shadow: 0 5px 18px rgba(118, 75, 162, 0.5);
     }
-    button:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(102, 126, 234, 0.4); }
+    button:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(118, 75, 162, 0.6); }
     button:active { transform: translateY(0); }
-    button.secondary { background: linear-gradient(135deg, #95a5a6, #7f8c8d); box-shadow: 0 4px 12px rgba(149, 165, 166, 0.3); }
-    button.success { background: linear-gradient(135deg, var(--success), #27ae60); box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3); }
-    button.danger { background: linear-gradient(135deg, var(--danger), #c0392b); box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3); }
+    button.secondary { 
+      background: rgba(255,255,255,0.2); 
+      color: var(--text);
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+    }
+    button.secondary:hover { background: rgba(255,255,255,0.3); }
+    button.success { background: linear-gradient(135deg, var(--success), #27ae60); box-shadow: 0 5px 18px rgba(46, 204, 113, 0.5); }
+    button.danger { background: linear-gradient(135deg, var(--danger), #c0392b); box-shadow: 0 5px 18px rgba(231, 76, 60, 0.5); }
     button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
     .code-box {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white; padding: 22px; border-radius: 16px;
-      text-align: center; font-size: 26px; font-weight: 700;
-      letter-spacing: 5px; margin: 18px 0; box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
+      background: rgba(255, 255, 255, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: var(--text); padding: 24px; border-radius: 18px;
+      text-align: center; font-size: 28px; font-weight: 700;
+      letter-spacing: 6px; margin: 20px 0; 
+      box-shadow: 0 6px 22px rgba(0,0,0,0.2);
+      text-shadow: 0 1px 4px rgba(0,0,0,0.3);
     }
 
-    .players { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 16px; width: 100%; }
+    .players { display: flex; justify-content: space-between; gap: 14px; margin-bottom: 18px; width: 100%; }
     .player-card {
-      flex: 1; padding: 12px; border-radius: 12px; background: var(--bg);
-      text-align: center; border: 2px solid transparent; transition: all 0.3s;
+      flex: 1; padding: 14px; border-radius: 14px; 
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid var(--border);
+      text-align: center; transition: all 0.3s;
+      color: var(--text);
     }
-    .player-card.active { border-color: var(--primary); background: #f0f4ff; transform: scale(1.03); }
-    .player-card.me { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
-    .player-name { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
-    .player-symbol { font-size: 18px; font-weight: 700; }
+    .player-card.active { 
+      border-color: var(--primary-light); 
+      background: rgba(255, 255, 255, 0.3); 
+      transform: scale(1.04); 
+      box-shadow: 0 4px 16px rgba(118, 75, 162, 0.4);
+    }
+    .player-card.me { 
+      background: linear-gradient(135deg, var(--primary), var(--accent)); 
+      border: none;
+      box-shadow: 0 4px 16px rgba(118, 75, 162, 0.5);
+    }
+    .player-name { font-weight: 600; font-size: 13px; margin-bottom: 5px; }
+    .player-symbol { font-size: 20px; font-weight: 700; }
 
     .status {
-      padding: 12px; border-radius: 12px; text-align: center; font-weight: 600; font-size: 14px;
-      margin: 14px 0; width: 100%; transition: all 0.3s; background: var(--bg); color: var(--text-muted);
+      padding: 14px; border-radius: 14px; text-align: center; font-weight: 600; font-size: 14px;
+      margin: 16px 0; width: 100%; transition: all 0.3s; 
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
     }
-    .status.my-turn { background: linear-gradient(135deg, var(--success), #27ae60); color: white; animation: pulse 2s infinite; }
-    .status.their-turn { background: linear-gradient(135deg, var(--text-muted), #95a5a6); color: white; }
-    .status.finished { background: linear-gradient(135deg, var(--danger), #c0392b); color: white; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.85; } }
+    .status.my-turn { 
+      background: linear-gradient(135deg, var(--success), #27ae60); 
+      color: white; 
+      border: none;
+      animation: pulse 2s infinite; 
+      box-shadow: 0 4px 16px rgba(46, 204, 113, 0.4);
+    }
+    .status.their-turn { 
+      background: rgba(255, 255, 255, 0.25); 
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .status.finished { 
+      background: linear-gradient(135deg, var(--danger), #c0392b); 
+      color: white; 
+      border: none;
+      box-shadow: 0 4px 16px rgba(231, 76, 60, 0.4);
+    }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.88; } }
 
     .board {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-      margin: 16px auto; width: 100%; max-width: 260px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+      margin: 18px auto; width: 100%; max-width: 270px;
     }
     .cell {
-      aspect-ratio: 1; background: var(--bg); border: 3px solid var(--border); border-radius: 14px;
+      aspect-ratio: 1; 
+      background: rgba(255, 255, 255, 0.25);
+      border: 3px solid var(--border); 
+      border-radius: 16px;
       display: flex; align-items: center; justify-content: center; cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 34px; font-weight: 700;
+      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+      font-size: 36px; font-weight: 700;
+      color: var(--text);
     }
-    .cell:hover:not(.taken) { background: #eef1ff; border-color: var(--primary); transform: scale(1.03); }
-    .cell.x { color: var(--danger); background: #ffeaea; border-color: var(--danger); }
-    .cell.o { color: var(--primary); background: #eaf4ff; border-color: var(--primary); }
+    .cell:hover:not(.taken) { 
+      background: rgba(255, 255, 255, 0.35); 
+      border-color: var(--primary-light); 
+      transform: scale(1.04); 
+      box-shadow: 0 4px 14px rgba(118, 75, 162, 0.4);
+    }
+    .cell.x { color: #ff8a8a; background: rgba(231, 76, 60, 0.2); border-color: rgba(231, 76, 60, 0.5); }
+    .cell.o { color: #a8d8ff; background: rgba(102, 126, 234, 0.2); border-color: rgba(102, 126, 234, 0.5); }
     .cell.taken { cursor: default; }
-    .cell.winner { background: linear-gradient(135deg, var(--success), #27ae60); color: white; border-color: var(--success); animation: winPop 0.4s; box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4); }
-    @keyframes winPop { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+    .cell.winner { 
+      background: linear-gradient(135deg, var(--success), #27ae60); 
+      color: white; 
+      border-color: var(--success); 
+      animation: winPop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+      box-shadow: 0 6px 20px rgba(46, 204, 113, 0.5); 
+    }
+    @keyframes winPop { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
 
     /* CONTROLES SEPARADOS */
     .left-controls {
-      position: fixed; bottom: 25px; left: 25px; z-index: 90; display: none; align-items: center; gap: 10px;
+      position: fixed; bottom: 30px; left: 30px; z-index: 90; display: none; align-items: center; gap: 12px;
     }
     .right-controls {
-      position: fixed; bottom: 25px; right: 25px; z-index: 90; display: none; align-items: center; gap: 10px;
+      position: fixed; bottom: 30px; right: 30px; z-index: 90; display: none; align-items: center; gap: 12px;
     }
     .left-controls.active { display: flex; }
     .right-controls.active { display: flex; }
 
     .trigger-btn {
-      width: 50px; height: 50px; border-radius: 50%;
-      background: white; color: var(--primary); font-size: 22px;
+      width: 52px; height: 52px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.25);
+      border: 1px solid var(--border);
+      color: var(--text); font-size: 24px;
       display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 5px 18px rgba(0,0,0,0.2); cursor: pointer;
-      transition: transform 0.2s; border: none; padding: 0; margin: 0;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3); cursor: pointer;
+      transition: transform 0.25s; padding: 0; margin: 0;
     }
-    .trigger-btn:hover { transform: scale(1.1); }
+    .trigger-btn:hover { transform: scale(1.12); background: rgba(255, 255, 255, 0.35); }
 
     /* CHAT ESTILO WHATSAPP */
     .chat-window {
-      position: fixed; bottom: 85px; right: 25px;
-      width: 300px; max-height: 360px;
-      background: rgba(255, 255, 255, 0.97); backdrop-filter: blur(12px);
-      border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+      position: fixed; bottom: 92px; right: 30px;
+      width: 310px; max-height: 370px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 22px; 
+      box-shadow: 0 18px 45px rgba(0,0,0,0.3);
       display: none; flex-direction: column; overflow: hidden;
-      z-index: 100; border: 1px solid rgba(255,255,255,0.7);
-      animation: popUp 0.3s ease;
+      z-index: 100;
+      animation: popUp 0.35s ease;
     }
     .chat-window.active { display: flex; }
-    @keyframes popUp { from { opacity: 0; transform: scale(0.9) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    @keyframes popUp { from { opacity: 0; transform: scale(0.92) translateY(12px); } to { opacity: 1; transform: scale(1) translateY(0); } }
     
     .chat-header {
-      padding: 14px; background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white; font-weight: 600; font-size: 14px; display: flex; justify-content: space-between; align-items: center;
+      padding: 15px; 
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white; font-weight: 600; font-size: 14px; 
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
     }
-    .chat-close { background: rgba(255,255,255,0.25); border: none; color: white; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; box-shadow: none; }
+    .chat-close { 
+      background: rgba(255,255,255,0.25); border: none; color: white; 
+      width: 30px; height: 30px; border-radius: 50%; cursor: pointer; 
+      font-size: 15px; display: flex; align-items: center; justify-content: center; 
+      padding: 0; margin: 0; transition: 0.2s;
+    }
+    .chat-close:hover { background: rgba(255,255,255,0.4); }
     
     .chat-messages {
-      flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column-reverse; gap: 10px;
-      background: #efeae2; min-height: 200px; max-height: 250px;
+      flex: 1; overflow-y: auto; padding: 14px; 
+      display: flex; flex-direction: column-reverse; gap: 11px;
+      background: #f0f2f5; 
+      min-height: 210px; max-height: 260px;
     }
     .chat-messages::-webkit-scrollbar { width: 5px; }
-    .chat-messages::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 5px; }
+    .chat-messages::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 5px; }
     
     .msg {
-      max-width: 80%; padding: 10px 14px; border-radius: 16px; font-size: 13.5px; line-height: 1.45;
-      position: relative; word-wrap: break-word; box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+      max-width: 82%; padding: 11px 15px; border-radius: 18px; 
+      font-size: 14px; line-height: 1.45;
+      position: relative; word-wrap: break-word; 
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    /* MIS MENSAJES (DERECHA) */
     .msg.me { 
       align-self: flex-end; 
-      background: #dcf8c6; 
-      border: 1px solid #c8e6b9; 
-      color: #111b21; 
-      border-bottom-right-radius: 4px; 
+      background: linear-gradient(135deg, #a8d8ff, #90caf9); 
+      color: #0a2540; 
+      border-bottom-right-radius: 5px; 
+      border: 1px solid rgba(144, 202, 249, 0.5);
     }
-    /* MENSAJES DEL OTRO (IZQUIERDA) */
     .msg.other { 
       align-self: flex-start; 
-      background: #ffffff; 
-      border: 1px solid #e0e0e0; 
-      color: #111b21; 
-      border-bottom-left-radius: 4px; 
+      background: white; 
+      color: #1a1a2e; 
+      border-bottom-left-radius: 5px; 
+      border: 1px solid rgba(0,0,0,0.1);
     }
-    .msg-name { font-size: 11px; font-weight: 700; margin-bottom: 2px; opacity: 0.75; }
-    .msg-time { font-size: 10px; opacity: 0.5; text-align: right; margin-top: 4px; display: flex; justify-content: flex-end; align-items: center; gap: 4px; }
+    .msg-name { font-size: 11px; font-weight: 700; margin-bottom: 3px; opacity: 0.8; }
+    .msg-time { font-size: 10px; opacity: 0.6; text-align: right; margin-top: 5px; display: flex; justify-content: flex-end; align-items: center; gap: 4px; }
     
     .chat-input-area {
-      display: flex; padding: 10px; border-top: 1px solid var(--border); background: white; gap: 8px; align-items: center;
+      display: flex; padding: 11px; border-top: 1px solid rgba(0,0,0,0.1); 
+      background: white; gap: 9px; align-items: center;
     }
-    .chat-input-area input { margin: 0; padding: 11px 14px; font-size: 14px; border-radius: 24px; flex: 1; border: 1px solid #e0e0e0; background: #f0f2f5; }
-    .chat-input-area button { width: 44px; height: 44px; padding: 0; margin: 0; border-radius: 50%; font-size: 18px; display: flex; align-items: center; justify-content: center; }
+    .chat-input-area input { 
+      margin: 0; padding: 12px 16px; font-size: 14px; border-radius: 26px; flex: 1; 
+      border: 1px solid rgba(0,0,0,0.15); background: #f0f2f5; 
+      color: #1a1a2e;
+    }
+    .chat-input-area input::placeholder { color: rgba(0,0,0,0.5); }
+    .chat-input-area button { 
+      width: 46px; height: 46px; padding: 0; margin: 0; border-radius: 50%; 
+      font-size: 19px; display: flex; align-items: center; justify-content: center; 
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border: none; box-shadow: 0 4px 14px rgba(118, 75, 162, 0.5);
+    }
 
     /* BADGE DE NOTIFICACIÓN */
     .chat-badge {
-      position: absolute; top: -4px; right: -4px;
-      width: 20px; height: 20px; background: var(--danger); color: white;
+      position: absolute; top: -5px; right: -5px;
+      width: 22px; height: 22px; background: var(--danger); color: white;
       border-radius: 50%; font-size: 11px; font-weight: bold;
       display: flex; align-items: center; justify-content: center;
       border: 2px solid white; z-index: 91; pointer-events: none;
-      animation: badgePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation: badgePop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 2px 8px rgba(231, 76, 60, 0.5);
     }
     @keyframes badgePop { from { transform: scale(0); } to { transform: scale(1); } }
 
     /* REACCIONES */
     .emoji-picker {
-      position: fixed; bottom: 85px; left: 25px;
-      background: white; border-radius: 18px; padding: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      display: none; grid-template-columns: repeat(3, 1fr); gap: 8px;
-      z-index: 95; animation: popUp 0.25s ease; border: 1px solid var(--border);
+      position: fixed; bottom: 92px; left: 30px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 20px; padding: 13px;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.3);
+      display: none; grid-template-columns: repeat(3, 1fr); gap: 9px;
+      z-index: 95; animation: popUp 0.3s ease;
     }
     .emoji-picker.active { display: grid; }
     .emoji-btn {
-      width: 42px; height: 42px; border: none; background: #f8f9fa;
-      border-radius: 12px; font-size: 24px; cursor: pointer; transition: 0.2s;
+      width: 44px; height: 44px; border: none; background: #f0f2f5;
+      border-radius: 13px; font-size: 25px; cursor: pointer; transition: 0.25s;
     }
-    .emoji-btn:hover { background: #eef1ff; transform: scale(1.15); }
+    .emoji-btn:hover { background: #e4e6e9; transform: scale(1.18); }
 
     .reaction-bubble {
-      position: fixed; width: 90px; height: 90px;
-      background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px);
+      position: fixed; width: 92px; height: 92px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid var(--primary-light);
       border-radius: 50%; display: none; flex-direction: column;
       align-items: center; justify-content: center;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
       z-index: 80; cursor: grab; touch-action: none;
-      border: 2px solid var(--primary);
-      transition: transform 0.1s ease;
+      transition: transform 0.12s ease;
     }
-    .reaction-bubble:active { cursor: grabbing; transform: scale(1.05); }
-    .reaction-emoji { font-size: 36px; pointer-events: none; line-height: 1; }
-    .reaction-sender { font-size: 10px; font-weight: 600; color: var(--primary); margin-top: 3px; max-width: 90%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; pointer-events: none; text-align: center; }
+    .reaction-bubble:active { cursor: grabbing; transform: scale(1.06); }
+    .reaction-emoji { font-size: 38px; pointer-events: none; line-height: 1; }
+    .reaction-sender { 
+      font-size: 10px; font-weight: 600; color: var(--primary); 
+      margin-top: 4px; max-width: 90%; overflow: hidden; 
+      text-overflow: ellipsis; white-space: nowrap; pointer-events: none; text-align: center; 
+    }
     .bubble-dismiss {
-      position: absolute; top: -5px; right: -5px;
-      width: 22px; height: 22px; background: var(--danger); color: white;
-      border-radius: 50%; font-size: 11px; display: flex; align-items: center; justify-content: center;
+      position: absolute; top: -6px; right: -6px;
+      width: 24px; height: 24px; background: var(--danger); color: white;
+      border-radius: 50%; font-size: 12px; display: flex; align-items: center; justify-content: center;
       cursor: pointer; border: 2px solid white; z-index: 81;
+      box-shadow: 0 2px 8px rgba(231, 76, 60, 0.5);
     }
 
     /* MODALES */
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.65); backdrop-filter: blur(6px);
+      background: rgba(0,0,0,0.7);
       display: flex; align-items: center; justify-content: center;
-      z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+      z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.35s;
     }
     .modal-overlay.active { opacity: 1; pointer-events: all; }
     .modal-content {
-      background: white; border-radius: 20px; padding: 28px 24px;
-      max-width: 300px; width: 85%; text-align: center;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.3);
-      transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 22px; padding: 30px 26px;
+      max-width: 310px; width: 88%; text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+      transform: scale(0.92); transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      color: #1a1a2e;
     }
     .modal-overlay.active .modal-content { transform: scale(1); }
-    .modal-loader { width: 48px; height: 48px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; margin: 0 auto 18px; animation: spin 1s linear infinite; }
+    .modal-loader { width: 50px; height: 50px; border: 4px solid rgba(0,0,0,0.1); border-top-color: var(--primary); border-radius: 50%; margin: 0 auto 20px; animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .modal-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
-    .modal-text { font-size: 14px; color: var(--text-muted); line-height: 1.5; margin-bottom: 18px; }
-    .modal-buttons { display: flex; gap: 10px; }
-    .modal-buttons button { flex: 1; margin: 0; padding: 12px; }
+    .modal-title { font-size: 19px; font-weight: 700; color: #1a1a2e; margin-bottom: 12px; }
+    .modal-text { font-size: 14px; color: #666; line-height: 1.55; margin-bottom: 20px; }
+    .modal-buttons { display: flex; gap: 12px; }
+    .modal-buttons button { flex: 1; margin: 0; padding: 13px; }
 
     /* CRÉDITOS CON BRILLO */
     .credits {
       font-family: 'Pacifico', cursive;
-      font-size: 22px;
+      font-size: 24px;
       color: #ffffff;
       text-align: center;
-      margin-top: 24px;
-      letter-spacing: 1px;
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(102, 126, 234, 1), 0 0 30px rgba(118, 75, 162, 0.8);
-      animation: glowPulse 3s infinite alternate;
+      margin-top: 28px;
+      letter-spacing: 1.5px;
+      text-shadow: 
+        0 0 12px rgba(255, 255, 255, 0.9), 
+        0 0 24px rgba(118, 75, 162, 1), 
+        0 0 36px rgba(168, 85, 247, 0.9);
+      animation: glowPulse 3.5s infinite alternate;
     }
     @keyframes glowPulse {
-      from { text-shadow: 0 0 10px rgba(255, 255, 255, 0.6), 0 0 20px rgba(102, 126, 234, 0.8); }
-      to { text-shadow: 0 0 15px rgba(255, 255, 255, 1), 0 0 30px rgba(102, 126, 234, 1), 0 0 40px rgba(118, 75, 162, 1); }
+      from { text-shadow: 0 0 10px rgba(255,255,255,0.7), 0 0 22px rgba(118,75,162,0.85), 0 0 34px rgba(168,85,247,0.75); }
+      to { text-shadow: 0 0 18px rgba(255,255,255,1), 0 0 32px rgba(118,75,162,1), 0 0 48px rgba(168,85,247,1); }
     }
 
     .hidden { display: none !important; }
@@ -276,11 +403,11 @@
 <body>
 
 <div class="app-container">
-  <h1>Tres en Raya</h1>
+  <h1>Tic Tac Toe</h1>
 
   <!-- MENÚ -->
   <div id="view-menu" class="view active">
-    <button onclick="showView('view-create')">Crear Sala Nueva</button>
+    <button onclick="createRoom()">Crear Sala Nueva</button>
     <button onclick="showView('view-join')" class="secondary">Unirse a Sala</button>
   </div>
 
@@ -293,11 +420,11 @@
 
   <!-- ESPERANDO -->
   <div id="view-wait" class="view">
-    <p style="text-align:center;color:var(--text-muted);margin-bottom:10px;font-size:14px">Comparte este código:</p>
+    <p style="text-align:center;color:var(--text-muted);margin-bottom:12px;font-size:14px">Comparte este código:</p>
     <div id="room-code" class="code-box">------</div>
     <button onclick="copyCode()">Copiar Código</button>
-    <p style="text-align:center;margin:12px 0;color:var(--text-muted);font-size:13px">Esperando al segundo jugador...</p>
-    <button onclick="leaveGame()" class="secondary" style="margin-top:10px">Cancelar y Salir</button>
+    <p style="text-align:center;margin:14px 0;color:var(--text-muted);font-size:13px">Esperando al segundo jugador...</p>
+    <button onclick="leaveGame()" class="secondary" style="margin-top:12px">Cancelar y Salir</button>
   </div>
 
   <!-- UNIRSE -->
@@ -331,7 +458,7 @@
 
 <!-- CONTROLES IZQUIERDA (REACCIONES) -->
 <div id="reaction-container" class="left-controls">
-  <button class="trigger-btn" onclick="toggleEmojiPicker()" style="background:var(--bg);color:var(--text);">😊</button>
+  <button class="trigger-btn" onclick="toggleEmojiPicker()">😊</button>
 </div>
 
 <!-- CONTROLES DERECHA (CHAT) -->
@@ -373,7 +500,7 @@
   <div class="reaction-sender" id="b-sender"></div>
 </div>
 
-<div class="credits">BerMatCode</div>
+<div class="credits">𖤍BerMatCode𖤍</div>
 
 <!-- MODAL GENÉRICO -->
 <div id="modal" class="modal-overlay">
@@ -455,43 +582,44 @@
     return Array.from({length: 6}, () => c[Math.floor(Math.random() * c.length)]).join('');
   }
 
-  // === CREAR / UNIR ===
+  // === CREAR SALA ===
   window.createRoom = async () => {
     myName = document.getElementById('name-create').value.trim();
     if (!myName) return showModal("Error", "Ingresa tu nombre.");
-    showLoading("Creando sala", "Generando código único y preparando la partida...");
-    setTimeout(async () => {
+    
+    showLoading("Creando sala", "Generando código único...");
+    
+    try {
       roomId = generateCode(); myPlayer = 1;
-      try {
-        await setDoc(doc(db, "games", roomId), {
-          p1: myName, p2: null, board: Array(9).fill(""), turn: "p1", winner: null, winCells: null,
-          status: "waiting", rematchReq: null, rematchStat: "none", reaction: null, created: serverTimestamp()
-        });
-        saveSession(roomId, myName, 1); closeModal();
-        document.getElementById('room-code').textContent = roomId;
-        showView('view-wait'); listenGame();
-      } catch(e) { closeModal(); showModal("Error", "Fallo de conexión."); }
-    }, 1000);
+      await setDoc(doc(db, "games", roomId), {
+        p1: myName, p2: null, board: Array(9).fill(""), turn: "p1", winner: null, winCells: null,
+        status: "waiting", rematchReq: null, rematchStat: "none", reaction: null, created: serverTimestamp()
+      });
+      saveSession(roomId, myName, 1); closeModal();
+      document.getElementById('room-code').textContent = roomId;
+      showView('view-wait'); listenGame();
+    } catch(e) { closeModal(); showModal("Error", "Fallo de conexión."); }
   };
 
+  // === UNIRSE ===
   window.joinRoom = async () => {
     myName = document.getElementById('name-join').value.trim();
     const code = document.getElementById('code-join').value.trim().toUpperCase();
     if (!myName || !code || code.length !== 6) return showModal("Error", "Completa datos válidos.");
-    showLoading("Uniéndote", "Conectando con la partida...");
-    setTimeout(async () => {
-      try {
-        const snap = await getDoc(doc(db, "games", code));
-        if (!snap.exists()) return closeModal(), showModal("Error", "Sala no encontrada.");
-        const d = snap.data();
-        if (d.p2) return closeModal(), showModal("Error", "Sala llena.");
-        if (d.status !== "waiting") return closeModal(), showModal("Error", "No disponible.");
-        roomId = code; myPlayer = 2;
-        await updateDoc(doc(db, "games", roomId), { p2: myName, status: "playing" });
-        saveSession(roomId, myName, 2); closeModal();
-        showView('view-game'); listenGame();
-      } catch(e) { closeModal(); showModal("Error", "No se pudo unir."); }
-    }, 1000);
+    
+    showLoading("Uniéndote", "Conectando...");
+    
+    try {
+      const snap = await getDoc(doc(db, "games", code));
+      if (!snap.exists()) return closeModal(), showModal("Error", "Sala no encontrada.");
+      const d = snap.data();
+      if (d.p2) return closeModal(), showModal("Error", "Sala llena.");
+      if (d.status !== "waiting") return closeModal(), showModal("Error", "No disponible.");
+      roomId = code; myPlayer = 2;
+      await updateDoc(doc(db, "games", roomId), { p2: myName, status: "playing" });
+      saveSession(roomId, myName, 2); closeModal();
+      showView('view-game'); listenGame();
+    } catch(e) { closeModal(); showModal("Error", "No se pudo unir."); }
   };
 
   // === LISTENERS ===
@@ -501,7 +629,6 @@
       if (!snap.exists()) return;
       gameData = snap.data();
       
-      // VALIDACIÓN: Botones solo visibles cuando hay 2 jugadores
       if (gameData.p2) {
         document.getElementById('chat-container').classList.add('active');
         document.getElementById('reaction-container').classList.add('active');
@@ -541,10 +668,8 @@
       snap.forEach(ds => {
         const m = ds.data();
         const div = document.createElement('div');
-        // LÓGICA WHATSAPP: Si soy yo -> derecha (.me), si es otro -> izquierda (.other)
         const isMe = m.sender === myPlayer;
         div.className = isMe ? 'msg me' : 'msg other';
-        
         const t = m.timestamp ? new Date(m.timestamp.toMillis()).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '';
         div.innerHTML = `<div class="msg-name">${m.name}</div><div>${m.text}</div><div class="msg-time">${t}</div>`;
         el.appendChild(div);
@@ -566,13 +691,30 @@
     document.getElementById('chat-window').classList.toggle('active');
     if (isChatOpen) { unreadCount=0; document.getElementById('chat-badge').classList.add('hidden'); document.getElementById('chat-input').focus(); }
   };
+  
   window.sendChatMessage = async () => {
     const inp = document.getElementById('chat-input');
     const txt = inp.value.trim();
     if (!txt || !roomId) return;
-    try { await addDoc(collection(db, "games", roomId, "chats"), { text:txt, sender:myPlayer, name:myName, timestamp:serverTimestamp() }); inp.value=''; } catch(e) { showModal("Error", "No se pudo enviar el mensaje."); }
+    
+    try { 
+      await addDoc(collection(db, "games", roomId, "chats"), { 
+        text: txt, 
+        sender: myPlayer, 
+        name: myName, 
+        timestamp: serverTimestamp() 
+      }); 
+      inp.value = ''; 
+      setTimeout(() => {
+        const el = document.getElementById('chat-messages');
+        if(el) el.scrollTop = el.scrollHeight;
+      }, 50);
+    } catch(e) { showModal("Error", "No se pudo enviar."); }
   };
-  document.getElementById('chat-input').addEventListener('keypress', e => { if(e.key==='Enter') window.sendChatMessage(); });
+  
+  document.getElementById('chat-input').addEventListener('keypress', e => { 
+    if(e.key==='Enter') window.sendChatMessage(); 
+  });
 
   // === TABLERO ===
   function renderBoard() {
@@ -601,6 +743,7 @@
       st.classList.add('their-turn'); st.textContent = `Turno de ${myPlayer===1?gameData.p2:gameData.p1}`; rb.classList.add('hidden');
     }
   }
+  
   window.makeMove = async (i) => {
     if(!gameData||gameData.board[i]||gameData.winner||gameData.turn!==(myPlayer===1?'p1':'p2')) return;
     const nb=[...gameData.board]; nb[i]=myPlayer===1?'X':'O';
@@ -611,6 +754,7 @@
     else up.turn=myPlayer===1?'p2':'p1';
     try{await updateDoc(doc(db,"games",roomId),up);}catch(e){}
   };
+  
   function checkWin(b){const p=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];for(let c of p)if(b[c[0]]&&b[c[0]]===b[c[1]]&&b[c[0]]===b[c[2]])return b[c[0]]==='X'?'p1':'p2';return null;}
   function getCells(b,w){const p=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];for(let c of p)if(b[c[0]]&&b[c[0]]===b[c[1]]&&b[c[0]]===b[c[2]])return c;return [];}
 
@@ -623,7 +767,7 @@
   window.toggleEmojiPicker=()=>document.getElementById('emoji-picker').classList.toggle('active');
   window.sendReaction=async(em)=>{
     if(!gameData)return;
-    const x=(window.innerWidth/2)-45, y=(window.innerHeight/2)-165;
+    const x=(window.innerWidth/2)-46, y=(window.innerHeight/2)-170;
     try{await updateDoc(doc(db,"games",roomId),{reaction:{emoji:em,sender:myName,x,y}});document.getElementById('emoji-picker').classList.remove('active');}catch(e){}
   };
   window.dismissReaction=async(e)=>{e.stopPropagation();if(gameData.reaction&&gameData.reaction.sender===myName)try{await updateDoc(doc(db,"games",roomId),{reaction:null});}catch(e){}};
@@ -634,19 +778,19 @@
     document.getElementById('b-emoji').textContent=r.emoji;
     document.getElementById('b-sender').textContent=r.sender;
     if(r.x!==undefined&&r.y!==undefined){bub.style.left=r.x+'px';bub.style.top=r.y+'px';}
-    else{bub.style.left=(window.innerWidth/2-45)+'px';bub.style.top=(window.innerHeight/2-165)+'px';}
+    else{bub.style.left=(window.innerWidth/2-46)+'px';bub.style.top=(window.innerHeight/2-170)+'px';}
   }
   const bubble=document.getElementById('bubble');
   bubble.addEventListener('pointerdown',e=>{isDragging=true;bubble.setPointerCapture(e.pointerId);bubble.style.transition='none';});
   bubble.addEventListener('pointermove',e=>{
     if(!isDragging)return;e.preventDefault();
-    let x=e.clientX-45, y=e.clientY-45;
-    x=Math.max(0,Math.min(window.innerWidth-90,x));
-    y=Math.max(0,Math.min(window.innerHeight-90,y));
+    let x=e.clientX-46, y=e.clientY-46;
+    x=Math.max(0,Math.min(window.innerWidth-92,x));
+    y=Math.max(0,Math.min(window.innerHeight-92,y));
     bubble.style.left=x+'px';bubble.style.top=y+'px';
   });
   bubble.addEventListener('pointerup',async e=>{
-    if(!isDragging)return;isDragging=false;bubble.style.transition='transform 0.1s';bubble.releasePointerCapture(e.pointerId);
+    if(!isDragging)return;isDragging=false;bubble.style.transition='transform 0.12s';bubble.releasePointerCapture(e.pointerId);
     if(gameData.reaction)try{await updateDoc(doc(db,"games",roomId),{"reaction.x":parseInt(bubble.style.left),"reaction.y":parseInt(bubble.style.top)});}catch(e){}
   });
 
