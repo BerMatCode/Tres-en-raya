@@ -27,39 +27,30 @@
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     
     html, body {
-      height: 100%;
+      height: 100dvh;
       overflow: hidden;
-      position: fixed;
-      width: 100%;
-    }
-
-    body {
       font-family: 'Inter', sans-serif;
       background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 15px;
     }
 
     .container {
       background: var(--card);
       border-radius: 24px;
-      padding: 24px 20px;
+      padding: 28px 20px;
       max-width: 420px;
       width: 100%;
-      max-height: 90vh;
-      overflow: hidden;
+      height: 92vh;
+      max-height: 700px;
       box-shadow: var(--shadow);
-      animation: slideUp 0.5s ease;
       display: flex;
       flex-direction: column;
-    }
-
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
     }
 
     h1 {
@@ -72,16 +63,11 @@
       font-size: 1.8rem;
       font-weight: 700;
       letter-spacing: -0.5px;
-      flex-shrink: 0;
     }
 
-    .view { display: none; animation: fadeIn 0.4s ease; height: 100%; flex-direction: column; }
-    .view.active { display: flex; }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateX(-10px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
+    .view { display: none; animation: fadeIn 0.4s ease; width: 100%; }
+    .view.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     input {
       width: 100%;
@@ -94,15 +80,8 @@
       font-weight: 500;
       transition: all 0.3s;
       background: var(--bg);
-      flex-shrink: 0;
     }
-    
-    input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
-      background: white;
-    }
+    input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15); background: white; }
 
     button {
       width: 100%;
@@ -119,30 +98,12 @@
       position: relative;
       overflow: hidden;
       box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-      flex-shrink: 0;
     }
-    
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-    }
-    
+    button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4); }
     button:active { transform: translateY(0); }
-    
-    button.secondary {
-      background: linear-gradient(135deg, #95a5a6, #7f8c8d);
-      box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
-    }
-    
-    button.success {
-      background: linear-gradient(135deg, var(--success), #27ae60);
-      box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
-    }
-    
-    button.danger {
-      background: linear-gradient(135deg, var(--danger), #c0392b);
-      box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
-    }
+    button.secondary { background: linear-gradient(135deg, #95a5a6, #7f8c8d); box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3); }
+    button.success { background: linear-gradient(135deg, var(--success), #27ae60); box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3); }
+    button.danger { background: linear-gradient(135deg, var(--danger), #c0392b); box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3); }
 
     .code-box {
       background: linear-gradient(135deg, var(--primary), var(--secondary));
@@ -150,317 +111,125 @@
       padding: 24px;
       border-radius: 18px;
       text-align: center;
-      font-size: 32px;
+      font-size: 28px;
       font-weight: 700;
-      letter-spacing: 8px;
+      letter-spacing: 6px;
       margin: 20px 0;
       box-shadow: 0 8px 25px rgba(102, 126, 234, 0.35);
-      flex-shrink: 0;
     }
 
-    .players {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 16px;
-      flex-shrink: 0;
-    }
-    
+    .players { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
     .player-card {
-      flex: 1;
-      padding: 14px;
-      border-radius: 14px;
-      background: var(--bg);
-      text-align: center;
-      border: 3px solid transparent;
-      transition: all 0.3s;
+      flex: 1; padding: 14px; border-radius: 14px; background: var(--bg);
+      text-align: center; border: 3px solid transparent; transition: all 0.3s;
     }
-    
-    .player-card.active {
-      border-color: var(--primary);
-      background: linear-gradient(135deg, #f0f4ff, #e8eeff);
-      transform: scale(1.03);
-    }
-    
-    .player-card.me {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
-    }
-    
+    .player-card.active { border-color: var(--primary); background: #f0f4ff; transform: scale(1.03); }
+    .player-card.me { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3); }
     .player-name { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
-    .player-symbol { font-size: 22px; font-weight: 700; }
+    .player-symbol { font-size: 20px; font-weight: 700; }
 
     .status {
-      padding: 14px;
-      border-radius: 14px;
-      text-align: center;
-      font-weight: 600;
-      font-size: 14px;
-      margin: 16px 0;
-      transition: all 0.3s;
-      background: var(--bg);
-      color: var(--text-muted);
-      flex-shrink: 0;
+      padding: 14px; border-radius: 14px; text-align: center; font-weight: 600; font-size: 14px;
+      margin: 16px 0; transition: all 0.3s; background: var(--bg); color: var(--text-muted);
     }
-    
-    .status.my-turn {
-      background: linear-gradient(135deg, var(--success), #27ae60);
-      color: white;
-    }
-    
-    .status.their-turn {
-      background: linear-gradient(135deg, var(--text-muted), #95a5a6);
-      color: white;
-    }
-    
-    .status.finished {
-      background: linear-gradient(135deg, var(--danger), #c0392b);
-      color: white;
-    }
-
-    .board-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 0;
-      position: relative;
-    }
+    .status.my-turn { background: linear-gradient(135deg, var(--success), #27ae60); color: white; animation: pulse 2s infinite; }
+    .status.their-turn { background: linear-gradient(135deg, var(--text-muted), #95a5a6); color: white; }
+    .status.finished { background: linear-gradient(135deg, var(--danger), #c0392b); color: white; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.85; } }
 
     .board {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin: 16px auto;
-      max-width: 280px;
-      width: 100%;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+      margin: 16px auto; max-width: 280px; width: 100%;
     }
-    
     .cell {
-      aspect-ratio: 1;
-      background: var(--bg);
-      border: 3px solid var(--border);
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.25s;
-      font-size: 36px;
-      font-weight: 700;
+      aspect-ratio: 1; background: var(--bg); border: 3px solid var(--border); border-radius: 14px;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 36px; font-weight: 700;
     }
-    
-    .cell:hover:not(.taken) {
-      background: #eef1ff;
-      border-color: var(--primary);
-      transform: scale(1.05);
-    }
-    
-    .cell.x {
-      color: var(--danger);
-      background: linear-gradient(135deg, #ffeaea, #ffd6d6);
-      border-color: var(--danger);
-    }
-    
-    .cell.o {
-      color: var(--primary);
-      background: linear-gradient(135deg, #eaf4ff, #d6e8ff);
-      border-color: var(--primary);
-    }
-    
+    .cell:hover:not(.taken) { background: #eef1ff; border-color: var(--primary); transform: scale(1.03); }
+    .cell.x { color: var(--danger); background: linear-gradient(135deg, #ffeaea, #ffd6d6); border-color: var(--danger); }
+    .cell.o { color: var(--primary); background: linear-gradient(135deg, #eaf4ff, #d6e8ff); border-color: var(--primary); }
     .cell.taken { cursor: default; }
-    
-    .cell.winner {
-      background: linear-gradient(135deg, var(--success), #27ae60);
-      color: white;
-      border-color: var(--success);
-      animation: winPop 0.5s;
-    }
-    
-    @keyframes winPop {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.15); }
-    }
+    .cell.winner { background: linear-gradient(135deg, var(--success), #27ae60); color: white; border-color: var(--success); animation: winPop 0.5s; box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4); }
+    @keyframes winPop { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
 
-    /* REACCIONES */
+    /* SISTEMA DE REACCIONES */
     .reaction-bubble {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0);
-      background: white;
-      padding: 20px 30px;
-      border-radius: 50px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-      font-size: 48px;
-      z-index: 100;
-      animation: bubblePop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-      pointer-events: none;
+      position: fixed; right: 20px; top: 50%; transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+      border-radius: 20px; padding: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      display: none; flex-direction: column; align-items: center; gap: 8px;
+      z-index: 50; transition: all 0.3s; border: 2px solid var(--border);
+      min-width: 140px; text-align: center;
     }
+    .reaction-emoji { font-size: 36px; line-height: 1; animation: bounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    @keyframes bounce { 0% { transform: scale(0); } 60% { transform: scale(1.2); } 100% { transform: scale(1); } }
+    .reaction-sender { font-size: 12px; font-weight: 600; color: var(--text-muted); max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .reaction-actions { display: flex; gap: 6px; width: 100%; }
+    .reaction-actions button { padding: 6px; font-size: 11px; margin: 0; border-radius: 8px; }
     
-    @keyframes bubblePop {
-      0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-      50% { transform: translate(-50%, -50%) scale(1.2); }
-      100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    .reaction-trigger {
+      position: absolute; bottom: 20px; right: 20px;
+      background: var(--primary); color: white; width: 44px; height: 44px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 20px; cursor: pointer; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      transition: transform 0.2s; z-index: 40;
     }
+    .reaction-trigger:hover { transform: scale(1.1); }
     
-    .reaction-bubble.p1 {
-      top: 20%;
-      left: 20%;
-      border: 4px solid var(--danger);
+    .reaction-picker {
+      position: absolute; bottom: 70px; right: 10px;
+      background: white; border-radius: 16px; padding: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      display: none; grid-template-columns: repeat(3, 1fr); gap: 8px;
+      z-index: 60; animation: popUp 0.3s ease;
     }
-    
-    .reaction-bubble.p2 {
-      top: 20%;
-      right: 20%;
-      left: auto;
-      border: 4px solid var(--primary);
+    .reaction-picker.active { display: grid; }
+    @keyframes popUp { from { opacity: 0; transform: scale(0.8) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    .emoji-btn {
+      width: 40px; height: 40px; border: none; background: var(--bg);
+      border-radius: 10px; font-size: 22px; cursor: pointer; transition: 0.2s;
+      display: flex; align-items: center; justify-content: center;
     }
+    .emoji-btn:hover { background: #eef1ff; transform: scale(1.1); }
 
-    .reaction-panel {
-      background: var(--bg);
-      border-radius: 16px;
-      padding: 12px;
-      margin: 12px 0;
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      flex-shrink: 0;
+    .modal {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s;
     }
-    
-    .reaction-btn {
-      width: 44px;
-      height: 44px;
-      border: 3px solid var(--border);
-      border-radius: 50%;
-      background: white;
-      font-size: 24px;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-      margin: 0;
-      box-shadow: none;
+    .modal.active { opacity: 1; pointer-events: all; }
+    .modal-content {
+      background: white; border-radius: 24px; padding: 32px 24px;
+      max-width: 320px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    
-    .reaction-btn:hover {
-      transform: scale(1.2);
-      border-color: var(--primary);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-    
-    .reaction-btn.active {
-      border-color: var(--success);
-      background: #e8f5e9;
-      transform: scale(1.1);
-    }
-    
-    .reaction-btn.dismiss {
-      border-color: var(--danger);
-      background: #ffebee;
-      font-size: 18px;
-    }
+    .modal.active .modal-content { transform: scale(1); }
+    .modal-loader { width: 50px; height: 50px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; margin: 0 auto 20px; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .modal-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+    .modal-text { font-size: 14px; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px; }
+    .modal-buttons { display: flex; gap: 10px; }
+    .modal-buttons button { flex: 1; margin: 0; padding: 12px; }
 
     .credits {
-      font-family: 'Inter', sans-serif;
-      font-weight: 700;
-      font-size: 16px;
-      color: white;
-      text-align: center;
-      padding: 20px;
-      margin-top: 15px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      flex-shrink: 0;
+      font-weight: 700; font-size: 16px; color: white; text-align: center;
+      margin-top: 16px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.9;
     }
-
-    /* MODALES */
-    .modal {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7);
-      backdrop-filter: blur(8px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s;
-    }
-    
-    .modal.active {
-      opacity: 1;
-      pointer-events: all;
-    }
-    
-    .modal-content {
-      background: white;
-      border-radius: 24px;
-      padding: 40px 32px;
-      max-width: 340px;
-      width: 90%;
-      text-align: center;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      transform: scale(0.8) translateY(20px);
-      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    
-    .modal.active .modal-content {
-      transform: scale(1) translateY(0);
-    }
-    
-    .modal-loader {
-      width: 60px;
-      height: 60px;
-      border: 4px solid var(--border);
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      margin: 0 auto 24px;
-      animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin { to { transform: rotate(360deg); } }
-    
-    .modal-title {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 12px;
-    }
-    
-    .modal-text {
-      font-size: 14px;
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
-    
-    .modal-buttons {
-      display: flex;
-      gap: 12px;
-      margin-top: 24px;
-    }
-    
-    .modal-buttons button { flex: 1; margin: 0; }
 
     .hidden { display: none !important; }
-    .text-center { text-align: center; }
-    .mt-10 { margin-top: 10px; }
-    .mb-10 { margin-bottom: 10px; }
 
     @media (max-width: 480px) {
-      .container { padding: 20px 16px; border-radius: 20px; }
-      h1 { font-size: 1.6rem; }
-      .code-box { font-size: 28px; letter-spacing: 6px; padding: 20px; }
+      .container { padding: 24px 16px; border-radius: 20px; height: 94vh; }
+      h1 { font-size: 1.6rem; margin-bottom: 16px; }
       .board { gap: 8px; max-width: 260px; }
       .cell { border-radius: 12px; font-size: 32px; }
-      .reaction-btn { width: 40px; height: 40px; font-size: 22px; }
-      .credits { font-size: 14px; padding: 16px; }
+      .reaction-bubble { right: 12px; padding: 10px; min-width: 120px; }
+      .reaction-emoji { font-size: 30px; }
+      .reaction-sender { font-size: 11px; max-width: 90px; }
+      .reaction-picker { right: 5px; bottom: 60px; gap: 6px; padding: 10px; }
+      .emoji-btn { width: 36px; height: 36px; font-size: 20px; }
     }
   </style>
 </head>
@@ -478,25 +247,25 @@
   <!-- CREAR -->
   <div id="view-create" class="view">
     <input type="text" id="name-create" placeholder="Tu nombre" maxlength="12">
-    <button onclick="createRoom()">Generar Código</button>
-    <button onclick="showView('view-menu')" class="secondary">Volver</button>
+    <button onclick="createRoom()">Generar Código de Sala</button>
+    <button onclick="showView('view-menu')" class="secondary">Volver al Menú</button>
   </div>
 
   <!-- ESPERANDO -->
   <div id="view-waiting" class="view">
-    <p class="text-center mb-10" style="color: var(--text-muted); font-size: 14px;">Comparte este código:</p>
+    <p class="text-center" style="color: var(--text-muted); font-size: 14px; margin-bottom: 8px;">Comparte este código con tu oponente:</p>
     <div id="room-code" class="code-box">------</div>
     <button onclick="copyCode()">Copiar Código</button>
-    <p class="text-center mt-10" style="color: var(--text-muted); font-size: 13px;">Esperando jugador...</p>
-    <button onclick="leaveGame()" class="secondary mt-10">Cancelar</button>
+    <p class="text-center" style="color: var(--text-muted); font-size: 13px; margin-top: 12px;">Esperando a que se una el segundo jugador...</p>
+    <button onclick="leaveGame()" class="secondary" style="margin-top: 16px;">Cancelar y Salir</button>
   </div>
 
   <!-- UNIRSE -->
   <div id="view-join" class="view">
     <input type="text" id="name-join" placeholder="Tu nombre" maxlength="12">
-    <input type="text" id="code-join" placeholder="Código (6 letras)" maxlength="6" style="text-transform:uppercase; letter-spacing: 2px;">
+    <input type="text" id="code-join" placeholder="Código de 6 letras" maxlength="6" style="text-transform:uppercase; letter-spacing: 2px;">
     <button onclick="joinRoom()">Unirse a la Sala</button>
-    <button onclick="showView('view-menu')" class="secondary">Volver</button>
+    <button onclick="showView('view-menu')" class="secondary">Volver al Menú</button>
   </div>
 
   <!-- JUEGO -->
@@ -513,34 +282,39 @@
     </div>
 
     <div id="status" class="status">Conectando...</div>
-    
-    <div class="board-container">
-      <div id="board" class="board"></div>
-      <div id="reaction-bubble-p1" class="reaction-bubble p1 hidden"></div>
-      <div id="reaction-bubble-p2" class="reaction-bubble p2 hidden"></div>
-    </div>
-
-    <div id="reaction-panel" class="reaction-panel hidden">
-      <button class="reaction-btn" onclick="sendReaction('❤️')">❤️</button>
-      <button class="reaction-btn" onclick="sendReaction('😂')">😂</button>
-      <button class="reaction-btn" onclick="sendReaction('😖')">😖</button>
-      <button class="reaction-btn" onclick="sendReaction('😡')">😡</button>
-      <button class="reaction-btn" onclick="sendReaction('😭')">😭</button>
-      <button class="reaction-btn" onclick="sendReaction('😲')">😲</button>
-      <button class="reaction-btn" onclick="sendReaction('😁')">😁</button>
-      <button class="reaction-btn" onclick="sendReaction('🥰')">🥰</button>
-      <button class="reaction-btn" onclick="sendReaction('😍')">😍</button>
-      <button class="reaction-btn dismiss" onclick="dismissReaction()">✕</button>
-    </div>
+    <div id="board" class="board"></div>
 
     <button id="btn-rematch" onclick="requestRematch()" class="hidden success">Solicitar Revancha</button>
-    <button onclick="leaveGame()" class="secondary">Salir</button>
+    <button onclick="leaveGame()" class="secondary">Salir de la Partida</button>
+
+    <!-- UI REACCIONES -->
+    <div id="reaction-trigger" class="reaction-trigger hidden" onclick="toggleReactions()">💬</div>
+    <div id="reaction-picker" class="reaction-picker">
+      <button class="emoji-btn" onclick="sendReaction('❤️')">❤️</button>
+      <button class="emoji-btn" onclick="sendReaction('😂')">😂</button>
+      <button class="emoji-btn" onclick="sendReaction('😖')">😖</button>
+      <button class="emoji-btn" onclick="sendReaction('😡')">😡</button>
+      <button class="emoji-btn" onclick="sendReaction('😭')">😭</button>
+      <button class="emoji-btn" onclick="sendReaction('😲')">😲</button>
+      <button class="emoji-btn" onclick="sendReaction('😁')">😁</button>
+      <button class="emoji-btn" onclick="sendReaction('🥰')">🥰</button>
+      <button class="emoji-btn" onclick="sendReaction('😍')">😍</button>
+    </div>
+  </div>
+</div>
+
+<!-- BURBUJA DE REACCIÓN (FIJA EN EL COSTADO) -->
+<div id="reaction-bubble" class="reaction-bubble">
+  <div id="reaction-emoji" class="reaction-emoji"></div>
+  <div id="reaction-sender" class="reaction-sender"></div>
+  <div class="reaction-actions">
+    <button id="btn-dismiss-reaction" onclick="dismissReaction()" class="secondary">Quitar</button>
   </div>
 </div>
 
 <div class="credits">BerMatCode</div>
 
-<!-- MODAL -->
+<!-- MODAL GENÉRICO -->
 <div id="modal" class="modal">
   <div class="modal-content">
     <div id="modal-loader" class="modal-loader hidden"></div>
@@ -572,15 +346,16 @@
   let roomId = null;
   let myName = "";
   let myPlayer = null;
-  let mySymbol = null;
   let gameData = null;
   let unsubscribe = null;
 
+  // NAVEGACIÓN
   window.showView = (id) => {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById(id).classList.add('active');
   };
 
+  // MODALES
   window.showLoadingModal = (title, text) => {
     document.getElementById('modal-loader').classList.remove('hidden');
     document.getElementById('modal-title').textContent = title;
@@ -615,98 +390,74 @@
     return Array.from({length: 6}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
   }
 
+  // CREAR SALA
   window.createRoom = async () => {
     myName = document.getElementById('name-create').value.trim();
-    if (!myName) return showModal("Error", "Ingresa tu nombre");
+    if (!myName) return showModal("Error", "Ingresa tu nombre para continuar.");
 
-    showLoadingModal("Creando sala", "Generando código único...");
+    showLoadingModal("Creando sala", "Generando código único y preparando la partida...");
     
     setTimeout(async () => {
       roomId = generateCode();
       myPlayer = 1;
-      mySymbol = 'X';
 
       try {
         await setDoc(doc(db, "games", roomId), {
-          player1: myName,
-          player2: null,
-          board: ["", "", "", "", "", "", "", "", ""],
-          turn: "player1",
-          winner: null,
-          winningCells: null,
-          status: "waiting",
-          rematchRequestedBy: null,
-          rematchStatus: "none",
-          reaction: null,
-          createdAt: serverTimestamp()
+          player1: myName, player2: null,
+          board: ["","","","","","","","",""],
+          turn: "player1", winner: null, winningCells: null,
+          status: "waiting", rematchRequestedBy: null, rematchStatus: "none",
+          reaction: null, createdAt: serverTimestamp()
         });
-
         closeModal();
         document.getElementById('room-code').textContent = roomId;
         showView('view-waiting');
 
         unsubscribe = onSnapshot(doc(db, "games", roomId), (snap) => {
-          if (snap.exists()) {
-            const data = snap.data();
-            if (data.player2 && data.status === "playing") startGame(data);
+          if (snap.exists() && snap.data().player2 && snap.data().status === "playing") {
+            startGame(snap.data());
           }
         });
       } catch (error) {
         closeModal();
-        showModal("Error", "No se pudo crear la sala");
+        showModal("Error", "No se pudo crear la sala. Verifica tu conexión.");
       }
     }, 1000);
   };
 
+  // UNIRSE
   window.joinRoom = async () => {
     myName = document.getElementById('name-join').value.trim();
     const code = document.getElementById('code-join').value.trim().toUpperCase();
 
-    if (!myName || !code || code.length !== 6) {
-      return showModal("Error", "Completa nombre y código válido");
-    }
+    if (!myName || !code || code.length !== 6) return showModal("Error", "Completa nombre y código válido.");
 
-    showLoadingModal("Uniéndote", "Conectando...");
+    showLoadingModal("Uniéndote", "Conectando con la partida...");
     
     setTimeout(async () => {
       try {
         const snap = await getDoc(doc(db, "games", code));
-        if (!snap.exists()) {
-          closeModal();
-          return showModal("Error", "Sala no encontrada");
-        }
-
-        const data = snap.data();
-        if (data.player2) {
-          closeModal();
-          return showModal("Error", "Sala llena");
-        }
-        if (data.status !== "waiting") {
-          closeModal();
-          return showModal("Error", "Partida no disponible");
-        }
+        if (!snap.exists()) return closeModal(), showModal("Error", "Sala no encontrada.");
+        const d = snap.data();
+        if (d.player2) return closeModal(), showModal("Error", "Sala llena.");
+        if (d.status !== "waiting") return closeModal(), showModal("Error", "Partida no disponible.");
 
         roomId = code;
         myPlayer = 2;
-        mySymbol = 'O';
-
-        await updateDoc(doc(db, "games", roomId), {
-          player2: myName,
-          status: "playing"
-        });
-
+        await updateDoc(doc(db, "games", roomId), { player2: myName, status: "playing" });
         closeModal();
-        
+
         unsubscribe = onSnapshot(doc(db, "games", roomId), (snap) => {
           if (snap.exists()) startGame(snap.data());
         });
       } catch (error) {
         closeModal();
-        showModal("Error", "No se pudo unir");
+        showModal("Error", "No se pudo unir a la sala.");
       }
     }, 1000);
   };
 
+  // INICIAR JUEGO
   function startGame(data) {
     showView('view-game');
     gameData = data;
@@ -714,66 +465,50 @@
     const isP1 = myPlayer === 1;
     document.getElementById('name-p1').textContent = data.player1;
     document.getElementById('name-p2').textContent = data.player2 || "Esperando...";
-
     document.getElementById('card-p1').className = 'player-card' + (isP1 ? ' me' : '');
     document.getElementById('card-p2').className = 'player-card' + (!isP1 ? ' me' : '');
 
-    // Mostrar panel de reacciones
-    document.getElementById('reaction-panel').classList.remove('hidden');
+    document.getElementById('reaction-trigger').classList.remove('hidden');
 
     unsubscribe = onSnapshot(doc(db, "games", roomId), (snap) => {
       if (snap.exists()) {
         gameData = snap.data();
         updateUI();
-        updateReactions();
+        updateReactionUI(gameData.reaction || null);
       }
     });
   }
 
+  // ACTUALIZAR UI PRINCIPAL
   function updateUI() {
     if (!gameData) return;
-
     const boardEl = document.getElementById('board');
     const statusEl = document.getElementById('status');
     const rematchBtn = document.getElementById('btn-rematch');
-    
     const isMyTurn = gameData.turn === `player${myPlayer}` && !gameData.winner;
     
     document.getElementById('card-p1').classList.remove('active');
     document.getElementById('card-p2').classList.remove('active');
-    
-    if (!gameData.winner) {
-      document.getElementById(gameData.turn === 'player1' ? 'card-p1' : 'card-p2').classList.add('active');
-    }
+    if (!gameData.winner) document.getElementById(gameData.turn === 'player1' ? 'card-p1' : 'card-p2').classList.add('active');
 
     boardEl.innerHTML = '';
     gameData.board.forEach((cell, idx) => {
       const div = document.createElement('div');
       div.className = 'cell' + (cell ? ` ${cell.toLowerCase()} taken` : '');
-      
-      if (gameData.winningCells && gameData.winningCells.includes(idx)) {
-        div.classList.add('winner');
-      }
-      
+      if (gameData.winningCells && gameData.winningCells.includes(idx)) div.classList.add('winner');
       div.textContent = cell;
-      
-      if (!cell && isMyTurn && !gameData.winner) {
-        div.onclick = () => makeMove(idx);
-      }
-      
+      if (!cell && isMyTurn && !gameData.winner) div.onclick = () => makeMove(idx);
       boardEl.appendChild(div);
     });
 
     statusEl.className = 'status';
     if (gameData.winner) {
       statusEl.classList.add('finished');
-      if (gameData.winner === 'draw') statusEl.textContent = 'Empate';
-      else if (gameData.winner === `player${myPlayer}`) statusEl.textContent = 'Ganaste';
-      else statusEl.textContent = 'Perdiste';
+      statusEl.textContent = gameData.winner === 'draw' ? '¡Empate!' : (gameData.winner === `player${myPlayer}` ? '¡Ganaste!' : 'Has perdido');
       rematchBtn.classList.remove('hidden');
     } else if (isMyTurn) {
       statusEl.classList.add('my-turn');
-      statusEl.textContent = 'Tu turno';
+      statusEl.textContent = '✓ Tu turno';
       rematchBtn.classList.add('hidden');
     } else {
       statusEl.classList.add('their-turn');
@@ -781,192 +516,115 @@
       rematchBtn.classList.add('hidden');
     }
 
-    if (gameData.rematchRequestedBy && gameData.rematchStatus === 'pending') {
+    if (gameData.rematchRequestedBy && gameData.rematchStatus === 'pending' && gameData.rematchRequestedBy !== myPlayer) {
       const requester = gameData.rematchRequestedBy === 1 ? gameData.player1 : gameData.player2;
-      if (gameData.rematchRequestedBy !== myPlayer) {
-        showModal("Revancha", `${requester} quiere revancha`, [
-          { text: "Aceptar", onclick: acceptRematch, class: "success" },
-          { text: "Rechazar", onclick: rejectRematch, class: "danger" }
-        ]);
-      }
+      showModal("Solicitud de revancha", `${requester} quiere jugar otra partida.`, [
+        { text: "Aceptar", onclick: acceptRematch, class: "success" },
+        { text: "Rechazar", onclick: rejectRematch, class: "danger" }
+      ]);
     }
   }
 
-  // SISTEMA DE REACCIONES
-  window.sendReaction = async (emoji) => {
-    if (!roomId || !myPlayer) return;
-    
-    try {
-      await updateDoc(doc(db, "games", roomId), {
-        reaction: {
-          emoji: emoji,
-          player: myPlayer,
-          timestamp: serverTimestamp()
-        }
-      });
-    } catch (error) {
-      console.error("Error sending reaction:", error);
-    }
-  };
-
-  window.dismissReaction = async () => {
-    if (!roomId) return;
-    
-    try {
-      await updateDoc(doc(db, "games", roomId), {
-        reaction: null
-      });
-    } catch (error) {
-      console.error("Error dismissing reaction:", error);
-    }
-  };
-
-  function updateReactions() {
-    if (!gameData || !gameData.reaction) {
-      document.getElementById('reaction-bubble-p1').classList.add('hidden');
-      document.getElementById('reaction-bubble-p2').classList.add('hidden');
-      return;
-    }
-
-    const { emoji, player } = gameData.reaction;
-    const bubbleP1 = document.getElementById('reaction-bubble-p1');
-    const bubbleP2 = document.getElementById('reaction-bubble-p2');
-    
-    // Resetear animación
-    bubbleP1.classList.remove('hidden');
-    bubbleP2.classList.remove('hidden');
-    bubbleP1.style.animation = 'none';
-    bubbleP2.style.animation = 'none';
-    setTimeout(() => {
-      bubbleP1.style.animation = '';
-      bubbleP2.style.animation = '';
-    }, 10);
-    
-    if (player === 1) {
-      bubbleP1.textContent = emoji;
-      bubbleP2.classList.add('hidden');
-    } else {
-      bubbleP2.textContent = emoji;
-      bubbleP1.classList.add('hidden');
-    }
-  }
-
+  // MOVIMIENTO
   window.makeMove = async (idx) => {
     if (!gameData || gameData.board[idx] || gameData.winner || gameData.turn !== `player${myPlayer}`) return;
-
-    const newBoard = [...gameData.board];
-    newBoard[idx] = mySymbol;
-
+    const newBoard = [...gameData.board]; newBoard[idx] = myPlayer === 1 ? 'X' : 'O';
     const winner = checkWinner(newBoard);
     const isDraw = !winner && !newBoard.includes("");
-
     const updateData = { board: newBoard };
-
-    if (winner) {
-      updateData.winner = winner;
-      updateData.winningCells = getWinningCells(newBoard, winner);
-      updateData.status = "finished";
-    } else if (isDraw) {
-      updateData.winner = 'draw';
-      updateData.status = "finished";
-    } else {
-      updateData.turn = myPlayer === 1 ? 'player2' : 'player1';
-    }
-
-    try {
-      await updateDoc(doc(db, "games", roomId), updateData);
-    } catch (error) {
-      console.error("Error:", error);
-    }
+    if (winner) Object.assign(updateData, { winner, winningCells: getWinningCells(newBoard, winner), status: "finished" });
+    else if (isDraw) Object.assign(updateData, { winner: 'draw', status: "finished" });
+    else updateData.turn = myPlayer === 1 ? 'player2' : 'player1';
+    try { await updateDoc(doc(db, "games", roomId), updateData); } catch(e) { console.error(e); }
   };
 
-  function checkWinner(board) {
-    const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    for (const [a, b, c] of wins) {
-      if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-        return board[a] === 'X' ? 'player1' : 'player2';
-      }
-    }
+  function checkWinner(b) {
+    const w = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    for(const [a,c,d] of w) if(b[a] && b[a]===b[c] && b[a]===b[d]) return b[a]==='X'?'player1':'player2';
     return null;
   }
-
-  function getWinningCells(board, winner) {
-    const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    for (const [a, b, c] of wins) {
-      if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-        return [a, b, c];
-      }
-    }
+  function getWinningCells(b, winner) {
+    const w = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    for(const [a,c,d] of w) if(b[a] && b[a]===b[c] && b[a]===b[d]) return [a,c,d];
     return [];
   }
 
+  // REVANCHA
   window.requestRematch = async () => {
     try {
-      await updateDoc(doc(db, "games", roomId), {
-        rematchRequestedBy: myPlayer,
-        rematchStatus: "pending"
-      });
-      showModal("Solicitud enviada", "Esperando respuesta...");
-    } catch (error) {
-      console.error(error);
-    }
+      await updateDoc(doc(db, "games", roomId), { rematchRequestedBy: myPlayer, rematchStatus: "pending" });
+      showModal("Solicitud enviada", "Esperando respuesta del oponente...");
+    } catch(e) {}
   };
-
   window.acceptRematch = async () => {
     try {
-      await updateDoc(doc(db, "games", roomId), {
-        board: ["", "", "", "", "", "", "", "", ""],
-        turn: "player1",
-        winner: null,
-        winningCells: null,
-        rematchRequestedBy: null,
-        rematchStatus: "none",
-        reaction: null,
-        status: "playing"
-      });
+      await updateDoc(doc(db, "games", roomId), { board: ["","","","","","","","",""], turn: "player1", winner: null, winningCells: null, rematchRequestedBy: null, rematchStatus: "none", status: "playing" });
       closeModal();
-    } catch (error) {
-      console.error(error);
-    }
+    } catch(e) {}
   };
-
   window.rejectRematch = async () => {
     try {
-      await updateDoc(doc(db, "games", roomId), {
-        rematchRequestedBy: null,
-        rematchStatus: "rejected"
-      });
+      await updateDoc(doc(db, "games", roomId), { rematchRequestedBy: null, rematchStatus: "rejected" });
       closeModal();
-    } catch (error) {
-      console.error(error);
-    }
+    } catch(e) {}
   };
 
+  // REACCIONES
+  window.toggleReactions = () => {
+    const picker = document.getElementById('reaction-picker');
+    picker.classList.toggle('active');
+  };
+
+  window.sendReaction = async (emoji) => {
+    if (!gameData || !myName) return;
+    try {
+      await updateDoc(doc(db, "games", roomId), { reaction: { emoji, sender: myName } });
+      document.getElementById('reaction-picker').classList.remove('active');
+    } catch(e) { console.error(e); }
+  };
+
+  window.dismissReaction = async () => {
+    if (!gameData) return;
+    try { await updateDoc(doc(db, "games", roomId), { reaction: null }); } catch(e) { console.error(e); }
+  };
+
+  function updateReactionUI(reaction) {
+    const bubble = document.getElementById('reaction-bubble');
+    const emojiEl = document.getElementById('reaction-emoji');
+    const senderEl = document.getElementById('reaction-sender');
+    const dismissBtn = document.getElementById('btn-dismiss-reaction');
+
+    if (reaction && reaction.emoji) {
+      bubble.style.display = 'flex';
+      emojiEl.textContent = reaction.emoji;
+      senderEl.textContent = `${reaction.sender} reaccionó`;
+      // Solo el remitente puede quitarla
+      dismissBtn.style.display = (reaction.sender === myName) ? 'block' : 'none';
+    } else {
+      bubble.style.display = 'none';
+    }
+  }
+
+  // UTILIDADES
   window.copyCode = () => {
-    navigator.clipboard.writeText(roomId).then(() => {
-      showModal("Copiado", "Código copiado");
-    });
+    navigator.clipboard.writeText(roomId).then(() => showModal("¡Copiado!", "Código copiado al portapapeles."));
   };
 
   window.leaveGame = async () => {
     if (unsubscribe) unsubscribe();
-    if (roomId && myPlayer === 1) {
-      try { await deleteDoc(doc(db, "games", roomId)); } catch(e) {}
-    }
-    roomId = null;
-    myName = "";
-    myPlayer = null;
-    gameData = null;
+    if (roomId && myPlayer === 1) try { await deleteDoc(doc(db, "games", roomId)); } catch(e) {}
+    roomId = null; myName = ""; myPlayer = null; gameData = null;
     document.getElementById('btn-rematch').classList.add('hidden');
-    document.getElementById('reaction-panel').classList.add('hidden');
-    document.getElementById('reaction-bubble-p1').classList.add('hidden');
-    document.getElementById('reaction-bubble-p2').classList.add('hidden');
+    document.getElementById('reaction-trigger').classList.add('hidden');
+    document.getElementById('reaction-bubble').style.display = 'none';
+    document.getElementById('reaction-picker').classList.remove('active');
     showView('view-menu');
     document.getElementById('name-create').value = '';
     document.getElementById('name-join').value = '';
     document.getElementById('code-join').value = '';
   };
 
+  // Init
   document.getElementById('board').innerHTML = Array(9).fill('<div class="cell"></div>').join('');
 </script>
 </body>
