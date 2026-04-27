@@ -131,73 +131,89 @@
     }
     .trigger-btn:hover { transform: scale(1.1); }
 
-    /* CHAT WINDOW */
+    /* CHAT ESTILO WHATSAPP */
     .chat-window {
       position: fixed; bottom: 85px; right: 25px;
-      width: 290px; max-height: 350px;
-      background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(12px);
-      border-radius: 18px; box-shadow: 0 12px 35px rgba(0,0,0,0.25);
+      width: 300px; max-height: 360px;
+      background: rgba(255, 255, 255, 0.97); backdrop-filter: blur(12px);
+      border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.25);
       display: none; flex-direction: column; overflow: hidden;
-      z-index: 100; border: 1px solid rgba(255,255,255,0.6);
+      z-index: 100; border: 1px solid rgba(255,255,255,0.7);
       animation: popUp 0.3s ease;
     }
     .chat-window.active { display: flex; }
     @keyframes popUp { from { opacity: 0; transform: scale(0.9) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
     
     .chat-header {
-      padding: 12px; background: linear-gradient(135deg, var(--primary), var(--secondary));
+      padding: 14px; background: linear-gradient(135deg, var(--primary), var(--secondary));
       color: white; font-weight: 600; font-size: 14px; display: flex; justify-content: space-between; align-items: center;
     }
-    .chat-close { background: rgba(255,255,255,0.25); border: none; color: white; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; box-shadow: none; }
+    .chat-close { background: rgba(255,255,255,0.25); border: none; color: white; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; box-shadow: none; }
     
     .chat-messages {
-      flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column-reverse; gap: 8px;
-      background: #f4f6f9; min-height: 180px; max-height: 230px;
+      flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column-reverse; gap: 10px;
+      background: #efeae2; min-height: 200px; max-height: 250px;
     }
-    .chat-messages::-webkit-scrollbar { width: 4px; }
-    .chat-messages::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .chat-messages::-webkit-scrollbar { width: 5px; }
+    .chat-messages::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 5px; }
     
     .msg {
-      max-width: 85%; padding: 9px 13px; border-radius: 14px; font-size: 13px; line-height: 1.4;
-      position: relative; word-wrap: break-word; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      max-width: 80%; padding: 10px 14px; border-radius: 16px; font-size: 13.5px; line-height: 1.45;
+      position: relative; word-wrap: break-word; box-shadow: 0 1px 2px rgba(0,0,0,0.08);
     }
-    .msg.p1 { background: #e3f2fd; border: 1px solid #90caf9; color: #1565c0; align-self: flex-start; border-bottom-left-radius: 4px; }
-    .msg.p2 { background: #ffffff; border: 1px solid #e0e0e0; color: #333333; align-self: flex-end; border-bottom-right-radius: 4px; }
-    .msg-name { font-size: 10px; font-weight: 700; margin-bottom: 3px; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.5px; }
-    .msg-time { font-size: 9px; opacity: 0.6; text-align: right; margin-top: 4px; }
+    /* MIS MENSAJES (DERECHA) */
+    .msg.me { 
+      align-self: flex-end; 
+      background: #dcf8c6; 
+      border: 1px solid #c8e6b9; 
+      color: #111b21; 
+      border-bottom-right-radius: 4px; 
+    }
+    /* MENSAJES DEL OTRO (IZQUIERDA) */
+    .msg.other { 
+      align-self: flex-start; 
+      background: #ffffff; 
+      border: 1px solid #e0e0e0; 
+      color: #111b21; 
+      border-bottom-left-radius: 4px; 
+    }
+    .msg-name { font-size: 11px; font-weight: 700; margin-bottom: 2px; opacity: 0.75; }
+    .msg-time { font-size: 10px; opacity: 0.5; text-align: right; margin-top: 4px; display: flex; justify-content: flex-end; align-items: center; gap: 4px; }
     
     .chat-input-area {
-      display: flex; padding: 10px; border-top: 1px solid var(--border); background: white; gap: 8px;
+      display: flex; padding: 10px; border-top: 1px solid var(--border); background: white; gap: 8px; align-items: center;
     }
-    .chat-input-area input { margin: 0; padding: 10px 14px; font-size: 13px; border-radius: 20px; flex: 1; }
-    .chat-input-area button { width: 42px; padding: 0; margin: 0; border-radius: 50%; font-size: 16px; }
+    .chat-input-area input { margin: 0; padding: 11px 14px; font-size: 14px; border-radius: 24px; flex: 1; border: 1px solid #e0e0e0; background: #f0f2f5; }
+    .chat-input-area button { width: 44px; height: 44px; padding: 0; margin: 0; border-radius: 50%; font-size: 18px; display: flex; align-items: center; justify-content: center; }
 
-    /* CHAT BADGE */
+    /* BADGE DE NOTIFICACIÓN */
     .chat-badge {
-      position: absolute; top: -5px; right: -5px;
-      width: 22px; height: 22px; background: var(--danger); color: white;
+      position: absolute; top: -4px; right: -4px;
+      width: 20px; height: 20px; background: var(--danger); color: white;
       border-radius: 50%; font-size: 11px; font-weight: bold;
       display: flex; align-items: center; justify-content: center;
       border: 2px solid white; z-index: 91; pointer-events: none;
+      animation: badgePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
+    @keyframes badgePop { from { transform: scale(0); } to { transform: scale(1); } }
 
     /* REACCIONES */
     .emoji-picker {
       position: fixed; bottom: 85px; left: 25px;
-      background: white; border-radius: 16px; padding: 10px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-      display: none; grid-template-columns: repeat(3, 1fr); gap: 6px;
-      z-index: 95; animation: popUp 0.25s ease;
+      background: white; border-radius: 18px; padding: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      display: none; grid-template-columns: repeat(3, 1fr); gap: 8px;
+      z-index: 95; animation: popUp 0.25s ease; border: 1px solid var(--border);
     }
     .emoji-picker.active { display: grid; }
     .emoji-btn {
-      width: 40px; height: 40px; border: none; background: var(--bg);
-      border-radius: 10px; font-size: 22px; cursor: pointer; transition: 0.2s;
+      width: 42px; height: 42px; border: none; background: #f8f9fa;
+      border-radius: 12px; font-size: 24px; cursor: pointer; transition: 0.2s;
     }
     .emoji-btn:hover { background: #eef1ff; transform: scale(1.15); }
 
     .reaction-bubble {
-      position: fixed; width: 85px; height: 85px;
+      position: fixed; width: 90px; height: 90px;
       background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px);
       border-radius: 50%; display: none; flex-direction: column;
       align-items: center; justify-content: center;
@@ -207,7 +223,7 @@
       transition: transform 0.1s ease;
     }
     .reaction-bubble:active { cursor: grabbing; transform: scale(1.05); }
-    .reaction-emoji { font-size: 34px; pointer-events: none; line-height: 1; }
+    .reaction-emoji { font-size: 36px; pointer-events: none; line-height: 1; }
     .reaction-sender { font-size: 10px; font-weight: 600; color: var(--primary); margin-top: 3px; max-width: 90%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; pointer-events: none; text-align: center; }
     .bubble-dismiss {
       position: absolute; top: -5px; right: -5px;
@@ -246,7 +262,6 @@
       text-align: center;
       margin-top: 24px;
       letter-spacing: 1px;
-      /* Efecto Glow */
       text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(102, 126, 234, 1), 0 0 30px rgba(118, 75, 162, 0.8);
       animation: glowPulse 3s infinite alternate;
     }
@@ -325,7 +340,7 @@
   <div id="chat-badge" class="chat-badge hidden">0</div>
 </div>
 
-<!-- PICKER DE EMOJIS (ALINEADO A LA IZQUIERDA) -->
+<!-- PICKER DE EMOJIS (IZQUIERDA) -->
 <div id="emoji-picker" class="emoji-picker">
   <button class="emoji-btn" onclick="sendReaction('❤️')">❤️</button>
   <button class="emoji-btn" onclick="sendReaction('😂')">😂</button>
@@ -338,7 +353,7 @@
   <button class="emoji-btn" onclick="sendReaction('😍')">😍</button>
 </div>
 
-<!-- VENTANA DE CHAT (ALINEADA A LA DERECHA) -->
+<!-- VENTANA DE CHAT (DERECHA) -->
 <div id="chat-window" class="chat-window">
   <div class="chat-header">
     <span>Chat de Sala</span>
@@ -486,7 +501,7 @@
       if (!snap.exists()) return;
       gameData = snap.data();
       
-      // VALIDACIÓN DE VISIBILIDAD: Solo aparecen si hay 2 jugadores
+      // VALIDACIÓN: Botones solo visibles cuando hay 2 jugadores
       if (gameData.p2) {
         document.getElementById('chat-container').classList.add('active');
         document.getElementById('reaction-container').classList.add('active');
@@ -526,14 +541,22 @@
       snap.forEach(ds => {
         const m = ds.data();
         const div = document.createElement('div');
-        div.className = m.sender === 1 ? 'msg p1' : 'msg p2';
+        // LÓGICA WHATSAPP: Si soy yo -> derecha (.me), si es otro -> izquierda (.other)
+        const isMe = m.sender === myPlayer;
+        div.className = isMe ? 'msg me' : 'msg other';
+        
         const t = m.timestamp ? new Date(m.timestamp.toMillis()).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '';
         div.innerHTML = `<div class="msg-name">${m.name}</div><div>${m.text}</div><div class="msg-time">${t}</div>`;
         el.appendChild(div);
       });
+      
       if (!isChatOpen && snap.docChanges().length > 0 && gameData) {
         const isNew = snap.docChanges().some(c => c.type==='added' && c.doc.data().sender !== myPlayer);
-        if (isNew) { unreadCount++; document.getElementById('chat-badge').textContent = unreadCount>9?'9+':unreadCount; document.getElementById('chat-badge').classList.remove('hidden'); }
+        if (isNew) { 
+          unreadCount++; 
+          document.getElementById('chat-badge').textContent = unreadCount>9?'9+':unreadCount; 
+          document.getElementById('chat-badge').classList.remove('hidden'); 
+        }
       }
     });
   }
@@ -600,7 +623,7 @@
   window.toggleEmojiPicker=()=>document.getElementById('emoji-picker').classList.toggle('active');
   window.sendReaction=async(em)=>{
     if(!gameData)return;
-    const x=(window.innerWidth/2)-42, y=(window.innerHeight/2)-160;
+    const x=(window.innerWidth/2)-45, y=(window.innerHeight/2)-165;
     try{await updateDoc(doc(db,"games",roomId),{reaction:{emoji:em,sender:myName,x,y}});document.getElementById('emoji-picker').classList.remove('active');}catch(e){}
   };
   window.dismissReaction=async(e)=>{e.stopPropagation();if(gameData.reaction&&gameData.reaction.sender===myName)try{await updateDoc(doc(db,"games",roomId),{reaction:null});}catch(e){}};
@@ -611,15 +634,15 @@
     document.getElementById('b-emoji').textContent=r.emoji;
     document.getElementById('b-sender').textContent=r.sender;
     if(r.x!==undefined&&r.y!==undefined){bub.style.left=r.x+'px';bub.style.top=r.y+'px';}
-    else{bub.style.left=(window.innerWidth/2-42)+'px';bub.style.top=(window.innerHeight/2-160)+'px';}
+    else{bub.style.left=(window.innerWidth/2-45)+'px';bub.style.top=(window.innerHeight/2-165)+'px';}
   }
   const bubble=document.getElementById('bubble');
   bubble.addEventListener('pointerdown',e=>{isDragging=true;bubble.setPointerCapture(e.pointerId);bubble.style.transition='none';});
   bubble.addEventListener('pointermove',e=>{
     if(!isDragging)return;e.preventDefault();
-    let x=e.clientX-42, y=e.clientY-42;
-    x=Math.max(0,Math.min(window.innerWidth-85,x));
-    y=Math.max(0,Math.min(window.innerHeight-85,y));
+    let x=e.clientX-45, y=e.clientY-45;
+    x=Math.max(0,Math.min(window.innerWidth-90,x));
+    y=Math.max(0,Math.min(window.innerHeight-90,y));
     bubble.style.left=x+'px';bubble.style.top=y+'px';
   });
   bubble.addEventListener('pointerup',async e=>{
