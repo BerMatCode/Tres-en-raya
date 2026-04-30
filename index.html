@@ -132,16 +132,32 @@
     button.danger { background: linear-gradient(135deg, var(--danger), #c0392b); color: white; }
     button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
     
-    /* Botones de selección de inicio - MORADOS */
-    button.starter-btn {
-      background: linear-gradient(135deg, #9370DB, #B19CD9);
-      color: white;
-      font-weight: 600;
+    /* Botones de inicio de turno - NUEVOS */
+    .starter-controls {
+      display: flex; flex-direction: column; gap: 8px; margin: 10px 0; width: 100%;
+      animation: slideIn 0.3s ease;
     }
-    button.starter-btn:hover {
-      background: linear-gradient(135deg, #8A5FC9, #A58CD4);
-      transform: translateY(-2px);
-      box-shadow: 0 5px 14px rgba(147, 112, 219, 0.55), 0 2px 4px rgba(0, 0, 0, 0.3);
+    .starter-btn {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white; font-weight: 600; font-size: 0.9rem;
+      box-shadow: 0 3px 12px rgba(118, 75, 162, 0.4);
+    }
+    .starter-btn:hover { 
+      transform: translateY(-2px); 
+      box-shadow: 0 5px 18px rgba(118, 75, 162, 0.6); 
+    }
+    .starter-btn:disabled {
+      opacity: 0.5; cursor: not-allowed; transform: none !important;
+    }
+    .starter-info {
+      font-size: 0.8rem; color: var(--text-muted); text-align: center;
+      padding: 8px; background: rgba(255,255,255,0.05); border-radius: 8px;
+    }
+    .starter-decided {
+      background: linear-gradient(135deg, var(--success), #27ae60);
+      color: white; font-weight: 600; text-align: center;
+      padding: 10px; border-radius: 10px; margin: 8px 0;
+      animation: pulse 2s infinite;
     }
 
     .code-box {
@@ -190,11 +206,6 @@
     .status.finished { 
       background: linear-gradient(135deg, var(--danger), #c0392b); 
       color: white; 
-    }
-    .status.waiting-starter {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
-      animation: pulse 2s infinite;
     }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.85; } }
 
@@ -371,18 +382,6 @@
     .modal-text { font-size: 13.5px; color: #555; line-height: 1.5; margin-bottom: 16px; }
     .modal-buttons { display: flex; gap: 9px; }
     .modal-buttons button { flex: 1; margin: 0; padding: 11px; font-size: 0.9rem; }
-    
-    /* Botones morados para modales de inicio */
-    .modal-buttons button.starter-accept {
-      background: linear-gradient(135deg, #9370DB, #B19CD9);
-      color: white;
-      font-weight: 600;
-    }
-    .modal-buttons button.starter-reject {
-      background: linear-gradient(135deg, #764ba2, #667eea);
-      color: white;
-      font-weight: 600;
-    }
 
     /* ALERT POPUP */
     .alert-popup {
@@ -480,11 +479,24 @@
       </div>
     </div>
 
+    <!-- NUEVO: Controles para elegir quién comienza -->
+    <div id="starter-section" class="hidden">
+      <div id="starter-pending" class="starter-controls">
+        <div class="starter-info">🎮 Define quién comienza la partida</div>
+        <button id="btn-i-start" class="starter-btn" onclick="requestStart()">✦ Quiero comenzar yo</button>
+        <button id="btn-give-turn" class="starter-btn secondary" onclick="giveTurn()">✦ Ceder turno al otro</button>
+      </div>
+      <div id="starter-request-modal" class="starter-controls hidden">
+        <div class="starter-info">🔄 <span id="req-sender-name"></span> quiere comenzar</div>
+        <button class="starter-btn success" onclick="acceptStartRequest()">✓ Aceptar</button>
+        <button class="starter-btn danger" onclick="rejectStartRequest()">✗ Rechazar</button>
+      </div>
+      <div id="starter-decided-msg" class="starter-decided hidden">
+        ✦ Comienza <span id="starter-name"></span> ✦
+      </div>
+    </div>
+
     <div id="status" class="status">Conectando...</div>
-    
-    <!-- BOTÓN PARA SOLICITAR COMENZAR (se muestra cuando ambos están conectados y no hay starter elegido) -->
-    <button id="btn-request-starter" onclick="requestStarter()" class="starter-btn hidden">🎮 Solicitar Comenzar</button>
-    
     <div id="board" class="board"></div>
 
     <button id="btn-rematch" onclick="requestRematch()" class="hidden success">Solicitar Revancha</button>
@@ -640,10 +652,10 @@
       roomId = generateCode(); myPlayer = 1;
       try {
         await setDoc(doc(db, "games", roomId), {
-          p1: myName, p2: null, board: Array(9).fill(""), turn: null, winner: null, winCells: null,
-          status: "waiting", rematchReq: null, rematchStat: "none", 
-          starterReq: null, starterStat: "none", starterChosen: null,
-          reaction: null, created: serverTimestamp()
+          p1: myName, p2: null, board: Array(9).fill(""), turn: "p1", winner: null, winCells: null,
+          status: "waiting", rematchReq: null, rematchStat: "none", reaction: null, 
+          starterDecided: false, startingPlayer: null, startRequest: null,
+          created: serverTimestamp()
         });
         saveSession(roomId, myName, 1); closeModal();
         document.getElementById('room-code').textContent = roomId;
@@ -673,7 +685,11 @@
         roomId = code; myPlayer = 2;
         await updateDoc(doc(db, "games", roomId), { 
           p2: myName, 
-          status: "playing" // Ambos conectados, ahora eligen quién comienza
+          status: "playing",
+          // Inicializar campos de starter para jugador que se une
+          starterDecided: false, 
+          startingPlayer: null, 
+          startRequest: null
         });
         saveSession(roomId, myName, 2); closeModal();
         showView('view-game'); listenGame();
@@ -710,68 +726,13 @@
       document.getElementById('card-p1').className = 'player-card' + (myPlayer===1?' me':'');
       document.getElementById('card-p2').className = 'player-card' + (myPlayer===2?' me':'');
       
-      // === SELECCIÓN DE QUIÉN COMIENZA ===
-      const btnRequestStarter = document.getElementById('btn-request-starter');
-      const st = document.getElementById('status');
+      // === NUEVO: Manejo de selección de quién comienza ===
+      updateStarterUI();
       
-      // Si ya hay starter elegido y el juego tiene turno, mostrar tablero normal
-      if (gameData.starterChosen && gameData.turn) {
-        btnRequestStarter.classList.add('hidden');
-        renderBoard();
-      } 
-      // Si ambos están conectados pero no hay starter elegido
-      else if (gameData.p2 && gameData.status === "playing" && !gameData.starterChosen) {
-        // Si hay solicitud pendiente
-        if (gameData.starterStat === "pending" && gameData.starterReq) {
-          btnRequestStarter.classList.add('hidden');
-          st.className = 'status waiting-starter';
-          
-          // Si soy el que recibió la solicitud (no soy el que pidió)
-          if (gameData.starterReq !== myPlayer) {
-            const requesterName = gameData.starterReq === 1 ? gameData.p1 : gameData.p2;
-            st.textContent = `🎲 ${requesterName} quiere comenzar...`;
-            
-            // Mostrar modal para aceptar/rechazar (solo una vez)
-            if (!document.getElementById('modal').classList.contains('active')) {
-              showModal(
-                "🎮 Solicitud de Inicio",
-                `<strong>${requesterName}</strong> quiere comenzar la partida.<br><br>¿Aceptar?`,
-                [
-                  {text: "✅ Aceptar", class: "starter-accept", onclick: acceptStarter},
-                  {text: "❌ Rechazar", class: "starter-reject", onclick: rejectStarter}
-                ]
-              );
-            }
-          } else {
-            // Soy el que pidió, espero respuesta
-            st.textContent = `⏳ Esperando respuesta de ${myPlayer===1?gameData.p2:gameData.p1}...`;
-          }
-        } 
-        // Si fue rechazado, permitir solicitar de nuevo
-        else if (gameData.starterStat === "rejected") {
-          btnRequestStarter.classList.remove('hidden');
-          btnRequestStarter.textContent = "🎮 Solicitar Comenzar";
-          st.className = 'status waiting-starter';
-          st.textContent = "💬 Decide quién comienza primero";
-        }
-        // Estado inicial: nadie ha solicitado
-        else {
-          btnRequestStarter.classList.remove('hidden');
-          btnRequestStarter.textContent = "🎮 Solicitar Comenzar";
-          st.className = 'status waiting-starter';
-          st.textContent = "💬 Decide quién comienza primero";
-        }
-      }
-      // Si el juego ya está en curso con tablero
-      else if (gameData.turn) {
-        btnRequestStarter.classList.add('hidden');
-        renderBoard();
-      }
-      
+      renderBoard(); 
       updateReactionUI(gameData.reaction || null);
       
-      // Revancha (solo si el juego ya terminó)
-      if (gameData.winner && gameData.rematchReq && gameData.rematchStat==="pending" && gameData.rematchReq!==myPlayer) {
+      if (gameData.rematchReq && gameData.rematchStat==="pending" && gameData.rematchReq!==myPlayer) {
         const n = gameData.rematchReq===1?gameData.p1:gameData.p2;
         showModal("Solicitud de revancha", `${n} quiere jugar otra vez.`, [
           {text:"Aceptar", class:"success", onclick:acceptRematch}, {text:"Rechazar", class:"danger", onclick:rejectRematch}
@@ -780,6 +741,134 @@
     });
     listenChat();
   }
+
+  // === NUEVO: Actualizar UI de selección de turno inicial ===
+  function updateStarterUI() {
+    const section = document.getElementById('starter-section');
+    const pending = document.getElementById('starter-pending');
+    const requestModal = document.getElementById('starter-request-modal');
+    const decidedMsg = document.getElementById('starter-decided-msg');
+    const btnIStart = document.getElementById('btn-i-start');
+    const btnGiveTurn = document.getElementById('btn-give-turn');
+    
+    // Solo mostrar si hay 2 jugadores, no hay ganador, y starter no ha sido decidido
+    const canChooseStarter = gameData.p2 && !gameData.winner && !gameData.starterDecided && gameData.board.every(c => !c);
+    
+    if (!canChooseStarter) {
+      section.classList.add('hidden');
+      return;
+    }
+    
+    section.classList.remove('hidden');
+    pending.classList.add('hidden');
+    requestModal.classList.add('hidden');
+    decidedMsg.classList.add('hidden');
+    
+    // Si ya hay una solicitud pendiente
+    if (gameData.startRequest && !gameData.startRequest.accepted) {
+      const sender = gameData.startRequest.player;
+      const senderName = sender === 1 ? gameData.p1 : gameData.p2;
+      
+      if (sender === myPlayer) {
+        // Yo envié la solicitud, mostrar mensaje de espera
+        pending.classList.remove('hidden');
+        btnIStart.disabled = true;
+        btnGiveTurn.disabled = true;
+        pending.querySelector('.starter-info').textContent = `⏳ Esperando respuesta de ${gameData.startRequest.player === 1 ? gameData.p2 : gameData.p1}...`;
+      } else {
+        // El otro envió solicitud, mostrar modal para aceptar/rechazar
+        requestModal.classList.remove('hidden');
+        document.getElementById('req-sender-name').textContent = senderName;
+      }
+    } 
+    // Si starter ya fue decidido
+    else if (gameData.starterDecided && gameData.startingPlayer) {
+      decidedMsg.classList.remove('hidden');
+      const starterName = gameData.startingPlayer === 1 ? gameData.p1 : gameData.p2;
+      document.getElementById('starter-name').textContent = starterName;
+      
+      // Actualizar el turno inicial según quien deba comenzar
+      if (gameData.turn !== (gameData.startingPlayer === 1 ? 'p1' : 'p2')) {
+        // Forzar sincronización del turno
+        updateDoc(doc(db, "games", roomId), { 
+          turn: gameData.startingPlayer === 1 ? 'p1' : 'p2' 
+        }).catch(() => {});
+      }
+    } 
+    // Si no hay solicitud ni decisión, mostrar botones normales
+    else {
+      pending.classList.remove('hidden');
+      btnIStart.disabled = false;
+      btnGiveTurn.disabled = false;
+      pending.querySelector('.starter-info').textContent = '🎮 Define quién comienza la partida';
+    }
+  }
+
+  // === NUEVO: Solicitar comenzar yo ===
+  window.requestStart = async () => {
+    if (!gameData || gameData.starterDecided) return;
+    try {
+      await updateDoc(doc(db, "games", roomId), {
+        startRequest: {
+          player: myPlayer,
+          name: myName,
+          timestamp: serverTimestamp(),
+          accepted: false
+        }
+      });
+      showAlert("🔄 Solicitud enviada", 'info');
+    } catch(e) {
+      showAlert("❌ Error al enviar solicitud", 'error');
+    }
+  };
+
+  // === NUEVO: Ceder turno al otro jugador ===
+  window.giveTurn = async () => {
+    if (!gameData || gameData.starterDecided) return;
+    const otherPlayer = myPlayer === 1 ? 2 : 1;
+    try {
+      // Establecer directamente que el otro comienza
+      await updateDoc(doc(db, "games", roomId), {
+        starterDecided: true,
+        startingPlayer: otherPlayer,
+        turn: otherPlayer === 1 ? 'p1' : 'p2',
+        startRequest: null
+      });
+      showAlert(`✦ Turno cedido a ${otherPlayer === 1 ? gameData.p1 : gameData.p2}`, 'success');
+    } catch(e) {
+      showAlert("❌ Error al ceder turno", 'error');
+    }
+  };
+
+  // === NUEVO: Aceptar solicitud de inicio ===
+  window.acceptStartRequest = async () => {
+    if (!gameData.startRequest || gameData.startRequest.accepted) return;
+    const requester = gameData.startRequest.player;
+    try {
+      await updateDoc(doc(db, "games", roomId), {
+        starterDecided: true,
+        startingPlayer: requester,
+        turn: requester === 1 ? 'p1' : 'p2',
+        startRequest: { ...gameData.startRequest, accepted: true }
+      });
+      showAlert(`✦ ¡${gameData.startRequest.name} comienza!`, 'success');
+    } catch(e) {
+      showAlert("❌ Error al aceptar", 'error');
+    }
+  };
+
+  // === NUEVO: Rechazar solicitud de inicio ===
+  window.rejectStartRequest = async () => {
+    if (!gameData.startRequest) return;
+    try {
+      await updateDoc(doc(db, "games", roomId), {
+        startRequest: null
+      });
+      showAlert("✗ Solicitud rechazada", 'info');
+    } catch(e) {
+      showAlert("❌ Error al rechazar", 'error');
+    }
+  };
 
   function listenChat() {
     if (chatUnsub) chatUnsub();
@@ -825,49 +914,6 @@
     } catch(e) { showAlert("❌ No se pudo enviar", 'error'); }
   };
   document.getElementById('chat-input').addEventListener('keypress', e => { if(e.key==='Enter') window.sendChatMessage(); });
-
-  // === SELECCIÓN DE QUIÉN COMIENZA ===
-  window.requestStarter = async () => {
-    if (!gameData || gameData.starterChosen) return;
-    try {
-      await updateDoc(doc(db, "games", roomId), {
-        starterReq: myPlayer,
-        starterStat: "pending"
-      });
-      showAlert("✅ Solicitud enviada", 'success');
-    } catch(e) {
-      showAlert("❌ No se pudo enviar solicitud", 'error');
-    }
-  };
-
-  window.acceptStarter = async () => {
-    if (!gameData || gameData.starterReq === myPlayer) return;
-    try {
-      const starter = gameData.starterReq; // Quién pidió comenzar
-      await updateDoc(doc(db, "games", roomId), {
-        starterChosen: starter,
-        starterStat: "accepted",
-        turn: starter === 1 ? "p1" : "p2", // Establecer turno al que aceptamos
-        starterReq: null // Limpiar solicitud
-      });
-      showAlert("🎮 ¡La partida comienza!", 'success');
-    } catch(e) {
-      showAlert("❌ Error al aceptar", 'error');
-    }
-  };
-
-  window.rejectStarter = async () => {
-    if (!gameData || gameData.starterReq === myPlayer) return;
-    try {
-      await updateDoc(doc(db, "games", roomId), {
-        starterStat: "rejected",
-        starterReq: null
-      });
-      showAlert("🔄 Solicitud rechazada", 'info');
-    } catch(e) {
-      showAlert("❌ Error al rechazar", 'error');
-    }
-  };
 
   // === TABLERO ===
   function renderBoard() {
@@ -956,7 +1002,6 @@
     document.getElementById('chat-window').classList.remove('active');
     document.getElementById('bubble').style.display='none';
     document.getElementById('btn-rematch').classList.add('hidden');
-    document.getElementById('btn-request-starter').classList.add('hidden');
     showView('view-menu');
     document.getElementById('name-create').value='';document.getElementById('name-join').value='';document.getElementById('code-join').value='';
     unreadCount=0;isChatOpen=false;
