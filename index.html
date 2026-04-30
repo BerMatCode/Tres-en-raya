@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <meta name="theme-color" content="#667eea" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="#667eea" />
+  <meta name="theme-color" content="#9370DB" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="#9370DB" />
   <title>✦ Tres en Raya ✦ BerMatCode</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Montserrat:wght@400;500&family=Pacifico&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -131,6 +131,18 @@
     button.success { background: linear-gradient(135deg, var(--success), #27ae60); color: white; }
     button.danger { background: linear-gradient(135deg, var(--danger), #c0392b); color: white; }
     button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    
+    /* Botones de selección de inicio - MORADOS */
+    button.starter-btn {
+      background: linear-gradient(135deg, #9370DB, #B19CD9);
+      color: white;
+      font-weight: 600;
+    }
+    button.starter-btn:hover {
+      background: linear-gradient(135deg, #8A5FC9, #A58CD4);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 14px rgba(147, 112, 219, 0.55), 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
 
     .code-box {
       background: linear-gradient(135deg, var(--primary), var(--primary-light));
@@ -178,6 +190,11 @@
     .status.finished { 
       background: linear-gradient(135deg, var(--danger), #c0392b); 
       color: white; 
+    }
+    .status.waiting-starter {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      animation: pulse 2s infinite;
     }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.85; } }
 
@@ -354,6 +371,18 @@
     .modal-text { font-size: 13.5px; color: #555; line-height: 1.5; margin-bottom: 16px; }
     .modal-buttons { display: flex; gap: 9px; }
     .modal-buttons button { flex: 1; margin: 0; padding: 11px; font-size: 0.9rem; }
+    
+    /* Botones morados para modales de inicio */
+    .modal-buttons button.starter-accept {
+      background: linear-gradient(135deg, #9370DB, #B19CD9);
+      color: white;
+      font-weight: 600;
+    }
+    .modal-buttons button.starter-reject {
+      background: linear-gradient(135deg, #764ba2, #667eea);
+      color: white;
+      font-weight: 600;
+    }
 
     /* ALERT POPUP */
     .alert-popup {
@@ -452,6 +481,10 @@
     </div>
 
     <div id="status" class="status">Conectando...</div>
+    
+    <!-- BOTÓN PARA SOLICITAR COMENZAR (se muestra cuando ambos están conectados y no hay starter elegido) -->
+    <button id="btn-request-starter" onclick="requestStarter()" class="starter-btn hidden">🎮 Solicitar Comenzar</button>
+    
     <div id="board" class="board"></div>
 
     <button id="btn-rematch" onclick="requestRematch()" class="hidden success">Solicitar Revancha</button>
@@ -607,8 +640,10 @@
       roomId = generateCode(); myPlayer = 1;
       try {
         await setDoc(doc(db, "games", roomId), {
-          p1: myName, p2: null, board: Array(9).fill(""), turn: "p1", winner: null, winCells: null,
-          status: "waiting", rematchReq: null, rematchStat: "none", reaction: null, created: serverTimestamp()
+          p1: myName, p2: null, board: Array(9).fill(""), turn: null, winner: null, winCells: null,
+          status: "waiting", rematchReq: null, rematchStat: "none", 
+          starterReq: null, starterStat: "none", starterChosen: null,
+          reaction: null, created: serverTimestamp()
         });
         saveSession(roomId, myName, 1); closeModal();
         document.getElementById('room-code').textContent = roomId;
@@ -636,7 +671,10 @@
         if (d.status !== "waiting") return closeModal(), showAlert("❌ No disponible", 'error');
         
         roomId = code; myPlayer = 2;
-        await updateDoc(doc(db, "games", roomId), { p2: myName, status: "playing" });
+        await updateDoc(doc(db, "games", roomId), { 
+          p2: myName, 
+          status: "playing" // Ambos conectados, ahora eligen quién comienza
+        });
         saveSession(roomId, myName, 2); closeModal();
         showView('view-game'); listenGame();
         showAlert("✅ ¡Conectado!", 'success');
@@ -672,10 +710,68 @@
       document.getElementById('card-p1').className = 'player-card' + (myPlayer===1?' me':'');
       document.getElementById('card-p2').className = 'player-card' + (myPlayer===2?' me':'');
       
-      renderBoard(); 
+      // === SELECCIÓN DE QUIÉN COMIENZA ===
+      const btnRequestStarter = document.getElementById('btn-request-starter');
+      const st = document.getElementById('status');
+      
+      // Si ya hay starter elegido y el juego tiene turno, mostrar tablero normal
+      if (gameData.starterChosen && gameData.turn) {
+        btnRequestStarter.classList.add('hidden');
+        renderBoard();
+      } 
+      // Si ambos están conectados pero no hay starter elegido
+      else if (gameData.p2 && gameData.status === "playing" && !gameData.starterChosen) {
+        // Si hay solicitud pendiente
+        if (gameData.starterStat === "pending" && gameData.starterReq) {
+          btnRequestStarter.classList.add('hidden');
+          st.className = 'status waiting-starter';
+          
+          // Si soy el que recibió la solicitud (no soy el que pidió)
+          if (gameData.starterReq !== myPlayer) {
+            const requesterName = gameData.starterReq === 1 ? gameData.p1 : gameData.p2;
+            st.textContent = `🎲 ${requesterName} quiere comenzar...`;
+            
+            // Mostrar modal para aceptar/rechazar (solo una vez)
+            if (!document.getElementById('modal').classList.contains('active')) {
+              showModal(
+                "🎮 Solicitud de Inicio",
+                `<strong>${requesterName}</strong> quiere comenzar la partida.<br><br>¿Aceptar?`,
+                [
+                  {text: "✅ Aceptar", class: "starter-accept", onclick: acceptStarter},
+                  {text: "❌ Rechazar", class: "starter-reject", onclick: rejectStarter}
+                ]
+              );
+            }
+          } else {
+            // Soy el que pidió, espero respuesta
+            st.textContent = `⏳ Esperando respuesta de ${myPlayer===1?gameData.p2:gameData.p1}...`;
+          }
+        } 
+        // Si fue rechazado, permitir solicitar de nuevo
+        else if (gameData.starterStat === "rejected") {
+          btnRequestStarter.classList.remove('hidden');
+          btnRequestStarter.textContent = "🎮 Solicitar Comenzar";
+          st.className = 'status waiting-starter';
+          st.textContent = "💬 Decide quién comienza primero";
+        }
+        // Estado inicial: nadie ha solicitado
+        else {
+          btnRequestStarter.classList.remove('hidden');
+          btnRequestStarter.textContent = "🎮 Solicitar Comenzar";
+          st.className = 'status waiting-starter';
+          st.textContent = "💬 Decide quién comienza primero";
+        }
+      }
+      // Si el juego ya está en curso con tablero
+      else if (gameData.turn) {
+        btnRequestStarter.classList.add('hidden');
+        renderBoard();
+      }
+      
       updateReactionUI(gameData.reaction || null);
       
-      if (gameData.rematchReq && gameData.rematchStat==="pending" && gameData.rematchReq!==myPlayer) {
+      // Revancha (solo si el juego ya terminó)
+      if (gameData.winner && gameData.rematchReq && gameData.rematchStat==="pending" && gameData.rematchReq!==myPlayer) {
         const n = gameData.rematchReq===1?gameData.p1:gameData.p2;
         showModal("Solicitud de revancha", `${n} quiere jugar otra vez.`, [
           {text:"Aceptar", class:"success", onclick:acceptRematch}, {text:"Rechazar", class:"danger", onclick:rejectRematch}
@@ -729,6 +825,49 @@
     } catch(e) { showAlert("❌ No se pudo enviar", 'error'); }
   };
   document.getElementById('chat-input').addEventListener('keypress', e => { if(e.key==='Enter') window.sendChatMessage(); });
+
+  // === SELECCIÓN DE QUIÉN COMIENZA ===
+  window.requestStarter = async () => {
+    if (!gameData || gameData.starterChosen) return;
+    try {
+      await updateDoc(doc(db, "games", roomId), {
+        starterReq: myPlayer,
+        starterStat: "pending"
+      });
+      showAlert("✅ Solicitud enviada", 'success');
+    } catch(e) {
+      showAlert("❌ No se pudo enviar solicitud", 'error');
+    }
+  };
+
+  window.acceptStarter = async () => {
+    if (!gameData || gameData.starterReq === myPlayer) return;
+    try {
+      const starter = gameData.starterReq; // Quién pidió comenzar
+      await updateDoc(doc(db, "games", roomId), {
+        starterChosen: starter,
+        starterStat: "accepted",
+        turn: starter === 1 ? "p1" : "p2", // Establecer turno al que aceptamos
+        starterReq: null // Limpiar solicitud
+      });
+      showAlert("🎮 ¡La partida comienza!", 'success');
+    } catch(e) {
+      showAlert("❌ Error al aceptar", 'error');
+    }
+  };
+
+  window.rejectStarter = async () => {
+    if (!gameData || gameData.starterReq === myPlayer) return;
+    try {
+      await updateDoc(doc(db, "games", roomId), {
+        starterStat: "rejected",
+        starterReq: null
+      });
+      showAlert("🔄 Solicitud rechazada", 'info');
+    } catch(e) {
+      showAlert("❌ Error al rechazar", 'error');
+    }
+  };
 
   // === TABLERO ===
   function renderBoard() {
@@ -817,6 +956,7 @@
     document.getElementById('chat-window').classList.remove('active');
     document.getElementById('bubble').style.display='none';
     document.getElementById('btn-rematch').classList.add('hidden');
+    document.getElementById('btn-request-starter').classList.add('hidden');
     showView('view-menu');
     document.getElementById('name-create').value='';document.getElementById('name-join').value='';document.getElementById('code-join').value='';
     unreadCount=0;isChatOpen=false;
