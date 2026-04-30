@@ -73,7 +73,7 @@
       box-shadow: var(--glow); text-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
-    .players { display: flex; justify-content: space-between; gap: 14px; margin-bottom: 18px; width: 100%; }
+    .players { display: flex; justify-content: space-between; gap: 14px; margin-bottom: 8px; width: 100%; }
     .player-card {
       flex: 1; padding: 14px; border-radius: 14px; background: var(--bg);
       text-align: center; border: 2px solid transparent; transition: all 0.2s; color: var(--text);
@@ -83,9 +83,38 @@
     .player-name { font-weight: 600; font-size: 14px; margin-bottom: 5px; }
     .player-symbol { font-size: 22px; font-weight: 700; }
 
+    /* === BOTÓN DE MANDO CENTRADO === */
+    .btn-mando {
+      width: 100%; max-width: 270px;
+      padding: 12px 16px; margin: 8px auto 12px;
+      border-radius: 14px; border: 2px solid var(--border);
+      background: var(--bg); color: var(--primary);
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; transition: all 0.2s;
+      font-family: 'Patrick Hand', cursive;
+      box-shadow: var(--glow);
+    }
+    .btn-mando:hover:not(:disabled) { 
+      background: rgba(102,126,234,0.08); 
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+    .btn-mando:active:not(:disabled) { transform: translateY(0); }
+    .btn-mando:disabled { 
+      opacity: 0.5; cursor: not-allowed; 
+      transform: none; box-shadow: none;
+      background: var(--bg); color: var(--text-muted);
+      border-color: var(--border);
+    }
+    .btn-mando.active {
+      background: linear-gradient(135deg, var(--success), #059669);
+      color: white; border-color: transparent;
+    }
+
     .status {
       padding: 14px; border-radius: 14px; text-align: center; font-weight: 600; font-size: 15px;
-      margin: 16px 0; width: 100%; background: var(--bg); color: var(--text-muted);
+      margin: 8px 0 16px; width: 100%; background: var(--bg); color: var(--text-muted);
       border: 1px solid var(--border); transition: all 0.3s;
     }
     .status.my-turn { background: var(--success); color: white; border-color: transparent; }
@@ -94,7 +123,7 @@
 
     .board {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
-      margin: 18px auto; width: 100%; max-width: 270px;
+      margin: 0 auto; width: 100%; max-width: 270px;
     }
     .board.locked { opacity: 0.4; pointer-events: none; filter: grayscale(0.5); }
     .cell {
@@ -102,12 +131,19 @@
       border-radius: 16px; display: flex; align-items: center; justify-content: center;
       cursor: pointer; transition: all 0.15s; font-size: 38px; font-weight: 700;
       color: var(--text); font-family: 'Patrick Hand', cursive;
+      user-select: none;
     }
     .cell:hover:not(.taken) { background: rgba(102,126,234,0.08); border-color: var(--primary); }
     .cell.x { color: var(--danger); background: rgba(239,68,68,0.08); border-color: var(--danger); }
     .cell.o { color: var(--primary); background: rgba(102,126,234,0.08); border-color: var(--primary); }
     .cell.taken { cursor: default; }
     .cell.winner { background: var(--success); color: white; border-color: var(--success); }
+    .cell.flash { animation: cellFlash 0.3s ease; }
+    @keyframes cellFlash {
+      0% { transform: scale(0.8); opacity: 0; }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
 
     /* === BOTONES FLOTANTES === */
     .btn-float {
@@ -196,7 +232,6 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Boton cerrar modales */
     .modal-close-btn {
       position: absolute; top: 12px; right: 14px;
       width: 34px; height: 34px; border-radius: 50%;
@@ -229,11 +264,6 @@
     }
     .theme-option-btn.active { border-color: var(--primary); background: rgba(102,126,234,0.1); font-weight: 700; color: var(--primary); }
     .theme-option-btn:hover { border-color: var(--primary); }
-
-    #turn-modal .modal-content { text-align: center; }
-    #turn-modal .turn-option { display: flex; gap: 12px; margin-top: 18px; }
-    #turn-modal .turn-option button { flex: 1; padding: 14px; font-size: 15px; }
-    #turn-modal .waiting-text { color: var(--primary); font-weight: 700; margin: 14px 0; }
 
     /* Revancha solicitando */
     .rematch-requesting {
@@ -305,6 +335,12 @@
         <div class="player-symbol">O</div>
       </div>
     </div>
+    
+    <!-- BOTÓN DE MANDO CENTRADO -->
+    <button id="btn-mando" class="btn-mando hidden" onclick="toggleTurn()">
+      🔄 Cambiar quien empieza
+    </button>
+    
     <div id="status" class="status">Conectando...</div>
     <div id="board" class="board locked"></div>
     <button id="btn-rematch" onclick="requestRematch()" class="hidden success">Solicitar Revancha</button>
@@ -387,24 +423,6 @@
   </div>
 </div>
 
-<!-- MODAL TURNO CON X -->
-<div id="turn-modal" class="modal-overlay">
-  <div class="modal-content">
-    <button class="modal-close-btn" onclick="closeTurnModal()">✕</button>
-    <div class="modal-title">Quien comienza?</div>
-    <div id="turn-text" class="modal-text">Elige quien dara el primer movimiento.</div>
-    <div id="turn-actions" class="turn-option">
-      <button class="success" onclick="proposeTurn('self')">Yo empiezo</button>
-      <button class="secondary" onclick="proposeTurn('other')">Que empiece <span id="other-name">el otro</span></button>
-    </div>
-    <div id="turn-waiting" class="waiting-text hidden">Esperando respuesta...</div>
-    <div id="turn-response" class="turn-option hidden">
-      <button class="success" onclick="respondTurn(true)">Aceptar</button>
-      <button class="danger" onclick="respondTurn(false)">Rechazar</button>
-    </div>
-  </div>
-</div>
-
 <div class="credits">BerMatCode</div>
 
 <script type="module">
@@ -425,7 +443,7 @@
   const db = getFirestore(app);
 
   let roomId = null, myName = "", myPlayer = null, gameData = null, unsub = null;
-  let turnModalClosed = false, isDragging = false;
+  let isDragging = false;
   let rematchShown = false;
 
   // === TEMA ===
@@ -475,9 +493,7 @@
     document.getElementById('modal-text').textContent = txt;
     document.getElementById('modal-buttons').classList.add('hidden');
     const closeBtn = document.getElementById('modal-close-btn');
-    if (closeBtn) {
-      closeBtn.classList.toggle('hidden', !showClose);
-    }
+    if (closeBtn) closeBtn.classList.toggle('hidden', !showClose);
     document.getElementById('modal').classList.add('active');
   };
   
@@ -494,23 +510,14 @@
       b.appendChild(btn);
     });
     const closeBtn = document.getElementById('modal-close-btn');
-    if (closeBtn) {
-      closeBtn.classList.toggle('hidden', !showClose);
-    }
+    if (closeBtn) closeBtn.classList.toggle('hidden', !showClose);
     document.getElementById('modal').classList.add('active');
   };
   
   window.closeModal = () => {
-    // Restaurar botón de cerrar por defecto
     const closeBtn = document.getElementById('modal-close-btn');
     if (closeBtn) closeBtn.classList.remove('hidden');
     document.getElementById('modal').classList.remove('active');
-  };
-
-  // === CERRAR MODAL TURNO ===
-  window.closeTurnModal = () => {
-    document.getElementById('turn-modal').classList.remove('active');
-    turnModalClosed = true;
   };
 
   // === CERRAR MODAL REVANCHA ===
@@ -522,6 +529,28 @@
   window.confirmLeave = () => { document.getElementById('confirm-modal').classList.add('active'); };
   window.cancelLeave = () => { document.getElementById('confirm-modal').classList.remove('active'); };
 
+  // === TOGGLE DE TURNO (MANDO) ===
+  window.toggleTurn = async () => {
+    if (!gameData || !roomId) return;
+    
+    const hasMoves = gameData.board && gameData.board.some(c => c !== "");
+    
+    if (hasMoves || gameData.winner) {
+      showModal("⚠️ Solo al inicio", "Este botón solo funciona antes de comenzar a jugar.", undefined, false);
+      return;
+    }
+    
+    const newTurn = gameData.turn === 'p1' ? 'p2' : 'p1';
+    
+    try {
+      await updateDoc(doc(db, "games", roomId), {
+        turn: newTurn
+      });
+    } catch(e) {
+      showModal("Error", "No se pudo cambiar el turno.", undefined, false);
+    }
+  };
+
   // === REVANCHA ===
   window.requestRematch = async () => {
     if (!gameData || !roomId) return;
@@ -530,7 +559,6 @@
         rematchReq: myPlayer,
         rematchStat: "requesting"
       });
-      // Mostrar "Solicitando" por 2 segundos al que envia
       const rematchModal = document.getElementById('rematch-modal');
       document.getElementById('rematch-req-content').classList.remove('hidden');
       document.getElementById('rematch-accept-content').classList.add('hidden');
@@ -543,21 +571,15 @@
     document.getElementById('rematch-modal').classList.remove('active');
     if (!gameData || !roomId) return;
     
-    // IMPORTANTE: Resetear turnModalClosed ANTES de actualizar Firestore
-    // para que el modal de turno aparezca en la nueva partida
-    turnModalClosed = false;
-    
     try {
       await updateDoc(doc(db, "games", roomId), {
         board: Array(9).fill(""),
-        turn: null,
+        turn: 'p1',
         winner: null,
         winCells: null,
         rematchReq: null,
         rematchStat: "none",
-        status: "playing",
-        turnOffer: null,
-        turnOfferStatus: "none"
+        status: "playing"
       });
     } catch(e) {}
   };
@@ -584,7 +606,6 @@
     const cleanCode = roomId.trim();
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(cleanCode).then(() => {
-        // Modal sin botón de cerrar para notificaciones automáticas
         showModal("Codigo copiado", "El codigo ha sido copiado correctamente.", undefined, false);
         setTimeout(() => closeModal(), 1500);
       }).catch(() => fallbackCopy(cleanCode));
@@ -597,7 +618,6 @@
     document.body.appendChild(textarea); textarea.focus(); textarea.select();
     try {
       document.execCommand('copy');
-      // Modal sin botón de cerrar para notificaciones automáticas
       showModal("Codigo copiado", "El codigo ha sido copiado correctamente.", undefined, false);
       setTimeout(() => closeModal(), 1500);
     } catch (err) { 
@@ -610,15 +630,16 @@
   window.createRoom = async () => {
     myName = document.getElementById('name-create').value.trim();
     if (!myName) return showModal("Atencion", "Ingresa tu nombre.", undefined, false);
-    // Modal de carga sin botón de cerrar
     showLoading("Creando sala", "Generando codigo unico...", false);
     await new Promise(resolve => setTimeout(resolve, 1500));
     try {
       roomId = generateCode(); myPlayer = 1;
       await setDoc(doc(db, "games", roomId), {
-        p1: myName, p2: null, board: Array(9).fill(""), turn: null, winner: null, winCells: null,
+        p1: myName, p2: null, board: Array(9).fill(""), 
+        turn: 'p1',
+        winner: null, winCells: null,
         status: "waiting", rematchReq: null, rematchStat: "none",
-        turnOffer: null, turnOfferStatus: "none", created: serverTimestamp()
+        created: serverTimestamp()
       });
       closeModal(); saveSession(roomId, myName, 1);
       document.getElementById('room-code').textContent = roomId;
@@ -633,7 +654,6 @@
     myName = document.getElementById('name-join').value.trim();
     const code = document.getElementById('code-join').value.trim().toUpperCase();
     if (!myName || !code || code.length !== 6) return showModal("Atencion", "Datos invalidos.", undefined, false);
-    // Modal de carga sin botón de cerrar
     showLoading("Uniendote", "Conectando a la sala...", false);
     await new Promise(resolve => setTimeout(resolve, 1500));
     try {
@@ -652,7 +672,11 @@
         return showModal("Error", "No disponible.", undefined, false); 
       }
       roomId = code; myPlayer = 2;
-      await updateDoc(doc(db, "games", roomId), { p2: myName, status: "playing", turnOfferStatus: "none" });
+      await updateDoc(doc(db, "games", roomId), { 
+        p2: myName, 
+        status: "playing",
+        turn: 'p1'
+      });
       closeModal(); saveSession(roomId, myName, 2);
       showView('view-game'); listenGame();
     } catch(e) { 
@@ -666,96 +690,40 @@
   function clearSession() { localStorage.removeItem('tic_room'); localStorage.removeItem('tic_name'); localStorage.removeItem('tic_player'); }
   function loadSession() { const id = localStorage.getItem('tic_room'); if (id) { roomId = id; myName = localStorage.getItem('tic_name'); myPlayer = parseInt(localStorage.getItem('tic_player')); return true; } return false; }
 
-  // === TURNO ===
-  function updateTurnModal() {
-    const modal = document.getElementById('turn-modal');
-    const board = document.getElementById('board');
-
-    // Si hay turno definido o juego terminado, cerrar modal
-    if (!gameData || gameData.turn || gameData.winner) {
-      modal.classList.remove('active');
-      board.classList.remove('locked');
-      turnModalClosed = true;
+  // === ACTUALIZAR BOTON MANDO ===
+  function updateMandoButton() {
+    const btn = document.getElementById('btn-mando');
+    
+    if (!gameData || !gameData.p2 || gameData.status !== "playing") {
+      btn.classList.add('hidden');
       return;
     }
-
-    // Si usuario cerro manualmente con la X
-    if (turnModalClosed) {
-      modal.classList.remove('active');
-      board.classList.remove('locked');
+    
+    const hasMoves = gameData.board && gameData.board.some(c => c !== "");
+    
+    if (hasMoves || gameData.winner) {
+      btn.classList.remove('hidden');
+      btn.disabled = true;
+      btn.innerHTML = '🔒 Partida en curso';
+      btn.classList.remove('active');
       return;
     }
-
-    // Solo mostrar si hay 2 jugadores y partida activa
-    if (!gameData.p2 || gameData.status !== "playing") return;
-
-    modal.classList.add('active');
-    board.classList.add('locked');
-
-    const otherName = myPlayer === 1 ? gameData.p2 : gameData.p1;
-    document.getElementById('other-name').textContent = otherName;
-
-    const status = gameData.turnOfferStatus || "none";
-    const offer = gameData.turnOffer;
-
-    // Ocultar todo primero
-    document.getElementById('turn-actions').classList.add('hidden');
-    document.getElementById('turn-waiting').classList.add('hidden');
-    document.getElementById('turn-response').classList.add('hidden');
-    document.getElementById('turn-text').textContent = "Elige quien dara el primer movimiento.";
-
-    if (status === "none") {
-      // Sin oferta activa: mostrar opciones
-      document.getElementById('turn-actions').classList.remove('hidden');
-    } else if (status === "pending") {
-      if (offer.by === myPlayer) {
-        // Yo propuse, esperando
-        document.getElementById('turn-waiting').classList.remove('hidden');
-        document.getElementById('turn-text').textContent = "Esperando respuesta...";
-      } else {
-        // El otro propuso, debo responder
-        document.getElementById('turn-response').classList.remove('hidden');
-        const wants = offer.for === (myPlayer===1?'p1':'p2') ? "que tu empieces" : "que el empiece";
-        document.getElementById('turn-text').textContent = `${offer.by===1?gameData.p1:gameData.p2} propone ${wants}. ¿Aceptas?`;
-      }
-    }
+    
+    btn.classList.remove('hidden');
+    btn.disabled = false;
+    
+    const isMyTurn = gameData.turn === (myPlayer===1 ? 'p1' : 'p2');
+    btn.classList.toggle('active', isMyTurn);
+    
+    const currentStarter = gameData.turn === 'p1' ? gameData.p1 : gameData.p2;
+    btn.innerHTML = `🔄 Cambiar: empieza ${currentStarter}`;
   }
-
-  window.proposeTurn = async (choice) => {
-    if (!gameData || gameData.turn) return;
-    const target = choice === 'self' ? (myPlayer===1?'p1':'p2') : (myPlayer===1?'p2':'p1');
-    try {
-      await updateDoc(doc(db, "games", roomId), {
-        turnOffer: { by: myPlayer, for: target },
-        turnOfferStatus: "pending"
-      });
-    } catch(e) {}
-  };
-
-  window.respondTurn = async (accept) => {
-    if (!gameData || !gameData.turnOffer) return;
-    if (accept) {
-      try {
-        await updateDoc(doc(db, "games", roomId), {
-          turn: gameData.turnOffer.for,
-          turnOffer: null,
-          turnOfferStatus: "agreed"
-        });
-      } catch(e) {}
-    } else {
-      try {
-        await updateDoc(doc(db, "games", roomId), {
-          turnOffer: null,
-          turnOfferStatus: "none"
-        });
-      } catch(e) {}
-    }
-  };
 
   // === LISTENER ===
   function listenGame() {
     if (unsub) unsub();
     rematchShown = false;
+    
     unsub = onSnapshot(doc(db, "games", roomId), (snap) => {
       if (!snap.exists()) return;
       gameData = snap.data();
@@ -769,7 +737,7 @@
       document.getElementById('card-p1').className = 'player-card' + (myPlayer===1?' me':'');
       document.getElementById('card-p2').className = 'player-card' + (myPlayer===2?' me':'');
 
-      updateTurnModal();
+      updateMandoButton();
       renderBoard();
       updateReactionUI(gameData.reaction || null);
       handleRematchUI();
@@ -799,65 +767,169 @@
 
   // === TABLERO ===
   function renderBoard() {
-    const b = document.getElementById('board'), st = document.getElementById('status'), rb = document.getElementById('btn-rematch');
-    const isMyTurn = gameData.turn && !gameData.winner && gameData.turn === (myPlayer===1?'p1':'p2');
+    const boardEl = document.getElementById('board');
+    const statusEl = document.getElementById('status');
+    const rematchBtn = document.getElementById('btn-rematch');
+    
+    if (!gameData || !gameData.board) return;
+    
+    const myTurnId = (myPlayer === 1) ? 'p1' : 'p2';
+    const isMyTurn = (gameData.turn === myTurnId) && !gameData.winner;
 
+    // Actualizar tarjetas de jugadores
     document.getElementById('card-p1').classList.remove('active');
     document.getElementById('card-p2').classList.remove('active');
-    if (!gameData.winner && gameData.turn) {
-      document.getElementById(gameData.turn==='p1'?'card-p1':'card-p2').classList.add('active');
+    
+    if (gameData.turn && !gameData.winner) {
+      const activeCardId = gameData.turn === 'p1' ? 'card-p1' : 'card-p2';
+      document.getElementById(activeCardId).classList.add('active');
     }
 
-    b.innerHTML = '';
-    if(gameData.board) {
-      gameData.board.forEach((c, i) => {
-        const d = document.createElement('div');
-        d.className = 'cell' + (c ? ` ${c.toLowerCase()} taken` : '');
-        if(gameData.winCells && gameData.winCells.includes(i)) d.classList.add('winner');
-        d.textContent = c;
-        if(!c && isMyTurn && !gameData.winner) d.onclick = () => makeMove(i);
-        b.appendChild(d);
-      });
-    }
+    // Reconstruir tablero completo
+    boardEl.innerHTML = '';
+    
+    // Bloquear tablero si no es mi turno o partida terminada
+    boardEl.classList.toggle('locked', !isMyTurn && !gameData.winner);
 
-    st.className = 'status';
-    if(!gameData.turn && !gameData.winner) {
-      st.textContent = "Definiendo turno...";
-    } else if(gameData.winner) {
-      st.classList.add('finished');
-      st.textContent = gameData.winner === 'draw' ? "Empate" : (gameData.winner === (myPlayer===1?'p1':'p2') ? "¡Ganaste!" : "Perdiste");
-      rb.classList.remove('hidden');
-    } else if(isMyTurn) {
-      st.classList.add('my-turn');
-      st.textContent = 'Tu turno';
-      rb.classList.add('hidden');
+    gameData.board.forEach((cellValue, index) => {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.textContent = cellValue;
+      cell.dataset.index = index;
+      
+      if (cellValue) {
+        cell.classList.add(cellValue.toLowerCase(), 'taken');
+      }
+      
+      if (gameData.winCells && gameData.winCells.includes(index)) {
+        cell.classList.add('winner');
+      }
+      
+      // Solo asignar click si es mi turno, celda vacía, sin ganador
+      if (!cellValue && isMyTurn && !gameData.winner) {
+        cell.addEventListener('click', () => {
+          handleCellClick(index, cell);
+        });
+      }
+      
+      boardEl.appendChild(cell);
+    });
+
+    // Actualizar status
+    statusEl.className = 'status';
+    if (!gameData.turn) {
+      statusEl.textContent = "Preparando partida...";
+    } else if (gameData.winner) {
+      statusEl.classList.add('finished');
+      if (gameData.winner === 'draw') {
+        statusEl.textContent = "¡Empate!";
+      } else {
+        const iWon = (gameData.winner === myTurnId);
+        statusEl.textContent = iWon ? "¡Ganaste! 🎉" : "Perdiste 😔";
+      }
+      rematchBtn.classList.remove('hidden');
+    } else if (isMyTurn) {
+      statusEl.classList.add('my-turn');
+      statusEl.textContent = 'Tu turno ✋';
+      rematchBtn.classList.add('hidden');
+      boardEl.classList.remove('locked');
     } else {
-      st.classList.add('their-turn');
-      st.textContent = `Turno de ${myPlayer===1 ? gameData.p2 : gameData.p1}`;
-      rb.classList.add('hidden');
+      statusEl.classList.add('their-turn');
+      const opponentName = myPlayer === 1 ? gameData.p2 : gameData.p1;
+      statusEl.textContent = `Turno de ${opponentName} ⏳`;
+      rematchBtn.classList.add('hidden');
     }
   }
 
-  window.makeMove = async (i) => {
-    if(!gameData || !gameData.turn || gameData.board[i] || gameData.winner || gameData.turn !== (myPlayer===1?'p1':'p2')) return;
-    const nb = [...gameData.board];
-    nb[i] = myPlayer===1 ? 'X' : 'O';
-    const w = checkWin(nb), draw = !w && !nb.includes("");
-    const up = { board: nb };
-    if(w) Object.assign(up, { winner: w, winCells: getCells(nb,w), status: "finished" });
-    else if(draw) Object.assign(up, { winner: 'draw', status: "finished" });
-    else up.turn = myPlayer===1 ? 'p2' : 'p1';
-    try { await updateDoc(doc(db,"games",roomId), up); } catch(e) {}
-  };
+  // === MANEJAR CLICK EN CELDA - FUNCIÓN CORREGIDA ===
+  async function handleCellClick(index, cellElement) {
+    // Verificaciones de seguridad
+    if (!gameData || !roomId) return;
+    if (gameData.winner) return;
+    
+    const myTurnId = (myPlayer === 1) ? 'p1' : 'p2';
+    
+    // Verificar que es mi turno usando gameData ACTUAL
+    if (gameData.turn !== myTurnId) {
+      showModal("⚠️ No es tu turno", "Espera a que la otra persona juegue.", undefined, false);
+      return;
+    }
+    
+    // Verificar que la celda está vacía
+    if (!gameData.board || gameData.board[index] !== "") {
+      return; // Celda ya ocupada, ignorar silenciosamente
+    }
+    
+    const mySymbol = myPlayer === 1 ? 'X' : 'O';
+    const opponentTurn = myPlayer === 1 ? 'p2' : 'p1';
+    
+    // Animación visual inmediata
+    cellElement.textContent = mySymbol;
+    cellElement.classList.add(mySymbol.toLowerCase(), 'taken', 'flash');
+    
+    // Actualizar board localmente
+    const newBoard = [...gameData.board];
+    newBoard[index] = mySymbol;
+    
+    // Verificar victoria
+    const winnerResult = checkWin(newBoard);
+    const isDraw = !winnerResult && !newBoard.includes("");
+    
+    // Preparar actualización
+    const updateData = { board: newBoard };
+    
+    if (winnerResult) {
+      updateData.winner = winnerResult;
+      updateData.winCells = getWinCells(newBoard);
+      updateData.status = "finished";
+    } else if (isDraw) {
+      updateData.winner = 'draw';
+      updateData.status = "finished";
+    } else {
+      // Cambiar turno al oponente
+      updateData.turn = opponentTurn;
+    }
+    
+    try {
+      await updateDoc(doc(db, "games", roomId), updateData);
+    } catch(e) {
+      console.error("Error al hacer movimiento:", e);
+      // Revertir visual si hay error
+      cellElement.textContent = '';
+      cellElement.classList.remove(mySymbol.toLowerCase(), 'taken', 'flash');
+      showModal("Error", "No se pudo registrar tu jugada. Intenta de nuevo.", undefined, false);
+    }
+  }
 
-  function checkWin(b) {
-    const p = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    for(let c of p) if(b[c[0]] && b[c[0]]===b[c[1]] && b[c[0]]===b[c[2]]) return b[c[0]]==='X'?'p1':'p2';
+  // === VERIFICAR VICTORIA ===
+  function checkWin(board) {
+    const winPatterns = [
+      [0,1,2], [3,4,5], [6,7,8], // Filas
+      [0,3,6], [1,4,7], [2,5,8], // Columnas
+      [0,4,8], [2,4,6]           // Diagonales
+    ];
+    
+    for (const [a, b, c] of winPatterns) {
+      if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+        return board[a] === 'X' ? 'p1' : 'p2';
+      }
+    }
     return null;
   }
-  function getCells(b, w) {
-    const p = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    for(let c of p) if(b[c[0]] && b[c[0]]===b[c[1]] && b[c[0]]===b[c[2]]) return c;
+
+  // === OBTENER CELDAS GANADORAS ===
+  function getWinCells(board) {
+    const winPatterns = [
+      [0,1,2], [3,4,5], [6,7,8],
+      [0,3,6], [1,4,7], [2,5,8],
+      [0,4,8], [2,4,6]
+    ];
+    
+    for (const [a, b, c] of winPatterns) {
+      if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+        return [a, b, c];
+      }
+    }
     return [];
   }
 
@@ -897,7 +969,7 @@
     bub.style.top = Math.max(0, Math.min(window.innerHeight - 100, by)) + 'px';
   }
 
-  // AMBAS personas pueden mover la burbuja
+  // ARRASTRAR BURBUJA
   const bubble = document.getElementById('bubble');
   bubble.addEventListener('pointerdown', e => {
     isDragging = true;
@@ -936,14 +1008,12 @@
     document.getElementById('name-create').value = '';
     document.getElementById('name-join').value = '';
     document.getElementById('code-join').value = '';
-    turnModalClosed = false;
     gameData = null;
     roomId = null;
     rematchShown = false;
     document.getElementById('bubble').style.display = 'none';
     document.getElementById('emoji-picker').classList.remove('active');
     document.getElementById('rematch-modal').classList.remove('active');
-    document.getElementById('turn-modal').classList.remove('active');
   };
 
   // === INIT ===
