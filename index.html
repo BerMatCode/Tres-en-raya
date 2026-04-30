@@ -125,7 +125,9 @@
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
       margin: 0 auto; width: 100%; max-width: 270px;
     }
-    .board.locked { opacity: 0.4; pointer-events: none; filter: grayscale(0.5); }
+    /* SOLO bloquea clicks, sin cambiar opacidad ni colores */
+    .board.locked { pointer-events: none; }
+    
     .cell {
       aspect-ratio: 1; background: var(--bg); border: 3px solid var(--border);
       border-radius: 16px; display: flex; align-items: center; justify-content: center;
@@ -134,8 +136,11 @@
       user-select: none;
     }
     .cell:hover:not(.taken) { background: rgba(102,126,234,0.08); border-color: var(--primary); }
-    .cell.x { color: var(--danger); background: rgba(239,68,68,0.08); border-color: var(--danger); }
-    .cell.o { color: var(--primary); background: rgba(102,126,234,0.08); border-color: var(--primary); }
+    
+    /* COLORES PUROS SIEMPRE */
+    .cell.x { color: var(--danger); }
+    .cell.o { color: var(--primary); }
+    
     .cell.taken { cursor: default; }
     .cell.winner { background: var(--success); color: white; border-color: var(--success); }
     .cell.flash { animation: cellFlash 0.3s ease; }
@@ -365,10 +370,10 @@
   <div class="reaction-sender" id="b-sender"></div>
 </div>
 
-<!-- MODAL CONFIRMAR SALIR -->
-<div id="confirm-modal" class="modal-overlay">
-  <div class="modal-content">
-    <button class="modal-close-btn" onclick="cancelLeave()">✕</button>
+<!-- MODAL CONFIRMAR SALIR (SOLO ESTE SE CIERRA CON BACKDROP Y SIN X) -->
+<div id="confirm-modal" class="modal-overlay" onclick="closeModalOnBackdrop(event, 'confirm-modal')">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <!-- BOTON X ELIMINADO INTENCIONALMENTE -->
     <div class="modal-title">¿Seguro que quieres salir?</div>
     <div class="modal-text">Si sales perderas la partida actual y tendras que crear o unirte a otra sala.</div>
     <div class="modal-buttons">
@@ -378,9 +383,9 @@
   </div>
 </div>
 
-<!-- MODAL REVANCHA -->
-<div id="rematch-modal" class="modal-overlay">
-  <div class="modal-content">
+<!-- MODAL REVANCHA (CON X Y BACKDROP CIERRE) -->
+<div id="rematch-modal" class="modal-overlay" onclick="closeModalOnBackdrop(event, 'rematch-modal')">
+  <div class="modal-content" onclick="event.stopPropagation()">
     <button class="modal-close-btn" onclick="closeRematchModal()">✕</button>
     <div id="rematch-req-content" class="hidden">
       <div class="rematch-requesting">Solicitando revancha</div>
@@ -397,9 +402,9 @@
   </div>
 </div>
 
-<!-- MODAL TEMA -->
-<div id="theme-modal" class="theme-modal">
-  <div class="theme-content">
+<!-- MODAL TEMA (CON X Y BACKDROP CIERRE) -->
+<div id="theme-modal" class="theme-modal" onclick="closeModalOnBackdrop(event, 'theme-modal')">
+  <div class="theme-content" onclick="event.stopPropagation()">
     <button class="modal-close-btn" onclick="closeTheme()">✕</button>
     <div class="theme-title">Seleccionar Tema</div>
     <div class="theme-options">
@@ -410,9 +415,9 @@
   </div>
 </div>
 
-<!-- MODAL GENERICO -->
+<!-- MODAL GENERICO (NO TIENE BACKDROP CIERRE PARA LOADINGS) -->
 <div id="modal" class="modal-overlay">
-  <div class="modal-content">
+  <div class="modal-content" onclick="event.stopPropagation()">
     <button class="modal-close-btn" id="modal-close-btn" onclick="closeModal()">✕</button>
     <div id="modal-loader" class="modal-loader hidden"></div>
     <div id="modal-title" class="modal-title">Titulo</div>
@@ -520,6 +525,23 @@
     document.getElementById('modal').classList.remove('active');
   };
 
+  // === CERRAR MODAL TOCANDO FONDO ===
+  window.closeModalOnBackdrop = (event, modalId) => {
+    // Verifica si se hizo click en el overlay directamente (id coincide) y no en el contenido
+    if (event.target.id === modalId) {
+      if (modalId === 'confirm-modal') {
+        cancelLeave(); // Lógica específica para cancelar salida
+      } else {
+        document.getElementById(modalId).classList.remove('active');
+      }
+      // Restaurar botón de cerrar en modal genérico si aplica
+      if (modalId === 'modal') {
+        const closeBtn = document.getElementById('modal-close-btn');
+        if (closeBtn) closeBtn.classList.remove('hidden');
+      }
+    }
+  };
+
   // === CERRAR MODAL REVANCHA ===
   window.closeRematchModal = () => {
     document.getElementById('rematch-modal').classList.remove('active');
@@ -533,7 +555,8 @@
   window.toggleTurn = async () => {
     if (!gameData || !roomId) return;
     
-    const hasMoves = gameData.board && gameData.board.some(c => c !== "");
+    const board = gameData.board || ["", "", "", "", "", "", "", "", ""];
+    const hasMoves = board.some(c => c !== "");
     
     if (hasMoves || gameData.winner) {
       showModal("⚠️ Solo al inicio", "Este botón solo funciona antes de comenzar a jugar.", undefined, false);
@@ -573,7 +596,7 @@
     
     try {
       await updateDoc(doc(db, "games", roomId), {
-        board: Array(9).fill(""),
+        board: ["", "", "", "", "", "", "", "", ""],
         turn: 'p1',
         winner: null,
         winCells: null,
@@ -635,7 +658,7 @@
     try {
       roomId = generateCode(); myPlayer = 1;
       await setDoc(doc(db, "games", roomId), {
-        p1: myName, p2: null, board: Array(9).fill(""), 
+        p1: myName, p2: null, board: ["", "", "", "", "", "", "", "", ""], 
         turn: 'p1',
         winner: null, winCells: null,
         status: "waiting", rematchReq: null, rematchStat: "none",
@@ -699,7 +722,8 @@
       return;
     }
     
-    const hasMoves = gameData.board && gameData.board.some(c => c !== "");
+    const board = gameData.board || ["", "", "", "", "", "", "", "", ""];
+    const hasMoves = board.some(c => c !== "");
     
     if (hasMoves || gameData.winner) {
       btn.classList.remove('hidden');
@@ -727,6 +751,16 @@
     unsub = onSnapshot(doc(db, "games", roomId), (snap) => {
       if (!snap.exists()) return;
       gameData = snap.data();
+      
+      // Normalizar board a array para asegurar funcionamiento correcto
+      if (gameData.board) {
+        gameData.board = Object.values(gameData.board);
+        if (gameData.board.length < 9) {
+          gameData.board = gameData.board.concat(Array(9 - gameData.board.length).fill(""));
+        }
+      } else {
+        gameData.board = ["", "", "", "", "", "", "", "", ""];
+      }
 
       if (gameData.status === "playing" && !document.getElementById('view-game').classList.contains('active')) {
         showView('view-game');
@@ -767,53 +801,53 @@
 
   // === TABLERO ===
   function renderBoard() {
+    if (!gameData) return;
+    
     const boardEl = document.getElementById('board');
     const statusEl = document.getElementById('status');
     const rematchBtn = document.getElementById('btn-rematch');
     
-    if (!gameData || !gameData.board) return;
-    
     const myTurnId = (myPlayer === 1) ? 'p1' : 'p2';
     const isMyTurn = (gameData.turn === myTurnId) && !gameData.winner;
+    const board = gameData.board || ["", "", "", "", "", "", "", "", ""];
 
-    // Actualizar tarjetas de jugadores
+    // Actualizar tarjetas
     document.getElementById('card-p1').classList.remove('active');
     document.getElementById('card-p2').classList.remove('active');
     
     if (gameData.turn && !gameData.winner) {
-      const activeCardId = gameData.turn === 'p1' ? 'card-p1' : 'card-p2';
-      document.getElementById(activeCardId).classList.add('active');
+      document.getElementById(gameData.turn === 'p1' ? 'card-p1' : 'card-p2').classList.add('active');
     }
 
-    // Reconstruir tablero completo
+    // Reconstruir tablero - SIN FILTROS DE COLOR
     boardEl.innerHTML = '';
-    
-    // Bloquear tablero si no es mi turno o partida terminada
-    boardEl.classList.toggle('locked', !isMyTurn && !gameData.winner);
+    // Bloquear clicks si no es mi turno, pero sin cambiar apariencia
+    boardEl.classList.toggle('locked', !isMyTurn);
 
-    gameData.board.forEach((cellValue, index) => {
+    for (let i = 0; i < 9; i++) {
+      const cellVal = board[i] || "";
       const cell = document.createElement('div');
       cell.className = 'cell';
-      cell.textContent = cellValue;
-      cell.dataset.index = index;
+      cell.textContent = cellVal;
       
-      if (cellValue) {
-        cell.classList.add(cellValue.toLowerCase(), 'taken');
+      // Colores siempre activos
+      if (cellVal === 'X') {
+        cell.classList.add('x', 'taken');
+      } else if (cellVal === 'O') {
+        cell.classList.add('o', 'taken');
       }
       
-      if (gameData.winCells && gameData.winCells.includes(index)) {
+      if (gameData.winCells && gameData.winCells.includes(i)) {
         cell.classList.add('winner');
       }
       
-      // Solo asignar click si es mi turno, celda vacía, sin ganador
-      if (!cellValue && isMyTurn && !gameData.winner) {
-        cell.addEventListener('click', () => {
-          handleCellClick(index, cell);
-        });
+      // Solo permitir click si es mi turno
+      if (!cellVal && isMyTurn && !gameData.winner) {
+        cell.addEventListener('click', () => handleCellClick(i));
       }
       
       boardEl.appendChild(cell);
-    });
+    }
 
     // Actualizar status
     statusEl.className = 'status';
@@ -835,47 +869,36 @@
       boardEl.classList.remove('locked');
     } else {
       statusEl.classList.add('their-turn');
-      const opponentName = myPlayer === 1 ? gameData.p2 : gameData.p1;
-      statusEl.textContent = `Turno de ${opponentName} ⏳`;
+      const oppName = myPlayer === 1 ? gameData.p2 : gameData.p1;
+      statusEl.textContent = `Turno de ${oppName} ⏳`;
       rematchBtn.classList.add('hidden');
     }
   }
 
-  // === MANEJAR CLICK EN CELDA - FUNCIÓN CORREGIDA ===
-  async function handleCellClick(index, cellElement) {
-    // Verificaciones de seguridad
+  // === MANEJAR CLICK EN CELDA ===
+  async function handleCellClick(index) {
     if (!gameData || !roomId) return;
     if (gameData.winner) return;
     
     const myTurnId = (myPlayer === 1) ? 'p1' : 'p2';
     
-    // Verificar que es mi turno usando gameData ACTUAL
-    if (gameData.turn !== myTurnId) {
-      showModal("⚠️ No es tu turno", "Espera a que la otra persona juegue.", undefined, false);
-      return;
-    }
+    // Validación extra de turno
+    if (gameData.turn !== myTurnId) return;
     
-    // Verificar que la celda está vacía
-    if (!gameData.board || gameData.board[index] !== "") {
-      return; // Celda ya ocupada, ignorar silenciosamente
-    }
+    const board = gameData.board || ["", "", "", "", "", "", "", "", ""];
+    if (board[index] !== "") return;
     
     const mySymbol = myPlayer === 1 ? 'X' : 'O';
     const opponentTurn = myPlayer === 1 ? 'p2' : 'p1';
     
-    // Animación visual inmediata
-    cellElement.textContent = mySymbol;
-    cellElement.classList.add(mySymbol.toLowerCase(), 'taken', 'flash');
-    
-    // Actualizar board localmente
-    const newBoard = [...gameData.board];
+    // Copiar board y actualizar
+    const newBoard = [...board];
     newBoard[index] = mySymbol;
     
     // Verificar victoria
     const winnerResult = checkWin(newBoard);
     const isDraw = !winnerResult && !newBoard.includes("");
     
-    // Preparar actualización
     const updateData = { board: newBoard };
     
     if (winnerResult) {
@@ -886,30 +909,26 @@
       updateData.winner = 'draw';
       updateData.status = "finished";
     } else {
-      // Cambiar turno al oponente
       updateData.turn = opponentTurn;
     }
     
     try {
       await updateDoc(doc(db, "games", roomId), updateData);
     } catch(e) {
-      console.error("Error al hacer movimiento:", e);
-      // Revertir visual si hay error
-      cellElement.textContent = '';
-      cellElement.classList.remove(mySymbol.toLowerCase(), 'taken', 'flash');
+      console.error("Error al jugar:", e);
       showModal("Error", "No se pudo registrar tu jugada. Intenta de nuevo.", undefined, false);
     }
   }
 
   // === VERIFICAR VICTORIA ===
   function checkWin(board) {
-    const winPatterns = [
-      [0,1,2], [3,4,5], [6,7,8], // Filas
-      [0,3,6], [1,4,7], [2,5,8], // Columnas
-      [0,4,8], [2,4,6]           // Diagonales
+    const patterns = [
+      [0,1,2], [3,4,5], [6,7,8],
+      [0,3,6], [1,4,7], [2,5,8],
+      [0,4,8], [2,4,6]
     ];
     
-    for (const [a, b, c] of winPatterns) {
+    for (const [a, b, c] of patterns) {
       if (board[a] && board[a] === board[b] && board[a] === board[c]) {
         return board[a] === 'X' ? 'p1' : 'p2';
       }
@@ -919,13 +938,13 @@
 
   // === OBTENER CELDAS GANADORAS ===
   function getWinCells(board) {
-    const winPatterns = [
+    const patterns = [
       [0,1,2], [3,4,5], [6,7,8],
       [0,3,6], [1,4,7], [2,5,8],
       [0,4,8], [2,4,6]
     ];
     
-    for (const [a, b, c] of winPatterns) {
+    for (const [a, b, c] of patterns) {
       if (board[a] && board[a] === board[b] && board[a] === board[c]) {
         return [a, b, c];
       }
@@ -935,38 +954,52 @@
 
   // === REACCIONES ===
   window.toggleEmojiPicker = () => {
-    document.getElementById('emoji-picker').classList.toggle('active');
+    const picker = document.getElementById('emoji-picker');
+    picker.classList.toggle('active');
   };
 
   window.sendReaction = async (em) => {
     if (!gameData || !roomId) return;
     document.getElementById('emoji-picker').classList.remove('active');
-    const cx = Math.max(50, Math.min(window.innerWidth - 150, (window.innerWidth / 2) - 50));
-    const cy = Math.max(50, Math.min(window.innerHeight - 150, (window.innerHeight / 2) - 175));
+    
+    const cx = Math.random() * (window.innerWidth - 100);
+    const cy = Math.random() * (window.innerHeight - 100);
+    
     try {
       await updateDoc(doc(db, "games", roomId), {
-        reaction: { emoji: em, sender: myName, senderId: myPlayer, x: cx, y: cy }
+        reaction: {
+          emoji: em,
+          sender: myName || "Jugador",
+          senderId: myPlayer || 1,
+          x: Math.max(10, cx),
+          y: Math.max(10, cy)
+        }
       });
-    } catch(e) {}
+    } catch(e) {
+      console.error("Error enviando reaccion:", e);
+    }
   };
 
   window.dismissReaction = async (e) => {
     e.stopPropagation();
-    if (gameData && gameData.reaction) {
-      try { await updateDoc(doc(db, "games", roomId), { reaction: null }); } catch(e) {}
+    if (gameData && roomId) {
+      try {
+        await updateDoc(doc(db, "games", roomId), { reaction: null });
+      } catch(e) {}
     }
   };
 
   function updateReactionUI(r) {
     const bub = document.getElementById('bubble');
-    if (!r || !r.emoji) { bub.style.display = 'none'; return; }
+    if (!r || !r.emoji) { 
+      bub.style.display = 'none'; 
+      return; 
+    }
     bub.style.display = 'flex';
     document.getElementById('b-emoji').textContent = r.emoji;
-    document.getElementById('b-sender').textContent = r.sender;
-    const bx = r.x !== undefined ? r.x : (window.innerWidth / 2 - 50);
-    const by = r.y !== undefined ? r.y : (window.innerHeight / 2 - 175);
-    bub.style.left = Math.max(0, Math.min(window.innerWidth - 100, bx)) + 'px';
-    bub.style.top = Math.max(0, Math.min(window.innerHeight - 100, by)) + 'px';
+    document.getElementById('b-sender').textContent = r.sender || "Jugador";
+    bub.style.left = Math.max(10, Math.min(window.innerWidth - 110, (r.x || 50))) + 'px';
+    bub.style.top = Math.max(10, Math.min(window.innerHeight - 110, (r.y || 50))) + 'px';
   }
 
   // ARRASTRAR BURBUJA
@@ -978,7 +1011,8 @@
   bubble.addEventListener('pointermove', e => {
     if (!isDragging) return;
     e.preventDefault();
-    let x = e.clientX - 50, y = e.clientY - 50;
+    let x = e.clientX - 50;
+    let y = e.clientY - 50;
     x = Math.max(0, Math.min(window.innerWidth - 100, x));
     y = Math.max(0, Math.min(window.innerHeight - 100, y));
     bubble.style.left = x + 'px';
@@ -988,7 +1022,7 @@
     if (!isDragging) return;
     isDragging = false;
     bubble.releasePointerCapture(e.pointerId);
-    if (gameData && gameData.reaction) {
+    if (gameData && roomId) {
       try {
         await updateDoc(doc(db, "games", roomId), {
           "reaction.x": parseInt(bubble.style.left),
@@ -1001,9 +1035,17 @@
   // === SALIR ===
   window.leaveGame = async () => {
     document.getElementById('confirm-modal').classList.remove('active');
-    if(unsub) unsub();
+    
+    // Mostrar modal de carga profesional para salida
+    showLoading("Saliendo...", "Desconectando de la sala...", false);
+    await new Promise(resolve => setTimeout(resolve, 800));
+
+    if (unsub) unsub();
     clearSession();
-    if(myPlayer===1 && roomId) { try { await deleteDoc(doc(db,"games",roomId)); } catch(e) {} }
+    if (myPlayer === 1 && roomId) {
+      try { await deleteDoc(doc(db, "games", roomId)); } catch(e) {}
+    }
+    closeModal(); // Cerrar modal de carga
     showView('view-menu');
     document.getElementById('name-create').value = '';
     document.getElementById('name-join').value = '';
