@@ -207,6 +207,7 @@
       z-index: 10;
     }
     .modal-close-btn:hover { background: var(--danger); color: white; border-color: var(--danger); }
+    .modal-close-btn.hidden { display: none !important; }
 
     .theme-modal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -315,7 +316,7 @@
 
 <div id="emoji-picker" class="emoji-picker">
   <button class="emoji-btn" onclick="sendReaction('❤️')">❤️</button>
-  <button class="emoji-btn" onclick="sendReaction('🥵')">🥵</button>
+  <button class="emoji-btn" onclick="sendReaction('👍')">👍</button>
   <button class="emoji-btn" onclick="sendReaction('😂')">😂</button>
   <button class="emoji-btn" onclick="sendReaction('😮')">😮</button>
   <button class="emoji-btn" onclick="sendReaction('😢')">😢</button>
@@ -376,7 +377,7 @@
 <!-- MODAL GENERICO -->
 <div id="modal" class="modal-overlay">
   <div class="modal-content">
-    <button class="modal-close-btn" onclick="closeModal()">✕</button>
+    <button class="modal-close-btn" id="modal-close-btn" onclick="closeModal()">✕</button>
     <div id="modal-loader" class="modal-loader hidden"></div>
     <div id="modal-title" class="modal-title">Titulo</div>
     <div id="modal-text" class="modal-text">Mensaje</div>
@@ -467,14 +468,20 @@
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById(id).classList.add('active');
   };
-  window.showLoading = (t, txt) => {
+  
+  window.showLoading = (t, txt, showClose = true) => {
     document.getElementById('modal-loader').classList.remove('hidden');
     document.getElementById('modal-title').textContent = t;
     document.getElementById('modal-text').textContent = txt;
     document.getElementById('modal-buttons').classList.add('hidden');
+    const closeBtn = document.getElementById('modal-close-btn');
+    if (closeBtn) {
+      closeBtn.classList.toggle('hidden', !showClose);
+    }
     document.getElementById('modal').classList.add('active');
   };
-  window.showModal = (t, txt, btns = [{text:'Cerrar', onclick:closeModal}]) => {
+  
+  window.showModal = (t, txt, btns = [{text:'Cerrar', onclick:closeModal}], showClose = true) => {
     document.getElementById('modal-loader').classList.add('hidden');
     document.getElementById('modal-title').textContent = t;
     document.getElementById('modal-text').textContent = txt;
@@ -486,9 +493,19 @@
       btn.onclick = () => { if(x.onclick) x.onclick(); closeModal(); };
       b.appendChild(btn);
     });
+    const closeBtn = document.getElementById('modal-close-btn');
+    if (closeBtn) {
+      closeBtn.classList.toggle('hidden', !showClose);
+    }
     document.getElementById('modal').classList.add('active');
   };
-  window.closeModal = () => document.getElementById('modal').classList.remove('active');
+  
+  window.closeModal = () => {
+    // Restaurar botón de cerrar por defecto
+    const closeBtn = document.getElementById('modal-close-btn');
+    if (closeBtn) closeBtn.classList.remove('hidden');
+    document.getElementById('modal').classList.remove('active');
+  };
 
   // === CERRAR MODAL TURNO ===
   window.closeTurnModal = () => {
@@ -525,6 +542,11 @@
   window.acceptRematch = async () => {
     document.getElementById('rematch-modal').classList.remove('active');
     if (!gameData || !roomId) return;
+    
+    // IMPORTANTE: Resetear turnModalClosed ANTES de actualizar Firestore
+    // para que el modal de turno aparezca en la nueva partida
+    turnModalClosed = false;
+    
     try {
       await updateDoc(doc(db, "games", roomId), {
         board: Array(9).fill(""),
@@ -537,7 +559,6 @@
         turnOffer: null,
         turnOfferStatus: "none"
       });
-      turnModalClosed = false;
     } catch(e) {}
   };
 
@@ -563,28 +584,34 @@
     const cleanCode = roomId.trim();
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(cleanCode).then(() => {
-        showModal("Codigo copiado", "El codigo ha sido copiado correctamente.");
+        // Modal sin botón de cerrar para notificaciones automáticas
+        showModal("Codigo copiado", "El codigo ha sido copiado correctamente.", undefined, false);
         setTimeout(() => closeModal(), 1500);
       }).catch(() => fallbackCopy(cleanCode));
     } else { fallbackCopy(cleanCode); }
   };
+  
   function fallbackCopy(text) {
     const textarea = document.createElement('textarea');
     textarea.value = text; textarea.style.position = 'fixed'; textarea.style.opacity = '0';
     document.body.appendChild(textarea); textarea.focus(); textarea.select();
     try {
       document.execCommand('copy');
-      showModal("Codigo copiado", "El codigo ha sido copiado correctamente.");
+      // Modal sin botón de cerrar para notificaciones automáticas
+      showModal("Codigo copiado", "El codigo ha sido copiado correctamente.", undefined, false);
       setTimeout(() => closeModal(), 1500);
-    } catch (err) { showModal("Error", "No se pudo copiar: " + text); }
+    } catch (err) { 
+      showModal("Error", "No se pudo copiar: " + text, undefined, false); 
+    }
     document.body.removeChild(textarea);
   }
 
   // === CREAR / UNIR ===
   window.createRoom = async () => {
     myName = document.getElementById('name-create').value.trim();
-    if (!myName) return showModal("Atencion", "Ingresa tu nombre.");
-    showLoading("Creando sala", "Generando codigo unico...");
+    if (!myName) return showModal("Atencion", "Ingresa tu nombre.", undefined, false);
+    // Modal de carga sin botón de cerrar
+    showLoading("Creando sala", "Generando codigo unico...", false);
     await new Promise(resolve => setTimeout(resolve, 1500));
     try {
       roomId = generateCode(); myPlayer = 1;
@@ -596,26 +623,42 @@
       closeModal(); saveSession(roomId, myName, 1);
       document.getElementById('room-code').textContent = roomId;
       showView('view-wait'); listenGame();
-    } catch(e) { closeModal(); showModal("Error", "Fallo de conexion."); }
+    } catch(e) { 
+      closeModal(); 
+      showModal("Error", "Fallo de conexion.", undefined, false); 
+    }
   };
 
   window.joinRoom = async () => {
     myName = document.getElementById('name-join').value.trim();
     const code = document.getElementById('code-join').value.trim().toUpperCase();
-    if (!myName || !code || code.length !== 6) return showModal("Atencion", "Datos invalidos.");
-    showLoading("Uniendote", "Conectando a la sala...");
+    if (!myName || !code || code.length !== 6) return showModal("Atencion", "Datos invalidos.", undefined, false);
+    // Modal de carga sin botón de cerrar
+    showLoading("Uniendote", "Conectando a la sala...", false);
     await new Promise(resolve => setTimeout(resolve, 1500));
     try {
       const snap = await getDoc(doc(db, "games", code));
-      if (!snap.exists()) { closeModal(); return showModal("Error", "Sala no encontrada."); }
+      if (!snap.exists()) { 
+        closeModal(); 
+        return showModal("Error", "Sala no encontrada.", undefined, false); 
+      }
       const d = snap.data();
-      if (d.p2) { closeModal(); return showModal("Error", "Sala llena."); }
-      if (d.status !== "waiting") { closeModal(); return showModal("Error", "No disponible."); }
+      if (d.p2) { 
+        closeModal(); 
+        return showModal("Error", "Sala llena.", undefined, false); 
+      }
+      if (d.status !== "waiting") { 
+        closeModal(); 
+        return showModal("Error", "No disponible.", undefined, false); 
+      }
       roomId = code; myPlayer = 2;
       await updateDoc(doc(db, "games", roomId), { p2: myName, status: "playing", turnOfferStatus: "none" });
       closeModal(); saveSession(roomId, myName, 2);
       showView('view-game'); listenGame();
-    } catch(e) { closeModal(); showModal("Error", "No se pudo unir."); }
+    } catch(e) { 
+      closeModal(); 
+      showModal("Error", "No se pudo unir.", undefined, false); 
+    }
   };
 
   // === PERSISTENCIA ===
