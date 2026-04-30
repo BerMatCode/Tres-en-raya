@@ -34,11 +34,14 @@
       background: var(--card); border-radius: var(--radius); padding: 28px 22px;
       max-width: 390px; width: 92%; box-shadow: var(--shadow);
       position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center;
-      border: 1px solid var(--border);
+      border: 2px solid var(--primary);
     }
     h1 {
       text-align: center; color: var(--primary); margin-bottom: 24px;
-      font-size: 2rem; font-weight: 700; text-shadow: var(--glow); letter-spacing: 0.5px;
+      font-size: 2.2rem; font-weight: 700; 
+      text-shadow: 0 0 10px rgba(102,126,234,0.5), 0 0 20px rgba(118,75,162,0.3);
+      letter-spacing: 1px;
+      -webkit-text-stroke: 1px var(--secondary);
     }
     .view { display: none; width: 100%; }
     .view.active { display: block; }
@@ -58,6 +61,7 @@
       color: white; font-size: 17px; font-weight: 600; cursor: pointer;
       transition: transform 0.15s, box-shadow 0.2s; font-family: 'Patrick Hand', cursive;
       text-shadow: 0 1px 3px rgba(0,0,0,0.2); box-shadow: var(--glow);
+      -webkit-text-stroke: 0.5px rgba(255,255,255,0.3);
     }
     button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102,126,234,0.35); }
     button:active { transform: translateY(0); }
@@ -69,8 +73,9 @@
     .code-box {
       background: linear-gradient(135deg, var(--primary), var(--secondary));
       color: white; padding: 24px; border-radius: 16px; text-align: center;
-      font-size: 30px; font-weight: 700; letter-spacing: 8px; margin: 20px 0;
+      font-size: 32px; font-weight: 700; letter-spacing: 10px; margin: 20px 0;
       box-shadow: var(--glow); text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      -webkit-text-stroke: 1px rgba(255,255,255,0.5);
     }
 
     .players { display: flex; justify-content: space-between; gap: 14px; margin-bottom: 8px; width: 100%; }
@@ -80,8 +85,8 @@
     }
     .player-card.active { border-color: var(--primary); background: rgba(102,126,234,0.08); transform: scale(1.02); }
     .player-card.me { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
-    .player-name { font-weight: 600; font-size: 14px; margin-bottom: 5px; }
-    .player-symbol { font-size: 22px; font-weight: 700; }
+    .player-name { font-weight: 600; font-size: 14px; margin-bottom: 5px; -webkit-text-stroke: 0.3px var(--text); }
+    .player-symbol { font-size: 24px; font-weight: 700; }
 
     /* === BOTÓN DE MANDO CENTRADO === */
     .btn-mando {
@@ -113,33 +118,33 @@
     }
 
     .status {
-      padding: 14px; border-radius: 14px; text-align: center; font-weight: 600; font-size: 15px;
+      padding: 14px; border-radius: 14px; text-align: center; font-weight: 600; font-size: 16px;
       margin: 8px 0 16px; width: 100%; background: var(--bg); color: var(--text-muted);
-      border: 1px solid var(--border); transition: all 0.3s;
+      border: 2px solid var(--border); transition: all 0.3s;
+      -webkit-text-stroke: 0.3px var(--text);
     }
     .status.my-turn { background: var(--success); color: white; border-color: transparent; }
-    .status.their-turn { background: var(--text-muted); color: white; opacity: 0.85; border-color: transparent; }
+    .status.their-turn { background: var(--text-muted); color: white; opacity: 0.9; border-color: transparent; }
     .status.finished { background: var(--danger); color: white; border-color: transparent; }
 
     .board {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
       margin: 0 auto; width: 100%; max-width: 270px;
     }
-    /* SOLO bloquea clicks, sin cambiar opacidad ni colores */
     .board.locked { pointer-events: none; }
     
     .cell {
       aspect-ratio: 1; background: var(--bg); border: 3px solid var(--border);
       border-radius: 16px; display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: all 0.15s; font-size: 38px; font-weight: 700;
+      cursor: pointer; transition: all 0.15s; font-weight: 700;
       color: var(--text); font-family: 'Patrick Hand', cursive;
       user-select: none;
     }
     .cell:hover:not(.taken) { background: rgba(102,126,234,0.08); border-color: var(--primary); }
     
-    /* COLORES PUROS SIEMPRE */
-    .cell.x { color: var(--danger); }
-    .cell.o { color: var(--primary); }
+    /* X y O MÁS GRANDES */
+    .cell.x { color: var(--danger); font-size: 44px; -webkit-text-stroke: 1px rgba(239,68,68,0.3); }
+    .cell.o { color: var(--primary); font-size: 44px; -webkit-text-stroke: 1px rgba(102,126,234,0.3); }
     
     .cell.taken { cursor: default; }
     .cell.winner { background: var(--success); color: white; border-color: var(--success); }
@@ -161,8 +166,9 @@
     .btn-float:active { transform: scale(0.95); }
     .btn-reactions { left: 20px; }
 
+    /* === BOTÓN DE TEMA - AHORA ABAJO DERECHA === */
     .btn-theme {
-      position: fixed; top: 20px; right: 20px; width: 50px; height: 50px; border-radius: 50%;
+      position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; border-radius: 50%;
       background: var(--card); display: flex; align-items: center; justify-content: center;
       box-shadow: var(--shadow); cursor: pointer; border: 2px solid var(--border);
       padding: 0; margin: 0; font-size: 24px; transition: transform 0.15s; z-index: 95;
@@ -225,7 +231,7 @@
       box-shadow: 0 20px 40px rgba(0,0,0,0.2); border: 1px solid var(--border);
       position: relative;
     }
-    .modal-title { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 14px; }
+    .modal-title { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 14px; -webkit-text-stroke: 0.3px var(--text); }
     .modal-text { font-size: 15px; color: var(--text-muted); margin-bottom: 22px; line-height: 1.5; }
     .modal-buttons { display: flex; gap: 12px; }
     .modal-buttons button { flex: 1; margin: 0; padding: 14px; }
@@ -260,7 +266,7 @@
       max-width: 350px; width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
       border: 1px solid var(--border); text-align: center; position: relative;
     }
-    .theme-title { font-size: 19px; font-weight: 700; margin-bottom: 18px; color: var(--primary); }
+    .theme-title { font-size: 19px; font-weight: 700; margin-bottom: 18px; color: var(--primary); -webkit-text-stroke: 0.3px var(--primary); }
     .theme-options { display: flex; flex-direction: column; gap: 12px; }
     .theme-option-btn {
       padding: 15px; border-radius: 14px; border: 2px solid var(--border);
@@ -292,12 +298,67 @@
       font-family: 'Patrick Hand', cursive; font-size: 21px;
       color: var(--primary); text-align: center; margin-top: 22px;
       text-shadow: var(--glow); letter-spacing: 1px; opacity: 0.9;
+      -webkit-text-stroke: 0.5px var(--secondary);
     }
     .hidden { display: none !important; }
+
+    /* === OVERLAY DE VICTORIA/DERROTA === */
+    .result-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15,23,42,0.7); backdrop-filter: blur(8px);
+      display: none; align-items: center; justify-content: center;
+      z-index: 2000; animation: overlayFadeIn 0.3s ease;
+      cursor: pointer;
+    }
+    .result-overlay.active { display: flex; }
+    @keyframes overlayFadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .result-text {
+      font-size: 48px; font-weight: 700; text-align: center;
+      color: white; text-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      animation: resultPop 0.5s ease;
+      -webkit-text-stroke: 2px rgba(255,255,255,0.8);
+      padding: 20px 40px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 24px;
+      border: 3px solid rgba(255,255,255,0.3);
+    }
+    @keyframes resultPop {
+      0% { transform: scale(0.5); opacity: 0; }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .result-win { color: var(--success); text-shadow: 0 0 30px rgba(46,204,113,0.6); }
+    .result-lose { color: var(--danger); text-shadow: 0 0 30px rgba(239,68,68,0.6); }
+    
+    /* Confetti animation for win */
+    .confetti {
+      position: fixed; width: 10px; height: 10px;
+      background: var(--success); border-radius: 2px;
+      animation: confettiFall 3s ease-in-out forwards;
+      pointer-events: none; z-index: 2001;
+    }
+    @keyframes confettiFall {
+      0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
   </style>
 </head>
 <body>
 
+<!-- AUDIO DE RISA PARA REACCIÓN 😂 -->
+<audio id="laugh-audio" preload="auto">
+  <source src="https://github.com/BerMatCode/Tres-en-raya/raw/refs/heads/main/TikVid.io_7214050739491065094.mp3" type="audio/mpeg">
+</audio>
+
+<!-- OVERLAY DE RESULTADO (GANASTE/PERDISTE) -->
+<div id="result-overlay" class="result-overlay" onclick="closeResultOverlay()">
+  <div id="result-text" class="result-text"></div>
+</div>
+
+<!-- BOTÓN DE TEMA - ABAJO DERECHA -->
 <button class="btn-theme" onclick="openTheme()">🎨</button>
 
 <div class="app-container">
@@ -353,7 +414,8 @@
   </div>
 </div>
 
-<button class="btn-float btn-reactions" onclick="toggleEmojiPicker()">😊</button>
+<!-- BOTÓN DE REACCIONES - OCULTO EN MENÚ PRINCIPAL -->
+<button id="btn-reactions-float" class="btn-float btn-reactions hidden" onclick="toggleEmojiPicker()">😊</button>
 
 <div id="emoji-picker" class="emoji-picker">
   <button class="emoji-btn" onclick="sendReaction('❤️')">❤️</button>
@@ -370,10 +432,9 @@
   <div class="reaction-sender" id="b-sender"></div>
 </div>
 
-<!-- MODAL CONFIRMAR SALIR (SOLO ESTE SE CIERRA CON BACKDROP Y SIN X) -->
+<!-- MODAL CONFIRMAR SALIR -->
 <div id="confirm-modal" class="modal-overlay" onclick="closeModalOnBackdrop(event, 'confirm-modal')">
   <div class="modal-content" onclick="event.stopPropagation()">
-    <!-- BOTON X ELIMINADO INTENCIONALMENTE -->
     <div class="modal-title">¿Seguro que quieres salir?</div>
     <div class="modal-text">Si sales perderas la partida actual y tendras que crear o unirte a otra sala.</div>
     <div class="modal-buttons">
@@ -383,7 +444,7 @@
   </div>
 </div>
 
-<!-- MODAL REVANCHA (CON X Y BACKDROP CIERRE) -->
+<!-- MODAL REVANCHA -->
 <div id="rematch-modal" class="modal-overlay" onclick="closeModalOnBackdrop(event, 'rematch-modal')">
   <div class="modal-content" onclick="event.stopPropagation()">
     <button class="modal-close-btn" onclick="closeRematchModal()">✕</button>
@@ -402,7 +463,7 @@
   </div>
 </div>
 
-<!-- MODAL TEMA (CON X Y BACKDROP CIERRE) -->
+<!-- MODAL TEMA -->
 <div id="theme-modal" class="theme-modal" onclick="closeModalOnBackdrop(event, 'theme-modal')">
   <div class="theme-content" onclick="event.stopPropagation()">
     <button class="modal-close-btn" onclick="closeTheme()">✕</button>
@@ -415,7 +476,7 @@
   </div>
 </div>
 
-<!-- MODAL GENERICO (NO TIENE BACKDROP CIERRE PARA LOADINGS) -->
+<!-- MODAL GENERICO -->
 <div id="modal" class="modal-overlay">
   <div class="modal-content" onclick="event.stopPropagation()">
     <button class="modal-close-btn" id="modal-close-btn" onclick="closeModal()">✕</button>
@@ -428,7 +489,7 @@
   </div>
 </div>
 
-<div class="credits">BerMatCode</div>
+<div class="credits">𖤍BerMatCode𖤍</div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -450,6 +511,62 @@
   let roomId = null, myName = "", myPlayer = null, gameData = null, unsub = null;
   let isDragging = false;
   let rematchShown = false;
+  let laughAudioPlayed = false;
+  let resultOverlayShown = false;
+
+  // === AUDIO DE RISA ===
+  const laughAudio = document.getElementById('laugh-audio');
+  laughAudio.volume = 0.7;
+
+  function playLaughSound() {
+    if (laughAudioPlayed) return;
+    laughAudioPlayed = true;
+    laughAudio.currentTime = 0;
+    laughAudio.play().catch(e => console.log("Audio no reproducido:", e));
+    setTimeout(() => { laughAudioPlayed = false; }, 2000);
+  }
+
+  // === OVERLAY DE RESULTADO ===
+  function showResultOverlay(isWin) {
+    if (resultOverlayShown) return;
+    resultOverlayShown = true;
+    
+    const overlay = document.getElementById('result-overlay');
+    const textEl = document.getElementById('result-text');
+    
+    if (isWin) {
+      textEl.textContent = '¡Ganaste! 🎉🎊';
+      textEl.className = 'result-text result-win';
+      createConfetti();
+    } else {
+      textEl.textContent = 'Perdiste 😔';
+      textEl.className = 'result-text result-lose';
+    }
+    
+    overlay.classList.add('active');
+  }
+
+  window.closeResultOverlay = () => {
+    document.getElementById('result-overlay').classList.remove('active');
+    resultOverlayShown = false;
+  };
+
+  // === CONFETTI ANIMATION ===
+  function createConfetti() {
+    const colors = ['#2ecc71', '#34d399', '#667eea', '#764ba2', '#fbbf24', '#f87171'];
+    for (let i = 0; i < 30; i++) {
+      setTimeout(() => {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
+        confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 3000);
+      }, i * 50);
+    }
+  }
 
   // === TEMA ===
   function initTheme() {
@@ -490,7 +607,14 @@
   window.showView = (id) => {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById(id).classList.add('active');
+    updateReactionsButtonVisibility();
   };
+  
+  function updateReactionsButtonVisibility() {
+    const btn = document.getElementById('btn-reactions-float');
+    const isGameView = document.getElementById('view-game').classList.contains('active');
+    btn.classList.toggle('hidden', !isGameView);
+  }
   
   window.showLoading = (t, txt, showClose = true) => {
     document.getElementById('modal-loader').classList.remove('hidden');
@@ -527,14 +651,12 @@
 
   // === CERRAR MODAL TOCANDO FONDO ===
   window.closeModalOnBackdrop = (event, modalId) => {
-    // Verifica si se hizo click en el overlay directamente (id coincide) y no en el contenido
     if (event.target.id === modalId) {
       if (modalId === 'confirm-modal') {
-        cancelLeave(); // Lógica específica para cancelar salida
+        cancelLeave();
       } else {
         document.getElementById(modalId).classList.remove('active');
       }
-      // Restaurar botón de cerrar en modal genérico si aplica
       if (modalId === 'modal') {
         const closeBtn = document.getElementById('modal-close-btn');
         if (closeBtn) closeBtn.classList.remove('hidden');
@@ -739,20 +861,32 @@
     const isMyTurn = gameData.turn === (myPlayer===1 ? 'p1' : 'p2');
     btn.classList.toggle('active', isMyTurn);
     
-    const currentStarter = gameData.turn === 'p1' ? gameData.p1 : gameData.p2;
-    btn.innerHTML = `🔄 Cambiar: empieza ${currentStarter}`;
+    // TEXTOS CON NOMBRE DEL OPONENTE
+    if (gameData.turn === 'p1') {
+      // Ahora empieza Jugador 1
+      const opponentName = gameData.p2 || "el otro";
+      btn.innerHTML = myPlayer === 1 
+        ? `🔄 Cambiar para que ${opponentName} empiece` 
+        : '🔄 Cambiar para que tú empieces';
+    } else {
+      // Ahora empieza Jugador 2
+      const opponentName = gameData.p1 || "el otro";
+      btn.innerHTML = myPlayer === 2 
+        ? `🔄 Cambiar para que ${opponentName} empiece` 
+        : '🔄 Cambiar para que tú empieces';
+    }
   }
 
   // === LISTENER ===
   function listenGame() {
     if (unsub) unsub();
     rematchShown = false;
+    resultOverlayShown = false;
     
     unsub = onSnapshot(doc(db, "games", roomId), (snap) => {
       if (!snap.exists()) return;
       gameData = snap.data();
       
-      // Normalizar board a array para asegurar funcionamiento correcto
       if (gameData.board) {
         gameData.board = Object.values(gameData.board);
         if (gameData.board.length < 9) {
@@ -775,7 +909,21 @@
       renderBoard();
       updateReactionUI(gameData.reaction || null);
       handleRematchUI();
+      handleResultUI();
     });
+  }
+
+  // === MANEJAR RESULTADO (GANASTE/PERDISTE) ===
+  function handleResultUI() {
+    if (!gameData || !gameData.winner) return;
+    
+    const myTurnId = (myPlayer === 1) ? 'p1' : 'p2';
+    const iWon = (gameData.winner === myTurnId);
+    
+    // Mostrar overlay solo una vez
+    if (!resultOverlayShown) {
+      showResultOverlay(iWon);
+    }
   }
 
   // === REVANCHA UI ===
@@ -811,7 +959,6 @@
     const isMyTurn = (gameData.turn === myTurnId) && !gameData.winner;
     const board = gameData.board || ["", "", "", "", "", "", "", "", ""];
 
-    // Actualizar tarjetas
     document.getElementById('card-p1').classList.remove('active');
     document.getElementById('card-p2').classList.remove('active');
     
@@ -819,9 +966,7 @@
       document.getElementById(gameData.turn === 'p1' ? 'card-p1' : 'card-p2').classList.add('active');
     }
 
-    // Reconstruir tablero - SIN FILTROS DE COLOR
     boardEl.innerHTML = '';
-    // Bloquear clicks si no es mi turno, pero sin cambiar apariencia
     boardEl.classList.toggle('locked', !isMyTurn);
 
     for (let i = 0; i < 9; i++) {
@@ -830,7 +975,6 @@
       cell.className = 'cell';
       cell.textContent = cellVal;
       
-      // Colores siempre activos
       if (cellVal === 'X') {
         cell.classList.add('x', 'taken');
       } else if (cellVal === 'O') {
@@ -841,7 +985,6 @@
         cell.classList.add('winner');
       }
       
-      // Solo permitir click si es mi turno
       if (!cellVal && isMyTurn && !gameData.winner) {
         cell.addEventListener('click', () => handleCellClick(i));
       }
@@ -849,7 +992,6 @@
       boardEl.appendChild(cell);
     }
 
-    // Actualizar status
     statusEl.className = 'status';
     if (!gameData.turn) {
       statusEl.textContent = "Preparando partida...";
@@ -864,13 +1006,13 @@
       rematchBtn.classList.remove('hidden');
     } else if (isMyTurn) {
       statusEl.classList.add('my-turn');
-      statusEl.textContent = 'Tu turno ✋';
+      statusEl.textContent = 'Tu turno😁';
       rematchBtn.classList.add('hidden');
       boardEl.classList.remove('locked');
     } else {
       statusEl.classList.add('their-turn');
       const oppName = myPlayer === 1 ? gameData.p2 : gameData.p1;
-      statusEl.textContent = `Turno de ${oppName} ⏳`;
+      statusEl.textContent = `Turno de ${oppName}ㅤ`;
       rematchBtn.classList.add('hidden');
     }
   }
@@ -881,8 +1023,6 @@
     if (gameData.winner) return;
     
     const myTurnId = (myPlayer === 1) ? 'p1' : 'p2';
-    
-    // Validación extra de turno
     if (gameData.turn !== myTurnId) return;
     
     const board = gameData.board || ["", "", "", "", "", "", "", "", ""];
@@ -891,11 +1031,9 @@
     const mySymbol = myPlayer === 1 ? 'X' : 'O';
     const opponentTurn = myPlayer === 1 ? 'p2' : 'p1';
     
-    // Copiar board y actualizar
     const newBoard = [...board];
     newBoard[index] = mySymbol;
     
-    // Verificar victoria
     const winnerResult = checkWin(newBoard);
     const isDraw = !winnerResult && !newBoard.includes("");
     
@@ -962,6 +1100,10 @@
     if (!gameData || !roomId) return;
     document.getElementById('emoji-picker').classList.remove('active');
     
+    if (em === '😂') {
+      playLaughSound();
+    }
+    
     const cx = Math.random() * (window.innerWidth - 100);
     const cy = Math.random() * (window.innerHeight - 100);
     
@@ -995,6 +1137,11 @@
       bub.style.display = 'none'; 
       return; 
     }
+    
+    if (r.emoji === '😂' && r.senderId !== myPlayer) {
+      playLaughSound();
+    }
+    
     bub.style.display = 'flex';
     document.getElementById('b-emoji').textContent = r.emoji;
     document.getElementById('b-sender').textContent = r.sender || "Jugador";
@@ -1036,7 +1183,6 @@
   window.leaveGame = async () => {
     document.getElementById('confirm-modal').classList.remove('active');
     
-    // Mostrar modal de carga profesional para salida
     showLoading("Saliendo...", "Desconectando de la sala...", false);
     await new Promise(resolve => setTimeout(resolve, 800));
 
@@ -1045,7 +1191,8 @@
     if (myPlayer === 1 && roomId) {
       try { await deleteDoc(doc(db, "games", roomId)); } catch(e) {}
     }
-    closeModal(); // Cerrar modal de carga
+    closeModal();
+    closeResultOverlay();
     showView('view-menu');
     document.getElementById('name-create').value = '';
     document.getElementById('name-join').value = '';
@@ -1064,6 +1211,7 @@
     document.getElementById('board').innerHTML = Array(9).fill('<div class="cell"></div>').join('');
     if(loadSession()){ showView('view-game'); listenGame(); }
     else { showView('view-menu'); }
+    updateReactionsButtonVisibility();
   })();
 </script>
 </body>
