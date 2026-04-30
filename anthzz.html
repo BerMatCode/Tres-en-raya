@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="theme-color" content="#0f172a" id="theme-color-meta"/>
+  <title>📊 Anthzz Stats - BerMatCode</title>
+  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #f4f6fb; --card: #ffffff; --text: #1e293b; --text-muted: #64748b;
+      --border: #e2e8f0; --primary: #667eea; --secondary: #764ba2;
+      --success: #2ecc71; --danger: #ef4444; --warning: #f59e0b;
+      --shadow: 0 10px 30px rgba(0,0,0,0.08);
+      --glow: 0 4px 16px rgba(102,126,234,0.25);
+      --radius: 16px;
+    }
+    [data-theme="dark"] {
+      --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --text-muted: #94a3b8;
+      --border: #334155; --shadow: 0 10px 30px rgba(0,0,0,0.35);
+      --glow: 0 4px 16px rgba(102,126,234,0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    
+    html, body {
+      min-height: 100dvh; width: 100vw;
+      font-family: 'Patrick Hand', cursive; background: var(--bg); color: var(--text);
+      transition: background 0.3s ease, color 0.3s ease;
+      padding-bottom: 80px;
+    }
+
+    /* === HEADER === */
+    .header {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white; padding: 24px 16px 20px; text-align: center;
+      box-shadow: 0 4px 20px rgba(102,126,234,0.3);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .header h1 {
+      font-size: 2rem; font-weight: 700; margin-bottom: 4px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      -webkit-text-stroke: 0.5px rgba(255,255,255,0.5);
+    }
+    .header-subtitle {
+      font-size: 0.95rem; opacity: 0.9;
+    }
+
+    /* === STATS CARDS === */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 12px; padding: 16px; max-width: 600px; margin: 0 auto;
+    }
+    .stat-card {
+      background: var(--card); border-radius: var(--radius);
+      padding: 16px 12px; text-align: center; border: 2px solid var(--border);
+      box-shadow: var(--shadow); position: relative; overflow: hidden;
+    }
+    .stat-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+    }
+    .stat-card.games::after { background: var(--primary); }
+    .stat-card.wins::after { background: var(--success); }
+    .stat-card.players::after { background: var(--warning); }
+    .stat-card.rematch::after { background: var(--danger); }
+    
+    .stat-value {
+      font-size: 2rem; font-weight: 700; line-height: 1.2;
+    }
+    .stat-card.games .stat-value { color: var(--primary); -webkit-text-stroke: 0.5px var(--secondary); }
+    .stat-card.wins .stat-value { color: var(--success); -webkit-text-stroke: 0.5px #059669; }
+    .stat-card.players .stat-value { color: var(--warning); -webkit-text-stroke: 0.5px #d97706; }
+    .stat-card.rematch .stat-value { color: var(--danger); -webkit-text-stroke: 0.5px #dc2626; }
+    
+    .stat-label {
+      font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;
+    }
+
+    /* === SECTION TITLES === */
+    .section-title {
+      padding: 20px 16px 8px; max-width: 600px; margin: 0 auto;
+      font-size: 1.2rem; font-weight: 700; color: var(--primary);
+      -webkit-text-stroke: 0.5px var(--secondary);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-title .count {
+      background: var(--primary); color: white; padding: 2px 10px;
+      border-radius: 20px; font-size: 0.9rem;
+    }
+
+    /* === FILTERS === */
+    .filters {
+      padding: 8px 16px; max-width: 600px; margin: 0 auto;
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .filter-btn {
+      flex: 1; min-width: 70px; padding: 10px 8px;
+      border: 2px solid var(--border); border-radius: 12px;
+      background: var(--card); color: var(--text);
+      font-family: 'Patrick Hand', cursive; font-size: 0.9rem;
+      cursor: pointer; transition: all 0.2s; text-align: center;
+    }
+    .filter-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white; border-color: transparent;
+      box-shadow: var(--glow);
+    }
+    .filter-btn:hover:not(.active) {
+      border-color: var(--primary); background: rgba(102,126,234,0.08);
+    }
+
+    /* === GAMES LIST === */
+    .games-list {
+      padding: 8px 16px 80px; max-width: 600px; margin: 0 auto;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+
+    /* === GAME CARD === */
+    .game-card {
+      background: var(--card); border-radius: var(--radius);
+      border: 2px solid var(--border); box-shadow: var(--shadow);
+      overflow: hidden; transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .game-card:active {
+      transform: scale(0.98);
+    }
+    
+    /* Barra superior por estado */
+    .game-card::before {
+      content: ''; display: block; height: 5px; width: 100%;
+    }
+    .game-card.status-finished::before { background: linear-gradient(90deg, var(--success), #059669); }
+    .game-card.status-waiting::before { background: linear-gradient(90deg, var(--warning), #d97706); }
+    .game-card.status-playing::before { background: linear-gradient(90deg, var(--primary), var(--secondary)); }
+
+    .game-header {
+      padding: 12px 16px; display: flex; justify-content: space-between;
+      align-items: center; border-bottom: 1px dashed var(--border);
+    }
+    .game-code {
+      font-size: 1.4rem; font-weight: 700; color: var(--primary);
+      letter-spacing: 3px; -webkit-text-stroke: 0.5px var(--secondary);
+    }
+    .game-status-badge {
+      padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+    }
+    .badge-finished { background: rgba(46,204,113,0.15); color: var(--success); }
+    .badge-playing { background: rgba(102,126,234,0.15); color: var(--primary); }
+    .badge-waiting { background: rgba(245,158,11,0.15); color: var(--warning); }
+
+    .game-date {
+      padding: 6px 16px; background: var(--bg); font-size: 0.85rem; color: var(--text-muted);
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .date-created { font-weight: 600; color: var(--text); }
+    .date-ago { font-size: 0.75rem; opacity: 0.8; }
+
+    /* Players section */
+    .game-players {
+      padding: 14px 16px; display: flex; justify-content: space-between;
+      align-items: center; gap: 10px;
+    }
+    .player-box {
+      flex: 1; text-align: center; padding: 10px 6px;
+      border-radius: 12px; background: var(--bg);
+      border: 2px solid transparent; transition: all 0.2s;
+    }
+    .player-box.winner {
+      background: linear-gradient(135deg, rgba(46,204,113,0.15), rgba(5,150,105,0.15));
+      border-color: var(--success);
+    }
+    .player-box.loser {
+      opacity: 0.6;
+    }
+    .player-name {
+      font-weight: 600; font-size: 1rem; margin-bottom: 4px;
+      -webkit-text-stroke: 0.3px var(--text);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .player-symbol {
+      font-size: 1.5rem; font-weight: 700;
+    }
+    .player-symbol.x { color: var(--danger); -webkit-text-stroke: 1px rgba(239,68,68,0.3); }
+    .player-symbol.o { color: var(--primary); -webkit-text-stroke: 1px rgba(102,126,234,0.3); }
+    
+    .vs-badge {
+      font-size: 0.9rem; font-weight: 700; color: var(--text-muted);
+      padding: 4px 8px; background: var(--card); border-radius: 50%;
+    }
+
+    /* Result section */
+    .game-result {
+      margin: 0 16px 12px; padding: 10px; border-radius: 10px;
+      text-align: center; font-weight: 600; font-size: 1rem;
+    }
+    .result-win { 
+      background: linear-gradient(135deg, rgba(46,204,113,0.15), rgba(5,150,105,0.1));
+      color: var(--success); border: 1px solid var(--success);
+    }
+    .result-draw { 
+      background: rgba(245,158,11,0.1); color: var(--warning); 
+      border: 1px solid var(--warning);
+    }
+    .result-ongoing {
+      background: rgba(102,126,234,0.08); color: var(--primary);
+      border: 1px dashed var(--primary);
+    }
+
+    /* Final Board Preview */
+    .board-preview {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 6px; margin: 0 16px 14px; max-width: 160px; justify-self: center;
+    }
+    .preview-cell {
+      aspect-ratio: 1; border-radius: 8px; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.2rem; font-weight: 700;
+      background: var(--bg); border: 2px solid var(--border);
+    }
+    .preview-cell.x { color: var(--danger); background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.3); }
+    .preview-cell.o { color: var(--primary); background: rgba(102,126,234,0.08); border-color: rgba(102,126,234,0.3); }
+    .preview-cell.winner-cell { background: var(--success) !important; color: white !important; border-color: var(--success) !important; }
+    .preview-cell.empty { opacity: 0.3; }
+
+    /* === DETAIL BUTTON === */
+    .detail-btn {
+      width: calc(100% - 32px); margin: 0 16px 16px;
+      padding: 10px; border: none; border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white; font-family: 'Patrick Hand', cursive;
+      font-size: 0.95rem; font-weight: 600; cursor: pointer;
+      box-shadow: var(--glow); transition: transform 0.2s;
+    }
+    .detail-btn:active { transform: scale(0.98); }
+
+    /* === PLAYER STATS SECTION === */
+    .player-stats-list {
+      padding: 0 16px; max-width: 600px; margin: 0 auto;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .player-stat-row {
+      background: var(--card); border-radius: 12px; padding: 12px 16px;
+      border: 2px solid var(--border); display: flex; justify-content: space-between;
+      align-items: center; box-shadow: var(--shadow);
+    }
+    .player-stat-name { font-weight: 700; font-size: 1.1rem; }
+    .player-stat-numbers { display: flex; gap: 16px; font-size: 0.9rem; }
+    .ps-wins { color: var(--success); font-weight: 600; }
+    .ps-losses { color: var(--danger); font-weight: 600; }
+    .ps-draws { color: var(--warning); font-weight: 600; }
+
+    /* === MODAL DETAILS === */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15,23,42,0.75); backdrop-filter: blur(8px);
+      display: none; align-items: flex-end; justify-content: center;
+      z-index: 1000;
+    }
+    .modal-overlay.active { display: flex; }
+    
+    .modal-sheet {
+      background: var(--card); border-radius: 24px 24px 0 0;
+      padding: 20px 20px 30px; width: 100%; max-width: 600px;
+      max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
+      animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    
+    .modal-handle {
+      width: 40px; height: 4px; background: var(--border);
+      border-radius: 2px; margin: 0 auto 16px; cursor: grab;
+    }
+    
+    .modal-title {
+      font-size: 1.3rem; font-weight: 700; margin-bottom: 16px;
+      text-align: center; color: var(--primary);
+      -webkit-text-stroke: 0.3px var(--secondary);
+    }
+    
+    .detail-section {
+      margin-bottom: 16px;
+    }
+    .detail-section-title {
+      font-size: 0.9rem; font-weight: 600; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+    }
+    
+    .detail-row {
+      display: flex; justify-content: space-between; padding: 8px 0;
+      border-bottom: 1px dashed var(--border); font-size: 0.95rem;
+    }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-label { color: var(--text-muted); }
+    .detail-value { font-weight: 600; color: var(--text); text-align: right; }
+    
+    .modal-close {
+      width: 100%; padding: 14px; border: none; border-radius: 12px;
+      background: var(--bg); color: var(--text-muted);
+      font-family: 'Patrick Hand', cursive; font-size: 1rem; font-weight: 600;
+      cursor: pointer; margin-top: 12px;
+    }
+    .modal-close:hover { background: var(--danger); color: white; }
+
+    /* === LOADING & EMPTY === */
+    .loading {
+      text-align: center; padding: 40px 20px; color: var(--text-muted);
+    }
+    .loading-spinner {
+      width: 40px; height: 40px; border: 4px solid var(--border);
+      border-top-color: var(--primary); border-radius: 50%;
+      margin: 0 auto 16px; animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .empty-state {
+      text-align: center; padding: 40px 20px; color: var(--text-muted);
+    }
+    .empty-icon { font-size: 3rem; margin-bottom: 12px; opacity: 0.6; }
+
+    /* === FLOATING ACTIONS === */
+    .fab-refresh {
+      position: fixed; bottom: 20px; right: 80px;
+      width: 52px; height: 52px; border-radius: 50%;
+      background: var(--card); border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; cursor: pointer; box-shadow: var(--shadow);
+      transition: transform 0.3s; z-index: 90;
+    }
+    .fab-refresh.spinning { animation: spinRefresh 0.6s ease; }
+    @keyframes spinRefresh { to { transform: rotate(360deg); } }
+    .fab-refresh:hover { transform: scale(1.1); }
+
+    .fab-theme {
+      position: fixed; bottom: 20px; right: 20px;
+      width: 52px; height: 52px; border-radius: 50%;
+      background: var(--card); border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; cursor: pointer; box-shadow: var(--shadow);
+      transition: transform 0.2s; z-index: 90;
+    }
+    .fab-theme:hover { transform: scale(1.1); }
+
+    /* === CREDITS === */
+    .credits {
+      text-align: center; padding: 20px; color: var(--text-muted);
+      font-size: 0.85rem; border-top: 1px solid var(--border);
+      margin-top: 10px; max-width: 600px; margin-left: auto; margin-right: auto;
+    }
+
+    /* === UTILS === */
+    .hidden { display: none !important; }
+    .text-center { text-align: center; }
+    .mt-2 { margin-top: 8px; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <h1>📊 Anthzz Stats</h1>
+  <div class="header-subtitle">Panel de Estadísticas - BerMatCode</div>
+</div>
+
+<!-- STATS CARDS -->
+<div class="stats-grid">
+  <div class="stat-card games">
+    <div class="stat-value" id="stat-total">0</div>
+    <div class="stat-label">🎮 Partidas Creadas</div>
+  </div>
+  <div class="stat-card wins">
+    <div class="stat-value" id="stat-finished">0</div>
+    <div class="stat-label">✅ Jugadas/Revan.</div>
+  </div>
+  <div class="stat-card players">
+    <div class="stat-value" id="stat-players">0</div>
+    <div class="stat-label">👥 Jugadores Únicos</div>
+  </div>
+  <div class="stat-card rematch">
+    <div class="stat-value" id="stat-rematch">0</div>
+    <div class="stat-label">🔄 Revanchas Totales</div>
+  </div>
+</div>
+
+<!-- FILTERS -->
+<div class="filters">
+  <button class="filter-btn active" data-filter="all">📋 Todas</button>
+  <button class="filter-btn" data-filter="finished">✅ Finalizadas</button>
+  <button class="filter-btn" data-filter="playing">🎮 En Curso</button>
+  <button class="filter-btn" data-filter="waiting">⏳ Esperando</button>
+</div>
+
+<!-- PLAYER STATS SECTION -->
+<div class="section-title">
+  👑 Ranking de Jugadores
+  <span class="count" id="player-count">0</span>
+</div>
+<div class="player-stats-list" id="player-stats">
+  <div class="loading"><div class="loading-spinner"></div></div>
+</div>
+
+<!-- GAMES SECTION -->
+<div class="section-title">
+  📜 Historial de Partidas
+  <span class="count" id="games-count">0</span>
+</div>
+<div class="games-list" id="games-list">
+  <div class="loading">
+    <div class="loading-spinner"></div>
+    <div>Cargando todas las partidas...</div>
+  </div>
+</div>
+
+<!-- EMPTY STATE -->
+<div class="empty-state hidden" id="empty-state">
+  <div class="empty-icon">🎮</div>
+  <div>No hay partidas registradas aún</div>
+  <div style="font-size: 0.85rem; margin-top: 8px;">¡Crea una partida para empezar!</div>
+</div>
+
+<!-- FLOATING ACTIONS -->
+<button class="fab-refresh" onclick="refreshData()" title="Actualizar">🔄</button>
+<button class="fab-theme" onclick="toggleTheme()" title="Cambiar tema">🎨</button>
+
+<!-- MODAL DETALLES -->
+<div class="modal-overlay" id="detail-modal" onclick="closeDetailModal(event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle" onclick="closeDetailModal()"></div>
+    <div class="modal-title">Detalles de Partida</div>
+    <div id="detail-content"></div>
+    <button class="modal-close" onclick="closeDetailModal()">Cerrar</button>
+  </div>
+</div>
+
+<!-- CREDITS -->
+<div class="credits">
+  Anthzz Stats v2.0 • BerMatCode • Datos en tiempo real 🔥
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA-MIB8DbCF3YDAqb2qGRO6sjgUzg-sb-I",
+    authDomain: "tres-en-raya1.firebaseapp.com",
+    projectId: "tres-en-raya1",
+    storageBucket: "tres-en-raya1.firebasestorage.app",
+    messagingSenderId: "728066446875",
+    appId: "1:728066446875:web:d80726479234f1cf580abe",
+    measurementId: "G-P41C6EYSRT"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  let allGames = [];
+  let currentFilter = 'all';
+  let theme = localStorage.getItem('anthzz_theme') || 'dark';
+
+  // === FORMATO DE FECHA CON SEGUNDOS ===
+  function formatTimestamp(timestamp) {
+    if (!timestamp) return 'N/A';
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    return date.toLocaleString('es-ES', {
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+      hour12: false
+    }).replace(',', '');
+  }
+
+  function formatTimeAgo(timestamp) {
+    if (!timestamp) return '';
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    const now = new Date();
+    const diff = Math.floor((now - date) / 1000);
+    
+    if (diff < 0) return 'en el futuro';
+    if (diff < 60) return `hace ${diff}s`;
+    if (diff < 3600) return `hace ${Math.floor(diff/60)}m`;
+    if (diff < 86400) return `hace ${Math.floor(diff/3600)}h`;
+    return `hace ${Math.floor(diff/86400)}d`;
+  }
+
+  // === CALCULAR ESTADÍSTICAS POR JUGADOR ===
+  function calculatePlayerStats(games) {
+    const stats = {};
+    
+    games.forEach(game => {
+      // Registrar jugadores
+      if (game.p1) {
+        if (!stats[game.p1]) stats[game.p1] = { name: game.p1, games: 0, wins: 0, losses: 0, draws: 0 };
+        stats[game.p1].games++;
+      }
+      if (game.p2) {
+        if (!stats[game.p2]) stats[game.p2] = { name: game.p2, games: 0, wins: 0, losses: 0, draws: 0 };
+        stats[game.p2].games++;
+      }
+      
+      // Contar victorias/derrotas
+      if (game.winner === 'p1' && game.p1) {
+        stats[game.p1].wins++;
+        if (game.p2) stats[game.p2].losses++;
+      } else if (game.winner === 'p2' && game.p2) {
+        stats[game.p2].wins++;
+        if (game.p1) stats[game.p1].losses++;
+      } else if (game.winner === 'draw') {
+        if (game.p1) stats[game.p1].draws++;
+        if (game.p2) stats[game.p2].draws++;
+      }
+    });
+    
+    return Object.values(stats).sort((a, b) => b.wins - a.wins);
+  }
+
+  // === RENDERIZAR RANKING DE JUGADORES ===
+  function renderPlayerStats(games) {
+    const stats = calculatePlayerStats(games);
+    const container = document.getElementById('player-stats');
+    document.getElementById('player-count').textContent = stats.length;
+    
+    if (stats.length === 0) {
+      container.innerHTML = '<div style="text-align:center; padding: 12px; color: var(--text-muted); font-size: 0.9rem;">Sin datos aún</div>';
+      return;
+    }
+    
+    container.innerHTML = stats.map((p, i) => `
+      <div class="player-stat-row">
+        <div>
+          <div class="player-stat-name">${i+1}º ${p.name}</div>
+          <div style="font-size: 0.8rem; color: var(--text-muted);">${p.games} partidas</div>
+        </div>
+        <div class="player-stat-numbers">
+          <span class="ps-wins">${p.wins}V</span>
+          <span class="ps-losses">${p.losses}D</span>
+          <span class="ps-draws">${p.draws}E</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // === RENDERIZAR LISTA DE PARTIDAS ===
+  function renderGames(games) {
+    const list = document.getElementById('games-list');
+    const empty = document.getElementById('empty-state');
+    
+    if (games.length === 0) {
+      list.classList.add('hidden');
+      empty.classList.remove('hidden');
+      document.getElementById('games-count').textContent = '0';
+      return;
+    }
+    
+    list.classList.remove('hidden');
+    empty.classList.add('hidden');
+    document.getElementById('games-count').textContent = games.length;
+    
+    list.innerHTML = games.map(game => {
+      const board = game.board || Array(9).fill('');
+      const isFinished = game.winner !== null && game.winner !== undefined;
+      const winnerName = game.winner === 'draw' ? 'Empate' : 
+                        game.winner === 'p1' ? (game.p1 || 'Jugador 1') : 
+                        game.winner === 'p2' ? (game.p2 || 'Jugador 2') : null;
+      
+      const statusClass = game.status === 'playing' && !game.winner ? 'playing' : 
+                         game.status === 'waiting' ? 'waiting' : 'finished';
+      const statusText = game.status === 'playing' && !game.winner ? '🎮 En Curso' : 
+                        game.status === 'waiting' ? '⏳ Esperando' : '✅ Finalizada';
+      const badgeClass = game.status === 'playing' && !game.winner ? 'badge-playing' : 
+                        game.status === 'waiting' ? 'badge-waiting' : 'badge-finished';
+      
+      let resultHTML = '';
+      let resultClass = '';
+      if (game.winner === 'draw') {
+        resultHTML = '🤝 Empate';
+        resultClass = 'result-draw';
+      } else if (game.winner === 'p1') {
+        resultHTML = `🏆 Ganó: ${game.p1 || 'Jugador 1'}`;
+        resultClass = 'result-win';
+      } else if (game.winner === 'p2') {
+        resultHTML = `🏆 Ganó: ${game.p2 || 'Jugador 2'}`;
+        resultClass = 'result-win';
+      } else if (game.status === 'waiting') {
+        resultHTML = '⏳ Esperando segundo jugador...';
+        resultClass = 'result-ongoing';
+      } else {
+        resultHTML = '🎮 Partida en curso';
+        resultClass = 'result-ongoing';
+      }
+      
+      // Generar mini tablero con celdas ganadoras resaltadas
+      const winCells = game.winCells || [];
+      const boardHTML = board.slice(0,9).map((cell, i) => {
+        const isWinner = winCells.includes(i);
+        const cellClass = isWinner ? 'preview-cell winner-cell' : 
+                         cell === 'X' ? 'preview-cell x' : 
+                         cell === 'O' ? 'preview-cell o' : 'preview-cell empty';
+        return `<div class="${cellClass}">${cell || '·'}</div>`;
+      }).join('');
+      
+      // Contador de movimientos
+      const moveCount = board.filter(c => c !== '').length;
+      
+      return `
+        <div class="game-card status-${statusClass}" onclick="showDetail('${game.id}')">
+          <div class="game-header">
+            <div class="game-code">${game.id}</div>
+            <div class="game-status-badge ${badgeClass}">${statusText}</div>
+          </div>
+          
+          <div class="game-date">
+            <span class="date-created">📅 ${formatTimestamp(game.created)}</span>
+            <span class="date-ago">${formatTimeAgo(game.created)}</span>
+          </div>
+          
+          <div class="game-players">
+            <div class="player-box ${game.winner === 'p1' ? 'winner' : game.winner === 'p2' ? 'loser' : ''}">
+              <div class="player-name">${game.p1 || 'Jugador 1'}</div>
+              <div class="player-symbol x">X</div>
+            </div>
+            <div class="vs-badge">VS</div>
+            <div class="player-box ${game.winner === 'p2' ? 'winner' : game.winner === 'p1' ? 'loser' : ''}">
+              <div class="player-name">${game.p2 || 'Esperando...'}</div>
+              <div class="player-symbol o">O</div>
+            </div>
+          </div>
+          
+          <div class="game-result ${resultClass}">${resultHTML}</div>
+          
+          <div class="board-preview">${boardHTML}</div>
+          
+          <div style="padding: 0 16px 4px; font-size: 0.8rem; color: var(--text-muted); text-align: center;">
+            📝 ${moveCount} movimientos realizados
+          </div>
+          
+          <button class="detail-btn">🔍 Ver Detalles Completos</button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // === CALCULAR ESTADÍSTICAS GENERALES ===
+  function updateStats(games) {
+    const total = games.length;
+    const finished = games.filter(g => g.winner !== null && g.winner !== undefined).length;
+    
+    // Jugadores únicos
+    const players = new Set();
+    games.forEach(g => {
+      if (g.p1) players.add(g.p1);
+      if (g.p2) players.add(g.p2);
+    });
+    
+    // Revanchas: partidas del mismo código con mismo par de jugadores
+    const codeGroups = {};
+    games.forEach(g => {
+      const key = g.p1 && g.p2 ? [g.p1, g.p2].sort().join(' vs ') : null;
+      if (key) {
+        if (!codeGroups[key]) codeGroups[key] = 0;
+        codeGroups[key]++;
+      }
+    });
+    const rematchCount = Object.values(codeGroups).reduce((sum, count) => sum + Math.max(0, count - 1), 0);
+    
+    document.getElementById('stat-total').textContent = total;
+    document.getElementById('stat-finished').textContent = finished;
+    document.getElementById('stat-players').textContent = players.size;
+    document.getElementById('stat-rematch').textContent = rematchCount;
+    
+    renderPlayerStats(games);
+  }
+
+  // === FILTRAR PARTIDAS ===
+  function filterGames() {
+    let filtered = [...allGames];
+    
+    if (currentFilter === 'finished') {
+      filtered = filtered.filter(g => g.winner !== null && g.winner !== undefined);
+    } else if (currentFilter === 'playing') {
+      filtered = filtered.filter(g => g.status === 'playing' && (g.winner === null || g.winner === undefined));
+    } else if (currentFilter === 'waiting') {
+      filtered = filtered.filter(g => g.status === 'waiting');
+    }
+    
+    // Ordenar por fecha (más reciente primero)
+    filtered.sort((a, b) => {
+      const aTime = a.created?.toDate?.() || a.created || 0;
+      const bTime = b.created?.toDate?.() || b.created || 0;
+      return bTime - aTime;
+    });
+    
+    renderGames(filtered);
+    updateStats(allGames);
+  }
+
+  // === CARGAR TODAS LAS PARTIDAS DE FIREBASE ===
+  async function loadGames() {
+    try {
+      const q = query(
+        collection(db, "games"),
+        orderBy("created", "desc"),
+        limit(500) // Traemos más partidas para mostrar todo el historial
+      );
+      
+      const snapshot = await getDocs(q);
+      allGames = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      
+      filterGames();
+      
+    } catch(error) {
+      console.error("Error cargando partidas:", error);
+      document.getElementById('games-list').innerHTML = `
+        <div class="empty-state">
+          <div style="font-size: 2rem; margin-bottom: 12px;">⚠️</div>
+          <div>Error al cargar datos de Firebase</div>
+          <div style="font-size: 0.85rem; margin-top: 8px; color: var(--danger);">${error.message}</div>
+          <button class="detail-btn mt-2" onclick="refreshData()">🔄 Reintentar</button>
+        </div>
+      `;
+      document.getElementById('empty-state').classList.add('hidden');
+    }
+  }
+
+  // === REFRESCAR DATOS ===
+  window.refreshData = async () => {
+    const fab = document.querySelector('.fab-refresh');
+    fab.classList.add('spinning');
+    
+    const list = document.getElementById('games-list');
+    list.innerHTML = `<div class="loading"><div class="loading-spinner"></div><div>Actualizando datos...</div></div>`;
+    document.getElementById('empty-state').classList.add('hidden');
+    document.getElementById('player-stats').innerHTML = '<div class="loading"><div class="loading-spinner"></div></div>';
+    
+    await loadGames();
+    
+    setTimeout(() => fab.classList.remove('spinning'), 600);
+  };
+
+  // === MOSTRAR DETALLES COMPLETOS ===
+  window.showDetail = (gameId) => {
+    const game = allGames.find(g => g.id === gameId);
+    if (!game) return;
+    
+    const board = game.board || Array(9).fill('');
+    const winCells = game.winCells || [];
+    const moveCount = board.filter(c => c !== '').length;
+    
+    const content = document.getElementById('detail-content');
+    
+    content.innerHTML = `
+      <div class="detail-section">
+        <div class="detail-section-title">📋 Información General</div>
+        <div class="detail-row">
+          <span class="detail-label">🆔 Código de Sala</span>
+          <span class="detail-value" style="color: var(--primary); font-size: 1.2rem; font-weight: 700;">${game.id}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">📅 Creado</span>
+          <span class="detail-value">${formatTimestamp(game.created)}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">⏰ Hace</span>
+          <span class="detail-value">${formatTimeAgo(game.created)}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">📊 Estado</span>
+          <span class="detail-value">${game.status?.toUpperCase() || 'N/A'}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">📝 Movimientos</span>
+          <span class="detail-value">${moveCount} de 9</span>
+        </div>
+      </div>
+      
+      <div class="detail-section">
+        <div class="detail-section-title">👥 Jugadores</div>
+        <div class="detail-row">
+          <span class="detail-label">🔴 Jugador 1 (X)</span>
+          <span class="detail-value">${game.p1 || 'N/A'} ${game.winner === 'p1' ? '🏆' : ''}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">🔵 Jugador 2 (O)</span>
+          <span class="detail-value">${game.p2 || 'No se unió'} ${game.winner === 'p2' ? '🏆' : ''}</span>
+        </div>
+        ${game.winner !== null && game.winner !== undefined ? `
+        <div class="detail-row">
+          <span class="detail-label">🏆 Resultado</span>
+          <span class="detail-value" style="color: ${game.winner === 'draw' ? 'var(--warning)' : 'var(--success)'}">
+            ${game.winner === 'draw' ? '🤝 Empate' : `🎉 ${game.winner === 'p1' ? game.p1 : game.p2}`}
+          </span>
+        </div>` : ''}
+        ${game.winCells && game.winCells.length > 0 ? `
+        <div class="detail-row">
+          <span class="detail-label">💥 Celdas Ganadoras</span>
+          <span class="detail-value">${game.winCells.join(', ')}</span>
+        </div>` : ''}
+      </div>
+      
+      <div class="detail-section">
+        <div class="detail-section-title">🎮 Tablero Final</div>
+        <div style="display: grid; grid-template-columns: repeat(3, 60px); gap: 8px; justify-content: center; margin: 12px 0;">
+          ${board.map((cell, i) => {
+            const isWinner = winCells.includes(i);
+            const style = isWinner ? 'background: var(--success); color: white; border-color: var(--success);' : 
+                         cell === 'X' ? 'color: var(--danger); border-color: rgba(239,68,68,0.4);' : 
+                         cell === 'O' ? 'color: var(--primary); border-color: rgba(102,126,234,0.4);' : 'opacity: 0.3;';
+            return `<div style="width: 60px; height: 60px; border: 2px solid var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; font-family: 'Patrick Hand', cursive; ${style}">${cell || '·'}</div>`;
+          }).join('')}
+        </div>
+      </div>
+      
+      ${game.reaction ? `
+      <div class="detail-section">
+        <div class="detail-section-title">😊 Última Reacción</div>
+        <div style="text-align: center; font-size: 2rem; margin: 8px 0;">${game.reaction.emoji}</div>
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+          Enviada por ${game.reaction.sender || 'Jugador'}
+        </div>
+      </div>` : ''}
+    `;
+    
+    document.getElementById('detail-modal').classList.add('active');
+  };
+
+  window.closeDetailModal = (event) => {
+    if (!event || event.target.id === 'detail-modal' || event.target.classList.contains('modal-handle')) {
+      document.getElementById('detail-modal').classList.remove('active');
+    }
+  };
+
+  // === FILTROS ===
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      filterGames();
+    });
+  });
+
+  // === TEMA ===
+  function applyTheme() {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.getElementById('theme-color-meta').setAttribute('content', theme === 'dark' ? '#0f172a' : '#f4f6fb');
+  }
+  
+  window.toggleTheme = () => {
+    theme = theme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('anthzz_theme', theme);
+    applyTheme();
+  };
+
+  // === INIT ===
+  (function init() {
+    applyTheme();
+    loadGames();
+    
+    // Auto-refresh cada 60 segundos
+    setInterval(() => {
+      if (!document.hidden) loadGames();
+    }, 60000);
+  })();
+</script>
+</body>
+</html>
