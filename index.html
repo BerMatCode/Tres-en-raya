@@ -10,7 +10,7 @@
   <style>
     :root {
       --bg: #f4f6fb; --card: #ffffff; --text: #1e293b; --text-muted: #64748b;
-      --border: #e2e8f0; --primary: #667eea; --secondary: #764ba2;
+      --border: #cbd5e1; --border-strong: #94a3b8; --primary: #667eea; --secondary: #764ba2;
       --success: #2ecc71; --danger: #ef4444; 
       --shadow: 0 10px 30px rgba(0,0,0,0.08);
       --glow: 0 4px 16px rgba(102,126,234,0.25);
@@ -18,7 +18,7 @@
     }
     [data-theme="dark"] {
       --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --text-muted: #94a3b8;
-      --border: #334155; --shadow: 0 10px 30px rgba(0,0,0,0.35);
+      --border: #475569; --border-strong: #64748b; --shadow: 0 10px 30px rgba(0,0,0,0.35);
       --glow: 0 4px 16px rgba(102,126,234,0.35);
     }
 
@@ -41,19 +41,26 @@
       font-size: 2.2rem; font-weight: 700; 
       text-shadow: 0 0 10px rgba(102,126,234,0.5), 0 0 20px rgba(118,75,162,0.3);
       letter-spacing: 1px;
-      -webkit-text-stroke: 1px var(--secondary);
     }
     .view { display: none; width: 100%; }
     .view.active { display: block; }
 
+    /* === INPUTS MEJORADOS - MÁS VISIBLES === */
     input {
-      width: 100%; padding: 15px; margin: 10px 0; border: 2px solid var(--border);
+      width: 100%; padding: 15px; margin: 10px 0; 
+      border: 3px solid var(--border-strong);
       border-radius: 14px; font-size: 17px; text-align: center; font-weight: 500;
-      transition: all 0.2s; background: var(--bg); color: var(--text);
+      transition: all 0.2s; background: var(--card); color: var(--text);
       font-family: 'Patrick Hand', cursive;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
-    input::placeholder { color: var(--text-muted); opacity: 0.8; }
-    input:focus { outline: none; border-color: var(--primary); box-shadow: var(--glow); background: var(--card); }
+    input::placeholder { color: var(--text-muted); opacity: 0.9; }
+    input:focus { 
+      outline: none; 
+      border-color: var(--primary); 
+      box-shadow: var(--glow), 0 0 0 4px rgba(102,126,234,0.15); 
+      background: var(--card); 
+    }
 
     button {
       width: 100%; padding: 16px; margin: 8px 0; border: none; border-radius: 14px;
@@ -61,7 +68,6 @@
       color: white; font-size: 17px; font-weight: 600; cursor: pointer;
       transition: transform 0.15s, box-shadow 0.2s; font-family: 'Patrick Hand', cursive;
       text-shadow: 0 1px 3px rgba(0,0,0,0.2); box-shadow: var(--glow);
-      -webkit-text-stroke: 0.5px rgba(255,255,255,0.3);
     }
     button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102,126,234,0.35); }
     button:active { transform: translateY(0); }
@@ -75,25 +81,24 @@
       color: white; padding: 24px; border-radius: 16px; text-align: center;
       font-size: 32px; font-weight: 700; letter-spacing: 10px; margin: 20px 0;
       box-shadow: var(--glow); text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-      -webkit-text-stroke: 1px rgba(255,255,255,0.5);
     }
 
     .players { display: flex; justify-content: space-between; gap: 14px; margin-bottom: 8px; width: 100%; }
     .player-card {
       flex: 1; padding: 14px; border-radius: 14px; background: var(--bg);
-      text-align: center; border: 2px solid transparent; transition: all 0.2s; color: var(--text);
+      text-align: center; border: 2px solid var(--border-strong); transition: all 0.2s; color: var(--text);
     }
-    .player-card.active { border-color: var(--primary); background: rgba(102,126,234,0.08); transform: scale(1.02); }
-    .player-card.me { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
-    .player-name { font-weight: 600; font-size: 14px; margin-bottom: 5px; -webkit-text-stroke: 0.3px var(--text); }
+    .player-card.active { border-color: var(--primary); background: rgba(102,126,234,0.12); transform: scale(1.02); }
+    .player-card.me { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border-color: transparent; }
+    .player-name { font-weight: 600; font-size: 14px; margin-bottom: 5px; }
     .player-symbol { font-size: 24px; font-weight: 700; }
 
     /* === BOTÓN DE MANDO CENTRADO === */
     .btn-mando {
       width: 100%; max-width: 270px;
       padding: 12px 16px; margin: 8px auto 12px;
-      border-radius: 14px; border: 2px solid var(--border);
-      background: var(--bg); color: var(--primary);
+      border-radius: 14px; border: 2px solid var(--border-strong);
+      background: var(--card); color: var(--primary);
       font-size: 15px; font-weight: 600; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       gap: 8px; transition: all 0.2s;
@@ -120,13 +125,13 @@
     .status {
       padding: 14px; border-radius: 14px; text-align: center; font-weight: 600; font-size: 16px;
       margin: 8px 0 16px; width: 100%; background: var(--bg); color: var(--text-muted);
-      border: 2px solid var(--border); transition: all 0.3s;
-      -webkit-text-stroke: 0.3px var(--text);
+      border: 2px solid var(--border-strong); transition: all 0.3s;
     }
     .status.my-turn { background: var(--success); color: white; border-color: transparent; }
     .status.their-turn { background: var(--text-muted); color: white; opacity: 0.9; border-color: transparent; }
     .status.finished { background: var(--danger); color: white; border-color: transparent; }
 
+    /* === TABLERO MEJORADO - CUADROS VISIBLES === */
     .board {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
       margin: 0 auto; width: 100%; max-width: 270px;
@@ -134,20 +139,29 @@
     .board.locked { pointer-events: none; }
     
     .cell {
-      aspect-ratio: 1; background: var(--bg); border: 3px solid var(--border);
-      border-radius: 16px; display: flex; align-items: center; justify-content: center;
+      aspect-ratio: 1; 
+      background: var(--card); 
+      border: 4px solid var(--border-strong);
+      border-radius: 16px; 
+      display: flex; align-items: center; justify-content: center;
       cursor: pointer; transition: all 0.15s; font-weight: 700;
       color: var(--text); font-family: 'Patrick Hand', cursive;
       user-select: none;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
     }
-    .cell:hover:not(.taken) { background: rgba(102,126,234,0.08); border-color: var(--primary); }
+    .cell:hover:not(.taken) { 
+      background: rgba(102,126,234,0.1); 
+      border-color: var(--primary); 
+      transform: scale(1.03);
+      box-shadow: 0 6px 20px rgba(102,126,234,0.25);
+    }
     
-    /* X y O MÁS GRANDES */
-    .cell.x { color: var(--danger); font-size: 44px; -webkit-text-stroke: 1px rgba(239,68,68,0.3); }
-    .cell.o { color: var(--primary); font-size: 44px; -webkit-text-stroke: 1px rgba(102,126,234,0.3); }
+    /* X y O MÁS GRANDES - SIN BORDE PARA MEJOR LECTURA */
+    .cell.x { color: var(--danger); font-size: 44px; }
+    .cell.o { color: var(--primary); font-size: 44px; }
     
     .cell.taken { cursor: default; }
-    .cell.winner { background: var(--success); color: white; border-color: var(--success); }
+    .cell.winner { background: var(--success); color: white; border-color: var(--success); box-shadow: 0 0 25px rgba(46,204,113,0.5); }
     .cell.flash { animation: cellFlash 0.3s ease; }
     @keyframes cellFlash {
       0% { transform: scale(0.8); opacity: 0; }
@@ -155,22 +169,69 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
+    /* === BOTÓN DE SALIDA - ESQUINA SUPERIOR DERECHA (CSS ICON) === */
+    .btn-exit {
+      position: fixed; top: 18px; right: 18px; 
+      width: 52px; height: 52px; border-radius: 50%;
+      background: var(--card); display: flex; align-items: center; justify-content: center;
+      box-shadow: var(--shadow); cursor: pointer; 
+      border: 3px solid var(--danger);
+      padding: 0; margin: 0; font-size: 26px; 
+      transition: transform 0.15s, box-shadow 0.2s; z-index: 95;
+    }
+    .btn-exit:hover { 
+      transform: scale(1.12); 
+      box-shadow: 0 8px 25px rgba(239,68,68,0.35);
+      background: rgba(239,68,68,0.1);
+    }
+    .btn-exit:active { transform: scale(0.95); }
+    
+    /* Icono CSS de salida (puerta) */
+    .btn-exit::before {
+      content: "";
+      display: block;
+      width: 20px;
+      height: 26px;
+      border: 3px solid var(--danger);
+      border-radius: 2px 8px 8px 2px;
+      border-left: none;
+      position: relative;
+      box-sizing: border-box;
+    }
+    .btn-exit::after {
+      content: "";
+      display: block;
+      width: 8px;
+      height: 2px;
+      background: var(--danger);
+      position: absolute;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-radius: 1px;
+    }
+    .btn-exit:hover::before,
+    .btn-exit:hover::after {
+      border-color: white;
+      background: white;
+    }
+
     /* === BOTONES FLOTANTES === */
     .btn-float {
       position: fixed; bottom: 22px; width: 58px; height: 58px; border-radius: 50%;
       background: var(--card); display: flex; align-items: center; justify-content: center;
-      box-shadow: var(--shadow); cursor: pointer; border: 2px solid var(--border);
+      box-shadow: var(--shadow); cursor: pointer; border: 2px solid var(--border-strong);
       padding: 0; margin: 0; font-size: 28px; transition: transform 0.15s; z-index: 90;
     }
     .btn-float:hover { transform: scale(1.12); }
     .btn-float:active { transform: scale(0.95); }
     .btn-reactions { left: 20px; }
 
-    /* === BOTÓN DE TEMA - AHORA ABAJO DERECHA === */
+    /* === BOTÓN DE TEMA - ABAJO DERECHA === */
     .btn-theme {
       position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; border-radius: 50%;
       background: var(--card); display: flex; align-items: center; justify-content: center;
-      box-shadow: var(--shadow); cursor: pointer; border: 2px solid var(--border);
+      box-shadow: var(--shadow); cursor: pointer; border: 2px solid var(--border-strong);
       padding: 0; margin: 0; font-size: 24px; transition: transform 0.15s; z-index: 95;
     }
     .btn-theme:hover { transform: scale(1.1); }
@@ -182,7 +243,7 @@
       background: var(--card); border-radius: 20px; padding: 12px;
       box-shadow: var(--shadow); display: none;
       grid-template-columns: repeat(3, 1fr); gap: 8px;
-      z-index: 95; border: 2px solid var(--border);
+      z-index: 95; border: 2px solid var(--border-strong);
     }
     .emoji-picker.active { display: grid; }
     .emoji-btn {
@@ -190,8 +251,9 @@
       background: var(--bg); border-radius: 50%; font-size: 28px;
       cursor: pointer; transition: 0.2s; display: flex;
       align-items: center; justify-content: center;
+      border: 2px solid var(--border-strong);
     }
-    .emoji-btn:hover { transform: scale(1.15); background: rgba(102,126,234,0.1); }
+    .emoji-btn:hover { transform: scale(1.15); background: rgba(102,126,234,0.1); border-color: var(--primary); }
 
     /* === BURBUJA REACCION === */
     .reaction-bubble {
@@ -228,16 +290,16 @@
     .modal-content {
       background: var(--card); border-radius: 22px; padding: 28px;
       max-width: 330px; width: 90%; text-align: center;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2); border: 1px solid var(--border);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2); border: 1px solid var(--border-strong);
       position: relative;
     }
-    .modal-title { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 14px; -webkit-text-stroke: 0.3px var(--text); }
+    .modal-title { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 14px; }
     .modal-text { font-size: 15px; color: var(--text-muted); margin-bottom: 22px; line-height: 1.5; }
     .modal-buttons { display: flex; gap: 12px; }
     .modal-buttons button { flex: 1; margin: 0; padding: 14px; }
     
     .modal-loader {
-      width: 44px; height: 44px; border: 4px solid var(--border);
+      width: 44px; height: 44px; border: 4px solid var(--border-strong);
       border-top-color: var(--primary); border-radius: 50%;
       margin: 0 auto 20px; animation: spin 1s linear infinite;
     }
@@ -246,7 +308,7 @@
     .modal-close-btn {
       position: absolute; top: 12px; right: 14px;
       width: 34px; height: 34px; border-radius: 50%;
-      background: var(--bg); border: 1px solid var(--border);
+      background: var(--bg); border: 1px solid var(--border-strong);
       color: var(--text-muted); font-size: 20px;
       display: flex; align-items: center; justify-content: center;
       cursor: pointer; padding: 0; transition: all 0.2s;
@@ -264,12 +326,12 @@
     .theme-content {
       background: var(--card); border-radius: 22px; padding: 26px;
       max-width: 350px; width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-      border: 1px solid var(--border); text-align: center; position: relative;
+      border: 1px solid var(--border-strong); text-align: center; position: relative;
     }
-    .theme-title { font-size: 19px; font-weight: 700; margin-bottom: 18px; color: var(--primary); -webkit-text-stroke: 0.3px var(--primary); }
+    .theme-title { font-size: 19px; font-weight: 700; margin-bottom: 18px; color: var(--primary); }
     .theme-options { display: flex; flex-direction: column; gap: 12px; }
     .theme-option-btn {
-      padding: 15px; border-radius: 14px; border: 2px solid var(--border);
+      padding: 15px; border-radius: 14px; border: 2px solid var(--border-strong);
       background: var(--bg); color: var(--text); cursor: pointer;
       font-family: 'Patrick Hand', cursive; font-size: 17px; transition: all 0.2s;
     }
@@ -298,19 +360,22 @@
       font-family: 'Patrick Hand', cursive; font-size: 21px;
       color: var(--primary); text-align: center; margin-top: 22px;
       text-shadow: var(--glow); letter-spacing: 1px; opacity: 0.9;
-      -webkit-text-stroke: 0.5px var(--secondary);
     }
     .hidden { display: none !important; }
 
-    /* === OVERLAY DE VICTORIA/DERROTA === */
+    /* === OVERLAY DE VICTORIA/DERROTA/EMPATE === */
     .result-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(15,23,42,0.7); backdrop-filter: blur(8px);
+      background: rgba(15,23,42,0.45); backdrop-filter: blur(3px);
       display: none; align-items: center; justify-content: center;
       z-index: 2000; animation: overlayFadeIn 0.3s ease;
       cursor: pointer;
+      pointer-events: none;
     }
-    .result-overlay.active { display: flex; }
+    .result-overlay.active { 
+      display: flex; 
+      pointer-events: auto;
+    }
     @keyframes overlayFadeIn {
       from { opacity: 0; transform: scale(0.95); }
       to { opacity: 1; transform: scale(1); }
@@ -319,11 +384,12 @@
       font-size: 48px; font-weight: 700; text-align: center;
       color: white; text-shadow: 0 4px 20px rgba(0,0,0,0.4);
       animation: resultPop 0.5s ease;
-      -webkit-text-stroke: 2px rgba(255,255,255,0.8);
       padding: 20px 40px;
-      background: rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.12);
       border-radius: 24px;
-      border: 3px solid rgba(255,255,255,0.3);
+      border: 3px solid rgba(255,255,255,0.35);
+      pointer-events: none;
+      user-select: none;
     }
     @keyframes resultPop {
       0% { transform: scale(0.5); opacity: 0; }
@@ -332,6 +398,7 @@
     }
     .result-win { color: var(--success); text-shadow: 0 0 30px rgba(46,204,113,0.6); }
     .result-lose { color: var(--danger); text-shadow: 0 0 30px rgba(239,68,68,0.6); }
+    .result-draw { color: #fbbf24; text-shadow: 0 0 30px rgba(251,191,36,0.6); }
     
     /* Confetti animation for win */
     .confetti {
@@ -348,15 +415,30 @@
 </head>
 <body>
 
-<!-- AUDIO DE RISA PARA REACCIÓN 😂 -->
+<!-- === AUDIOS DEL JUEGO === -->
 <audio id="laugh-audio" preload="auto">
   <source src="https://github.com/BerMatCode/Tic-Tac-Toe/raw/refs/heads/main/TikVid.io_7214050739491065094.mp3" type="audio/mpeg">
 </audio>
+<audio id="audio-empate" preload="auto">
+  <source src="https://github.com/BerMatCode/Tic-Tac-Toe/raw/refs/heads/main/assets/Empate.mp3" type="audio/mpeg">
+</audio>
+<audio id="audio-movida" preload="auto">
+  <source src="https://github.com/BerMatCode/Tic-Tac-Toe/raw/refs/heads/main/assets/Movida.mp3" type="audio/mpeg">
+</audio>
+<audio id="audio-perdido" preload="auto">
+  <source src="https://github.com/BerMatCode/Tic-Tac-Toe/raw/refs/heads/main/assets/Perdido.mp3" type="audio/mpeg">
+</audio>
+<audio id="audio-victoria" preload="auto">
+  <source src="https://github.com/BerMatCode/Tic-Tac-Toe/raw/refs/heads/main/assets/Victoria%20audio.mp3" type="audio/mpeg">
+</audio>
 
-<!-- OVERLAY DE RESULTADO (GANASTE/PERDISTE) -->
-<div id="result-overlay" class="result-overlay" onclick="closeResultOverlay()">
+<!-- OVERLAY DE RESULTADO -->
+<div id="result-overlay" class="result-overlay">
   <div id="result-text" class="result-text"></div>
 </div>
+
+<!-- BOTÓN DE SALIDA - ESQUINA SUPERIOR DERECHA (CSS ICON) -->
+<button class="btn-exit" onclick="confirmLeave()" title="Salir de la partida"></button>
 
 <!-- BOTÓN DE TEMA - ABAJO DERECHA -->
 <button class="btn-theme" onclick="openTheme()">🎨</button>
@@ -410,7 +492,6 @@
     <div id="status" class="status">Conectando...</div>
     <div id="board" class="board locked"></div>
     <button id="btn-rematch" onclick="requestRematch()" class="hidden success">Solicitar Revancha</button>
-    <button onclick="confirmLeave()" class="secondary">Salir de la Partida</button>
   </div>
 </div>
 
@@ -513,43 +594,108 @@
   let rematchShown = false;
   let laughAudioPlayed = false;
   let resultOverlayShown = false;
+  
+  // === CONTROL DE AUDIOS PARA EVITAR REPETICIÓN ===
+  let audioPlayed = {
+    empate: false,
+    perdido: false,
+    victoria: false
+  };
+
+  // === REFERENCIAS A LOS AUDIOS ===
+  const laughAudio = document.getElementById('laugh-audio');
+  const audioEmpate = document.getElementById('audio-empate');
+  const audioMovida = document.getElementById('audio-movida');
+  const audioPerdido = document.getElementById('audio-perdido');
+  const audioVictoria = document.getElementById('audio-victoria');
+  
+  // Configurar volumen
+  [laughAudio, audioEmpate, audioMovida, audioPerdido, audioVictoria].forEach(a => {
+    if (a) a.volume = 0.7;
+  });
+
+  // === FUNCIÓN PARA REPRODUCIR AUDIO DE FORMA SEGURA ===
+  function safePlay(audio) {
+    if (!audio) return;
+    audio.currentTime = 0;
+    audio.play().catch(e => console.log("Audio no reproducido:", e));
+  }
 
   // === AUDIO DE RISA ===
-  const laughAudio = document.getElementById('laugh-audio');
-  laughAudio.volume = 0.7;
-
   function playLaughSound() {
     if (laughAudioPlayed) return;
     laughAudioPlayed = true;
-    laughAudio.currentTime = 0;
-    laughAudio.play().catch(e => console.log("Audio no reproducido:", e));
+    safePlay(laughAudio);
     setTimeout(() => { laughAudioPlayed = false; }, 2000);
   }
 
+  // === AUDIO DE MOVIDA (se reproduce cada vez) ===
+  function playMovidaSound() {
+    safePlay(audioMovida);
+  }
+
+  // === AUDIO DE EMPATE (solo una vez) ===
+  function playEmpateSound() {
+    if (audioPlayed.empate) return;
+    audioPlayed.empate = true;
+    safePlay(audioEmpate);
+  }
+
+  // === AUDIO DE PERDIDO (solo una vez, solo para el que pierde) ===
+  function playPerdidoSound() {
+    if (audioPlayed.perdido) return;
+    audioPlayed.perdido = true;
+    safePlay(audioPerdido);
+  }
+
+  // === AUDIO DE VICTORIA (solo una vez, solo para el que gana) ===
+  function playVictoriaSound() {
+    if (audioPlayed.victoria) return;
+    audioPlayed.victoria = true;
+    safePlay(audioVictoria);
+  }
+
+  // === RESET DE AUDIOS PARA NUEVA PARTIDA ===
+  function resetAudioFlags() {
+    audioPlayed = { empate: false, perdido: false, victoria: false };
+  }
+
   // === OVERLAY DE RESULTADO ===
-  function showResultOverlay(isWin) {
+  function showResultOverlay(resultType) {
     if (resultOverlayShown) return;
     resultOverlayShown = true;
     
     const overlay = document.getElementById('result-overlay');
     const textEl = document.getElementById('result-text');
     
-    if (isWin) {
+    if (resultType === 'win') {
       textEl.textContent = '¡Ganaste! 🎉🎊';
       textEl.className = 'result-text result-win';
+      playVictoriaSound(); // Solo para el ganador
       createConfetti();
-    } else {
+    } else if (resultType === 'lose') {
       textEl.textContent = 'Perdiste 😔';
       textEl.className = 'result-text result-lose';
+      playPerdidoSound(); // Solo para el que pierde
+    } else if (resultType === 'draw') {
+      textEl.textContent = '¡Empate! 🤝';
+      textEl.className = 'result-text result-draw';
+      playEmpateSound(); // Para ambos en empate
     }
     
     overlay.classList.add('active');
   }
 
   window.closeResultOverlay = () => {
-    document.getElementById('result-overlay').classList.remove('active');
-    resultOverlayShown = false;
+    const overlay = document.getElementById('result-overlay');
+    overlay.classList.remove('active');
   };
+
+  document.getElementById('result-overlay').addEventListener('click', (e) => {
+    if (e.target.id === 'result-overlay') {
+      closeResultOverlay();
+    }
+  });
 
   // === CONFETTI ANIMATION ===
   function createConfetti() {
@@ -649,7 +795,6 @@
     document.getElementById('modal').classList.remove('active');
   };
 
-  // === CERRAR MODAL TOCANDO FONDO ===
   window.closeModalOnBackdrop = (event, modalId) => {
     if (event.target.id === modalId) {
       if (modalId === 'confirm-modal') {
@@ -664,16 +809,13 @@
     }
   };
 
-  // === CERRAR MODAL REVANCHA ===
   window.closeRematchModal = () => {
     document.getElementById('rematch-modal').classList.remove('active');
   };
 
-  // === CONFIRMAR SALIR ===
   window.confirmLeave = () => { document.getElementById('confirm-modal').classList.add('active'); };
   window.cancelLeave = () => { document.getElementById('confirm-modal').classList.remove('active'); };
 
-  // === TOGGLE DE TURNO (MANDO) ===
   window.toggleTurn = async () => {
     if (!gameData || !roomId) return;
     
@@ -696,7 +838,6 @@
     }
   };
 
-  // === REVANCHA ===
   window.requestRematch = async () => {
     if (!gameData || !roomId) return;
     try {
@@ -715,6 +856,9 @@
   window.acceptRematch = async () => {
     document.getElementById('rematch-modal').classList.remove('active');
     if (!gameData || !roomId) return;
+    
+    // Resetear flags de audio para nueva partida
+    resetAudioFlags();
     
     try {
       await updateDoc(doc(db, "games", roomId), {
@@ -745,7 +889,6 @@
     return Array.from({length: 6}, () => c[Math.floor(Math.random() * c.length)]).join('');
   }
 
-  // === COPIAR ===
   window.copyCode = () => {
     if (!roomId) return;
     const cleanCode = roomId.trim();
@@ -771,7 +914,6 @@
     document.body.removeChild(textarea);
   }
 
-  // === CREAR / UNIR ===
   window.createRoom = async () => {
     myName = document.getElementById('name-create').value.trim();
     if (!myName) return showModal("Atencion", "Ingresa tu nombre.", undefined, false);
@@ -830,12 +972,10 @@
     }
   };
 
-  // === PERSISTENCIA ===
   function saveSession(id, name, p) { localStorage.setItem('tic_room', id); localStorage.setItem('tic_name', name); localStorage.setItem('tic_player', p); }
   function clearSession() { localStorage.removeItem('tic_room'); localStorage.removeItem('tic_name'); localStorage.removeItem('tic_player'); }
   function loadSession() { const id = localStorage.getItem('tic_room'); if (id) { roomId = id; myName = localStorage.getItem('tic_name'); myPlayer = parseInt(localStorage.getItem('tic_player')); return true; } return false; }
 
-  // === ACTUALIZAR BOTON MANDO ===
   function updateMandoButton() {
     const btn = document.getElementById('btn-mando');
     
@@ -861,15 +1001,12 @@
     const isMyTurn = gameData.turn === (myPlayer===1 ? 'p1' : 'p2');
     btn.classList.toggle('active', isMyTurn);
     
-    // TEXTOS CON NOMBRE DEL OPONENTE
     if (gameData.turn === 'p1') {
-      // Ahora empieza Jugador 1
       const opponentName = gameData.p2 || "el otro";
       btn.innerHTML = myPlayer === 1 
         ? `🔄 Cambiar para que ${opponentName} empiece` 
         : '🔄 Cambiar para que tú empieces';
     } else {
-      // Ahora empieza Jugador 2
       const opponentName = gameData.p1 || "el otro";
       btn.innerHTML = myPlayer === 2 
         ? `🔄 Cambiar para que ${opponentName} empiece` 
@@ -877,7 +1014,6 @@
     }
   }
 
-  // === LISTENER ===
   function listenGame() {
     if (unsub) unsub();
     rematchShown = false;
@@ -913,20 +1049,20 @@
     });
   }
 
-  // === MANEJAR RESULTADO (GANASTE/PERDISTE) ===
   function handleResultUI() {
     if (!gameData || !gameData.winner) return;
     
-    const myTurnId = (myPlayer === 1) ? 'p1' : 'p2';
-    const iWon = (gameData.winner === myTurnId);
-    
-    // Mostrar overlay solo una vez
-    if (!resultOverlayShown) {
-      showResultOverlay(iWon);
+    let resultType;
+    if (gameData.winner === 'draw') {
+      resultType = 'draw';
+    } else {
+      const myTurnId = (myPlayer === 1) ? 'p1' : 'p2';
+      resultType = (gameData.winner === myTurnId) ? 'win' : 'lose';
     }
+    
+    showResultOverlay(resultType);
   }
 
-  // === REVANCHA UI ===
   function handleRematchUI() {
     if (!gameData || !gameData.rematchReq) return;
 
@@ -947,7 +1083,6 @@
     }
   }
 
-  // === TABLERO ===
   function renderBoard() {
     if (!gameData) return;
     
@@ -1017,7 +1152,6 @@
     }
   }
 
-  // === MANEJAR CLICK EN CELDA ===
   async function handleCellClick(index) {
     if (!gameData || !roomId) return;
     if (gameData.winner) return;
@@ -1027,6 +1161,9 @@
     
     const board = gameData.board || ["", "", "", "", "", "", "", "", ""];
     if (board[index] !== "") return;
+    
+    // === REPRODUCIR AUDIO DE MOVIDA ===
+    playMovidaSound();
     
     const mySymbol = myPlayer === 1 ? 'X' : 'O';
     const opponentTurn = myPlayer === 1 ? 'p2' : 'p1';
@@ -1058,7 +1195,6 @@
     }
   }
 
-  // === VERIFICAR VICTORIA ===
   function checkWin(board) {
     const patterns = [
       [0,1,2], [3,4,5], [6,7,8],
@@ -1074,7 +1210,6 @@
     return null;
   }
 
-  // === OBTENER CELDAS GANADORAS ===
   function getWinCells(board) {
     const patterns = [
       [0,1,2], [3,4,5], [6,7,8],
@@ -1090,7 +1225,6 @@
     return [];
   }
 
-  // === REACCIONES ===
   window.toggleEmojiPicker = () => {
     const picker = document.getElementById('emoji-picker');
     picker.classList.toggle('active');
@@ -1149,7 +1283,6 @@
     bub.style.top = Math.max(10, Math.min(window.innerHeight - 110, (r.y || 50))) + 'px';
   }
 
-  // ARRASTRAR BURBUJA
   const bubble = document.getElementById('bubble');
   bubble.addEventListener('pointerdown', e => {
     isDragging = true;
@@ -1179,7 +1312,6 @@
     }
   });
 
-  // === SALIR ===
   window.leaveGame = async () => {
     document.getElementById('confirm-modal').classList.remove('active');
     
@@ -1193,6 +1325,7 @@
     }
     closeModal();
     closeResultOverlay();
+    resetAudioFlags(); // Resetear flags al salir
     showView('view-menu');
     document.getElementById('name-create').value = '';
     document.getElementById('name-join').value = '';
@@ -1200,17 +1333,22 @@
     gameData = null;
     roomId = null;
     rematchShown = false;
+    resultOverlayShown = false;
     document.getElementById('bubble').style.display = 'none';
     document.getElementById('emoji-picker').classList.remove('active');
     document.getElementById('rematch-modal').classList.remove('active');
   };
 
-  // === INIT ===
   (function init(){
     initTheme();
     document.getElementById('board').innerHTML = Array(9).fill('<div class="cell"></div>').join('');
-    if(loadSession()){ showView('view-game'); listenGame(); }
-    else { showView('view-menu'); }
+    if(loadSession()){ 
+      showView('view-game'); 
+      listenGame(); 
+    }
+    else { 
+      showView('view-menu'); 
+    }
     updateReactionsButtonVisibility();
   })();
 </script>
