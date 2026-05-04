@@ -165,7 +165,6 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
-    /* === BOTÓN DE SALIDA - MINI Y ELEGANTE === */
     .btn-exit {
       position: fixed; top: 14px; right: 14px; 
       width: 36px; height: 36px; border-radius: 50%;
@@ -181,8 +180,6 @@
       background: var(--danger);
     }
     .btn-exit:active { transform: scale(0.95); }
-    
-    /* Icono CSS de salida - minimalista */
     .btn-exit::before {
       content: "";
       display: block;
@@ -421,10 +418,10 @@
   <div id="result-text" class="result-text"></div>
 </div>
 
-<!-- BOTÓN DE SALIDA - MINI (CSS ICON) -->
+<!-- BOTÓN DE SALIDA -->
 <button class="btn-exit" onclick="confirmLeave()" title="Salir de la partida"></button>
 
-<!-- BOTÓN DE TEMA - ABAJO DERECHA -->
+<!-- BOTÓN DE TEMA -->
 <button class="btn-theme" onclick="openTheme()">🎨</button>
 
 <div class="app-container">
@@ -527,6 +524,17 @@
   </div>
 </div>
 
+<!-- MODAL OPONENTE SALIÓ -->
+<div id="opponent-left-modal" class="modal-overlay" onclick="event.stopPropagation()">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div class="modal-title" id="opponent-left-title">Oponente abandonó</div>
+    <div class="modal-text" id="opponent-left-text">Tu oponente salió de la partida.</div>
+    <div class="modal-buttons">
+      <button class="primary" onclick="handleOpponentLeftClose()">Entendido</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL TEMA -->
 <div id="theme-modal" class="theme-modal" onclick="closeModalOnBackdrop(event, 'theme-modal')">
   <div class="theme-content" onclick="event.stopPropagation()">
@@ -577,6 +585,7 @@
   let rematchShown = false;
   let laughAudioPlayed = false;
   let resultOverlayShown = false;
+  let previousWinner = null;
 
   // === REFERENCIAS A LOS AUDIOS ===
   const laughAudio = document.getElementById('laugh-audio');
@@ -589,14 +598,12 @@
     if (a) a.volume = 0.7;
   });
 
-  // === FUNCIÓN PARA REPRODUCIR AUDIO DE FORMA SEGURA ===
   function safePlay(audio) {
     if (!audio) return;
     audio.currentTime = 0;
     audio.play().catch(e => console.log("Audio no reproducido:", e));
   }
 
-  // === AUDIO DE RISA ===
   function playLaughSound() {
     if (laughAudioPlayed) return;
     laughAudioPlayed = true;
@@ -604,27 +611,22 @@
     setTimeout(() => { laughAudioPlayed = false; }, 2000);
   }
 
-  // === AUDIO DE MOVIDA (CADA jugada, siempre) ===
   function playMovidaSound() {
     safePlay(audioMovida);
   }
 
-  // === AUDIO DE EMPATE (SIEMPRE que haya empate, para ambos, en CADA partida) ===
   function playEmpateSound() {
     safePlay(audioEmpate);
   }
 
-  // === AUDIO DE PERDIDO (SIEMPRE que tú pierdas, en CADA partida) ===
   function playPerdidoSound() {
     safePlay(audioPerdido);
   }
 
-  // === AUDIO DE VICTORIA (SIEMPRE que tú ganes, en CADA partida) ===
   function playVictoriaSound() {
     safePlay(audioVictoria);
   }
 
-  // === OVERLAY DE RESULTADO ===
   function showResultOverlay(resultType) {
     if (resultOverlayShown) return;
     resultOverlayShown = true;
@@ -635,16 +637,16 @@
     if (resultType === 'win') {
       textEl.textContent = '¡Ganaste! 🎉🎊';
       textEl.className = 'result-text result-win';
-      playVictoriaSound(); // ✅ SIEMPRE que ganes
+      playVictoriaSound();
       createConfetti();
     } else if (resultType === 'lose') {
       textEl.textContent = 'Perdiste 😔';
       textEl.className = 'result-text result-lose';
-      playPerdidoSound(); // ✅ SIEMPRE que pierdas
+      playPerdidoSound();
     } else if (resultType === 'draw') {
       textEl.textContent = '¡Empate! 🤝';
       textEl.className = 'result-text result-draw';
-      playEmpateSound(); // ✅ SIEMPRE que empates
+      playEmpateSound();
     }
     
     overlay.classList.add('active');
@@ -661,7 +663,6 @@
     }
   });
 
-  // === CONFETTI ANIMATION ===
   function createConfetti() {
     const colors = ['#2ecc71', '#34d399', '#667eea', '#764ba2', '#fbbf24', '#f87171'];
     for (let i = 0; i < 30; i++) {
@@ -678,7 +679,6 @@
     }
   }
 
-  // === TEMA ===
   function initTheme() {
     const saved = localStorage.getItem('tic_theme') || 'light';
     applyTheme(saved); updateThemeButtons(saved);
@@ -713,7 +713,6 @@
     if ((localStorage.getItem('tic_theme') || 'light') === 'auto') applyTheme('auto');
   });
 
-  // === NAVEGACION & MODALES ===
   window.showView = (id) => {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -761,11 +760,8 @@
 
   window.closeModalOnBackdrop = (event, modalId) => {
     if (event.target.id === modalId) {
-      if (modalId === 'confirm-modal') {
-        cancelLeave();
-      } else {
-        document.getElementById(modalId).classList.remove('active');
-      }
+      if (modalId === 'confirm-modal') cancelLeave();
+      else document.getElementById(modalId).classList.remove('active');
       if (modalId === 'modal') {
         const closeBtn = document.getElementById('modal-close-btn');
         if (closeBtn) closeBtn.classList.remove('hidden');
@@ -966,11 +962,21 @@
     if (unsub) unsub();
     rematchShown = false;
     resultOverlayShown = false;
+    previousWinner = null;
     
     unsub = onSnapshot(doc(db, "games", roomId), (snap) => {
-      if (!snap.exists()) return;
+      if (!snap.exists()) {
+        // El documento fue eliminado (alguien salió)
+        if (document.getElementById('view-game').classList.contains('active') || 
+            document.getElementById('view-wait').classList.contains('active')) {
+          showOpponentLeftModal();
+        }
+        return;
+      }
+      
       gameData = snap.data();
       
+      // Procesar board
       if (gameData.board) {
         gameData.board = Object.values(gameData.board);
         if (gameData.board.length < 9) {
@@ -979,6 +985,14 @@
       } else {
         gameData.board = ["", "", "", "", "", "", "", "", ""];
       }
+
+      // Detectar si una nueva partida comienza (winner cambió de un valor a null)
+      if (previousWinner !== null && gameData.winner === null) {
+        // Nueva partida (revancha) comienza: resetear estado de resultado
+        resultOverlayShown = false;
+        closeResultOverlay();
+      }
+      previousWinner = gameData.winner;
 
       if (gameData.status === "playing" && !document.getElementById('view-game').classList.contains('active')) {
         showView('view-game');
@@ -999,7 +1013,6 @@
 
   function handleResultUI() {
     if (!gameData || !gameData.winner) return;
-    
     let resultType;
     if (gameData.winner === 'draw') {
       resultType = 'draw';
@@ -1007,7 +1020,6 @@
       const myTurnId = (myPlayer === 1) ? 'p1' : 'p2';
       resultType = (gameData.winner === myTurnId) ? 'win' : 'lose';
     }
-    
     showResultOverlay(resultType);
   }
 
@@ -1052,21 +1064,10 @@
       const cell = document.createElement('div');
       cell.className = 'cell';
       cell.textContent = cellVal;
-      
-      if (cellVal === 'X') {
-        cell.classList.add('x', 'taken');
-      } else if (cellVal === 'O') {
-        cell.classList.add('o', 'taken');
-      }
-      
-      if (gameData.winCells && gameData.winCells.includes(i)) {
-        cell.classList.add('winner');
-      }
-      
-      if (!cellVal && isMyTurn && !gameData.winner) {
-        cell.addEventListener('click', () => handleCellClick(i));
-      }
-      
+      if (cellVal === 'X') cell.classList.add('x', 'taken');
+      else if (cellVal === 'O') cell.classList.add('o', 'taken');
+      if (gameData.winCells && gameData.winCells.includes(i)) cell.classList.add('winner');
+      if (!cellVal && isMyTurn && !gameData.winner) cell.addEventListener('click', () => handleCellClick(i));
       boardEl.appendChild(cell);
     }
 
@@ -1075,9 +1076,8 @@
       statusEl.textContent = "Preparando partida...";
     } else if (gameData.winner) {
       statusEl.classList.add('finished');
-      if (gameData.winner === 'draw') {
-        statusEl.textContent = "¡Empate!";
-      } else {
+      if (gameData.winner === 'draw') statusEl.textContent = "¡Empate!";
+      else {
         const iWon = (gameData.winner === myTurnId);
         statusEl.textContent = iWon ? "¡Ganaste! 🎉" : "Perdiste 😔";
       }
@@ -1103,8 +1103,7 @@
     const board = gameData.board || ["", "", "", "", "", "", "", "", ""];
     if (board[index] !== "") return;
     
-    // ✅ AUDIO DE MOVIDA: SUENA CADA VEZ QUE ALGUIEN JUEGA
-    playMovidaSound();
+    playMovidaSound(); // ✅ Suena CADA jugada
     
     const mySymbol = myPlayer === 1 ? 'X' : 'O';
     const opponentTurn = myPlayer === 1 ? 'p2' : 'p1';
@@ -1214,20 +1213,65 @@
     }
   });
 
-  window.leaveGame = async () => {
-    document.getElementById('confirm-modal').classList.remove('active');
-    showLoading("Saliendo...", "Desconectando de la sala...", false);
-    await new Promise(resolve => setTimeout(resolve, 800));
+  // === MODAL OPONENTE SALIÓ ===
+  function showOpponentLeftModal() {
     if (unsub) unsub();
     clearSession();
-    if (myPlayer === 1 && roomId) { try { await deleteDoc(doc(db, "games", roomId)); } catch(e) {} }
-    closeModal();
+    
+    const titleEl = document.getElementById('opponent-left-title');
+    const textEl = document.getElementById('opponent-left-text');
+    
+    // Determinar quién salió
+    const leftName = myPlayer === 1 ? (gameData?.p2 || "Oponente") : (gameData?.p1 || "Oponente");
+    titleEl.textContent = `${leftName} salió`;
+    textEl.textContent = "Tu oponente abandonó la partida. La sala se cerrará automáticamente.";
+    
+    document.getElementById('opponent-left-modal').classList.add('active');
+    
+    // Limpiar datos locales
+    roomId = null;
+    gameData = null;
+    rematchShown = false;
+    resultOverlayShown = false;
+    previousWinner = null;
+    document.getElementById('bubble').style.display = 'none';
+    document.getElementById('emoji-picker').classList.remove('active');
+    document.getElementById('rematch-modal').classList.remove('active');
+  }
+
+  window.handleOpponentLeftClose = () => {
+    document.getElementById('opponent-left-modal').classList.remove('active');
     closeResultOverlay();
     showView('view-menu');
     document.getElementById('name-create').value = '';
     document.getElementById('name-join').value = '';
     document.getElementById('code-join').value = '';
-    gameData = null; roomId = null; rematchShown = false; resultOverlayShown = false;
+  };
+
+  // === SALIR DE LA PARTIDA ===
+  window.leaveGame = async () => {
+    document.getElementById('confirm-modal').classList.remove('active');
+    
+    // Eliminar la sala para que el otro jugador detecte que alguien salió
+    if (roomId) {
+      try { await deleteDoc(doc(db, "games", roomId)); } catch(e) {}
+    }
+    
+    if (unsub) unsub();
+    clearSession();
+    
+    closeModal();
+    closeResultOverlay();
+    
+    showView('view-menu');
+    document.getElementById('name-create').value = '';
+    document.getElementById('name-join').value = '';
+    document.getElementById('code-join').value = '';
+    gameData = null;
+    roomId = null;
+    rematchShown = false;
+    resultOverlayShown = false;
+    previousWinner = null;
     document.getElementById('bubble').style.display = 'none';
     document.getElementById('emoji-picker').classList.remove('active');
     document.getElementById('rematch-modal').classList.remove('active');
