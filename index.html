@@ -45,7 +45,6 @@
     .view { display: none; width: 100%; }
     .view.active { display: block; }
 
-    /* === INPUTS MEJORADOS - MÁS VISIBLES === */
     input {
       width: 100%; padding: 15px; margin: 10px 0; 
       border: 3px solid var(--border-strong);
@@ -93,7 +92,6 @@
     .player-name { font-weight: 600; font-size: 14px; margin-bottom: 5px; }
     .player-symbol { font-size: 24px; font-weight: 700; }
 
-    /* === BOTÓN DE MANDO CENTRADO === */
     .btn-mando {
       width: 100%; max-width: 270px;
       padding: 12px 16px; margin: 8px auto 12px;
@@ -131,7 +129,6 @@
     .status.their-turn { background: var(--text-muted); color: white; opacity: 0.9; border-color: transparent; }
     .status.finished { background: var(--danger); color: white; border-color: transparent; }
 
-    /* === TABLERO MEJORADO - CUADROS VISIBLES === */
     .board {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
       margin: 0 auto; width: 100%; max-width: 270px;
@@ -156,7 +153,6 @@
       box-shadow: 0 6px 20px rgba(102,126,234,0.25);
     }
     
-    /* X y O MÁS GRANDES - SIN BORDE PARA MEJOR LECTURA */
     .cell.x { color: var(--danger); font-size: 44px; }
     .cell.o { color: var(--primary); font-size: 44px; }
     
@@ -169,46 +165,42 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
-    /* === BOTÓN DE SALIDA - ESQUINA SUPERIOR DERECHA (CSS ICON) === */
+    /* === BOTÓN DE SALIDA - MINI Y ELEGANTE === */
     .btn-exit {
-      position: fixed; top: 18px; right: 18px; 
-      width: 52px; height: 52px; border-radius: 50%;
+      position: fixed; top: 14px; right: 14px; 
+      width: 36px; height: 36px; border-radius: 50%;
       background: var(--card); display: flex; align-items: center; justify-content: center;
       box-shadow: var(--shadow); cursor: pointer; 
-      border: 3px solid var(--danger);
-      padding: 0; margin: 0; font-size: 26px; 
-      transition: transform 0.15s, box-shadow 0.2s; z-index: 95;
+      border: 2px solid var(--danger);
+      padding: 0; margin: 0; font-size: 0; 
+      transition: all 0.15s ease; z-index: 95;
     }
     .btn-exit:hover { 
-      transform: scale(1.12); 
-      box-shadow: 0 8px 25px rgba(239,68,68,0.35);
-      background: rgba(239,68,68,0.1);
+      transform: scale(1.1); 
+      box-shadow: 0 5px 18px rgba(239,68,68,0.35);
+      background: var(--danger);
     }
     .btn-exit:active { transform: scale(0.95); }
     
-    /* Icono CSS de salida (puerta) */
+    /* Icono CSS de salida - minimalista */
     .btn-exit::before {
       content: "";
       display: block;
-      width: 20px;
-      height: 26px;
-      border: 3px solid var(--danger);
-      border-radius: 2px 8px 8px 2px;
+      width: 10px; height: 14px;
+      border: 2px solid var(--danger);
+      border-radius: 1px 4px 4px 1px;
       border-left: none;
-      position: relative;
-      box-sizing: border-box;
+      transition: border-color 0.15s;
     }
     .btn-exit::after {
       content: "";
       display: block;
-      width: 8px;
-      height: 2px;
+      width: 4px; height: 2px;
       background: var(--danger);
       position: absolute;
-      right: 24px;
-      top: 50%;
+      right: 14px; top: 50%;
       transform: translateY(-50%);
-      border-radius: 1px;
+      transition: background 0.15s;
     }
     .btn-exit:hover::before,
     .btn-exit:hover::after {
@@ -216,7 +208,6 @@
       background: white;
     }
 
-    /* === BOTONES FLOTANTES === */
     .btn-float {
       position: fixed; bottom: 22px; width: 58px; height: 58px; border-radius: 50%;
       background: var(--card); display: flex; align-items: center; justify-content: center;
@@ -227,7 +218,6 @@
     .btn-float:active { transform: scale(0.95); }
     .btn-reactions { left: 20px; }
 
-    /* === BOTÓN DE TEMA - ABAJO DERECHA === */
     .btn-theme {
       position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; border-radius: 50%;
       background: var(--card); display: flex; align-items: center; justify-content: center;
@@ -237,7 +227,6 @@
     .btn-theme:hover { transform: scale(1.1); }
     .btn-theme:active { transform: scale(0.95); }
 
-    /* === PICKER REACCIONES === */
     .emoji-picker {
       position: fixed; bottom: 88px; left: 20px;
       background: var(--card); border-radius: 20px; padding: 12px;
@@ -255,7 +244,6 @@
     }
     .emoji-btn:hover { transform: scale(1.15); background: rgba(102,126,234,0.1); border-color: var(--primary); }
 
-    /* === BURBUJA REACCION === */
     .reaction-bubble {
       position: fixed; width: 100px; height: 100px;
       background: var(--card); border-radius: 50%;
@@ -280,7 +268,6 @@
       font-weight: bold;
     }
 
-    /* === MODALES === */
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(15,23,42,0.65); backdrop-filter: blur(6px);
@@ -338,19 +325,18 @@
     .theme-option-btn.active { border-color: var(--primary); background: rgba(102,126,234,0.1); font-weight: 700; color: var(--primary); }
     .theme-option-btn:hover { border-color: var(--primary); }
 
-    /* Revancha solicitando */
     .rematch-requesting {
-      font-size: 22px; font-weight: 700; color: var(--primary); margin: 16px 0;
+      font-size: 20px; font-weight: 700; color: var(--primary); margin: 12px 0;
     }
     .rematch-dots {
-      display: inline-flex; gap: 6px; margin-left: 4px;
+      display: inline-flex; gap: 5px; margin-left: 4px;
     }
     .rematch-dots span {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: var(--primary); animation: dotPulse 1.2s infinite;
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--primary); animation: dotPulse 1s infinite;
     }
-    .rematch-dots span:nth-child(2) { animation-delay: 0.2s; }
-    .rematch-dots span:nth-child(3) { animation-delay: 0.4s; }
+    .rematch-dots span:nth-child(2) { animation-delay: 0.15s; }
+    .rematch-dots span:nth-child(3) { animation-delay: 0.3s; }
     @keyframes dotPulse {
       0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
       40% { transform: scale(1); opacity: 1; }
@@ -363,7 +349,6 @@
     }
     .hidden { display: none !important; }
 
-    /* === OVERLAY DE VICTORIA/DERROTA/EMPATE === */
     .result-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(15,23,42,0.45); backdrop-filter: blur(3px);
@@ -400,7 +385,6 @@
     .result-lose { color: var(--danger); text-shadow: 0 0 30px rgba(239,68,68,0.6); }
     .result-draw { color: #fbbf24; text-shadow: 0 0 30px rgba(251,191,36,0.6); }
     
-    /* Confetti animation for win */
     .confetti {
       position: fixed; width: 10px; height: 10px;
       background: var(--success); border-radius: 2px;
@@ -437,7 +421,7 @@
   <div id="result-text" class="result-text"></div>
 </div>
 
-<!-- BOTÓN DE SALIDA - ESQUINA SUPERIOR DERECHA (CSS ICON) -->
+<!-- BOTÓN DE SALIDA - MINI (CSS ICON) -->
 <button class="btn-exit" onclick="confirmLeave()" title="Salir de la partida"></button>
 
 <!-- BOTÓN DE TEMA - ABAJO DERECHA -->
@@ -484,7 +468,6 @@
       </div>
     </div>
     
-    <!-- BOTÓN DE MANDO CENTRADO -->
     <button id="btn-mando" class="btn-mando hidden" onclick="toggleTurn()">
       🔄 Cambiar quien empieza
     </button>
@@ -495,7 +478,7 @@
   </div>
 </div>
 
-<!-- BOTÓN DE REACCIONES - OCULTO EN MENÚ PRINCIPAL -->
+<!-- BOTÓN DE REACCIONES -->
 <button id="btn-reactions-float" class="btn-float btn-reactions hidden" onclick="toggleEmojiPicker()">😊</button>
 
 <div id="emoji-picker" class="emoji-picker">
@@ -594,13 +577,6 @@
   let rematchShown = false;
   let laughAudioPlayed = false;
   let resultOverlayShown = false;
-  
-  // === CONTROL DE AUDIOS PARA EVITAR REPETICIÓN ===
-  let audioPlayed = {
-    empate: false,
-    perdido: false,
-    victoria: false
-  };
 
   // === REFERENCIAS A LOS AUDIOS ===
   const laughAudio = document.getElementById('laugh-audio');
@@ -609,7 +585,6 @@
   const audioPerdido = document.getElementById('audio-perdido');
   const audioVictoria = document.getElementById('audio-victoria');
   
-  // Configurar volumen
   [laughAudio, audioEmpate, audioMovida, audioPerdido, audioVictoria].forEach(a => {
     if (a) a.volume = 0.7;
   });
@@ -629,35 +604,24 @@
     setTimeout(() => { laughAudioPlayed = false; }, 2000);
   }
 
-  // === AUDIO DE MOVIDA (se reproduce cada vez) ===
+  // === AUDIO DE MOVIDA (CADA jugada, siempre) ===
   function playMovidaSound() {
     safePlay(audioMovida);
   }
 
-  // === AUDIO DE EMPATE (solo una vez) ===
+  // === AUDIO DE EMPATE (SIEMPRE que haya empate, para ambos, en CADA partida) ===
   function playEmpateSound() {
-    if (audioPlayed.empate) return;
-    audioPlayed.empate = true;
     safePlay(audioEmpate);
   }
 
-  // === AUDIO DE PERDIDO (solo una vez, solo para el que pierde) ===
+  // === AUDIO DE PERDIDO (SIEMPRE que tú pierdas, en CADA partida) ===
   function playPerdidoSound() {
-    if (audioPlayed.perdido) return;
-    audioPlayed.perdido = true;
     safePlay(audioPerdido);
   }
 
-  // === AUDIO DE VICTORIA (solo una vez, solo para el que gana) ===
+  // === AUDIO DE VICTORIA (SIEMPRE que tú ganes, en CADA partida) ===
   function playVictoriaSound() {
-    if (audioPlayed.victoria) return;
-    audioPlayed.victoria = true;
     safePlay(audioVictoria);
-  }
-
-  // === RESET DE AUDIOS PARA NUEVA PARTIDA ===
-  function resetAudioFlags() {
-    audioPlayed = { empate: false, perdido: false, victoria: false };
   }
 
   // === OVERLAY DE RESULTADO ===
@@ -671,16 +635,16 @@
     if (resultType === 'win') {
       textEl.textContent = '¡Ganaste! 🎉🎊';
       textEl.className = 'result-text result-win';
-      playVictoriaSound(); // Solo para el ganador
+      playVictoriaSound(); // ✅ SIEMPRE que ganes
       createConfetti();
     } else if (resultType === 'lose') {
       textEl.textContent = 'Perdiste 😔';
       textEl.className = 'result-text result-lose';
-      playPerdidoSound(); // Solo para el que pierde
+      playPerdidoSound(); // ✅ SIEMPRE que pierdas
     } else if (resultType === 'draw') {
       textEl.textContent = '¡Empate! 🤝';
       textEl.className = 'result-text result-draw';
-      playEmpateSound(); // Para ambos en empate
+      playEmpateSound(); // ✅ SIEMPRE que empates
     }
     
     overlay.classList.add('active');
@@ -818,21 +782,15 @@
 
   window.toggleTurn = async () => {
     if (!gameData || !roomId) return;
-    
     const board = gameData.board || ["", "", "", "", "", "", "", "", ""];
     const hasMoves = board.some(c => c !== "");
-    
     if (hasMoves || gameData.winner) {
       showModal("⚠️ Solo al inicio", "Este botón solo funciona antes de comenzar a jugar.", undefined, false);
       return;
     }
-    
     const newTurn = gameData.turn === 'p1' ? 'p2' : 'p1';
-    
     try {
-      await updateDoc(doc(db, "games", roomId), {
-        turn: newTurn
-      });
+      await updateDoc(doc(db, "games", roomId), { turn: newTurn });
     } catch(e) {
       showModal("Error", "No se pudo cambiar el turno.", undefined, false);
     }
@@ -849,17 +807,13 @@
       document.getElementById('rematch-req-content').classList.remove('hidden');
       document.getElementById('rematch-accept-content').classList.add('hidden');
       rematchModal.classList.add('active');
-      setTimeout(() => { rematchModal.classList.remove('active'); }, 2000);
+      setTimeout(() => { rematchModal.classList.remove('active'); }, 1200);
     } catch(e) {}
   };
 
   window.acceptRematch = async () => {
     document.getElementById('rematch-modal').classList.remove('active');
     if (!gameData || !roomId) return;
-    
-    // Resetear flags de audio para nueva partida
-    resetAudioFlags();
-    
     try {
       await updateDoc(doc(db, "games", roomId), {
         board: ["", "", "", "", "", "", "", "", ""],
@@ -978,15 +932,12 @@
 
   function updateMandoButton() {
     const btn = document.getElementById('btn-mando');
-    
     if (!gameData || !gameData.p2 || gameData.status !== "playing") {
       btn.classList.add('hidden');
       return;
     }
-    
     const board = gameData.board || ["", "", "", "", "", "", "", "", ""];
     const hasMoves = board.some(c => c !== "");
-    
     if (hasMoves || gameData.winner) {
       btn.classList.remove('hidden');
       btn.disabled = true;
@@ -994,13 +945,10 @@
       btn.classList.remove('active');
       return;
     }
-    
     btn.classList.remove('hidden');
     btn.disabled = false;
-    
     const isMyTurn = gameData.turn === (myPlayer===1 ? 'p1' : 'p2');
     btn.classList.toggle('active', isMyTurn);
-    
     if (gameData.turn === 'p1') {
       const opponentName = gameData.p2 || "el otro";
       btn.innerHTML = myPlayer === 1 
@@ -1065,9 +1013,7 @@
 
   function handleRematchUI() {
     if (!gameData || !gameData.rematchReq) return;
-
     if (gameData.rematchReq === myPlayer && gameData.rematchStat === "requesting") return;
-
     if (gameData.rematchReq !== myPlayer && gameData.rematchStat === "requesting" && !rematchShown) {
       rematchShown = true;
       const opponentName = gameData.rematchReq === 1 ? gameData.p1 : gameData.p2;
@@ -1076,7 +1022,6 @@
       document.getElementById('rematch-accept-text').textContent = `${opponentName} quiere jugar otra vez. ¿Aceptas?`;
       document.getElementById('rematch-modal').classList.add('active');
     }
-
     if (gameData.rematchStat === "accepted" || gameData.rematchStat === "rejected") {
       document.getElementById('rematch-modal').classList.remove('active');
       if (gameData.rematchStat === "rejected") rematchShown = false;
@@ -1085,11 +1030,9 @@
 
   function renderBoard() {
     if (!gameData) return;
-    
     const boardEl = document.getElementById('board');
     const statusEl = document.getElementById('status');
     const rematchBtn = document.getElementById('btn-rematch');
-    
     const myTurnId = (myPlayer === 1) ? 'p1' : 'p2';
     const isMyTurn = (gameData.turn === myTurnId) && !gameData.winner;
     const board = gameData.board || ["", "", "", "", "", "", "", "", ""];
@@ -1155,25 +1098,21 @@
   async function handleCellClick(index) {
     if (!gameData || !roomId) return;
     if (gameData.winner) return;
-    
     const myTurnId = (myPlayer === 1) ? 'p1' : 'p2';
     if (gameData.turn !== myTurnId) return;
-    
     const board = gameData.board || ["", "", "", "", "", "", "", "", ""];
     if (board[index] !== "") return;
     
-    // === REPRODUCIR AUDIO DE MOVIDA ===
+    // ✅ AUDIO DE MOVIDA: SUENA CADA VEZ QUE ALGUIEN JUEGA
     playMovidaSound();
     
     const mySymbol = myPlayer === 1 ? 'X' : 'O';
     const opponentTurn = myPlayer === 1 ? 'p2' : 'p1';
-    
     const newBoard = [...board];
     newBoard[index] = mySymbol;
     
     const winnerResult = checkWin(newBoard);
     const isDraw = !winnerResult && !newBoard.includes("");
-    
     const updateData = { board: newBoard };
     
     if (winnerResult) {
@@ -1196,12 +1135,7 @@
   }
 
   function checkWin(board) {
-    const patterns = [
-      [0,1,2], [3,4,5], [6,7,8],
-      [0,3,6], [1,4,7], [2,5,8],
-      [0,4,8], [2,4,6]
-    ];
-    
+    const patterns = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
     for (const [a, b, c] of patterns) {
       if (board[a] && board[a] === board[b] && board[a] === board[c]) {
         return board[a] === 'X' ? 'p1' : 'p2';
@@ -1211,12 +1145,7 @@
   }
 
   function getWinCells(board) {
-    const patterns = [
-      [0,1,2], [3,4,5], [6,7,8],
-      [0,3,6], [1,4,7], [2,5,8],
-      [0,4,8], [2,4,6]
-    ];
-    
+    const patterns = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
     for (const [a, b, c] of patterns) {
       if (board[a] && board[a] === board[b] && board[a] === board[c]) {
         return [a, b, c];
@@ -1233,49 +1162,27 @@
   window.sendReaction = async (em) => {
     if (!gameData || !roomId) return;
     document.getElementById('emoji-picker').classList.remove('active');
-    
-    if (em === '😂') {
-      playLaughSound();
-    }
-    
+    if (em === '😂') playLaughSound();
     const cx = Math.random() * (window.innerWidth - 100);
     const cy = Math.random() * (window.innerHeight - 100);
-    
     try {
       await updateDoc(doc(db, "games", roomId), {
-        reaction: {
-          emoji: em,
-          sender: myName || "Jugador",
-          senderId: myPlayer || 1,
-          x: Math.max(10, cx),
-          y: Math.max(10, cy)
-        }
+        reaction: { emoji: em, sender: myName || "Jugador", senderId: myPlayer || 1, x: Math.max(10, cx), y: Math.max(10, cy) }
       });
-    } catch(e) {
-      console.error("Error enviando reaccion:", e);
-    }
+    } catch(e) { console.error("Error enviando reaccion:", e); }
   };
 
   window.dismissReaction = async (e) => {
     e.stopPropagation();
     if (gameData && roomId) {
-      try {
-        await updateDoc(doc(db, "games", roomId), { reaction: null });
-      } catch(e) {}
+      try { await updateDoc(doc(db, "games", roomId), { reaction: null }); } catch(e) {}
     }
   };
 
   function updateReactionUI(r) {
     const bub = document.getElementById('bubble');
-    if (!r || !r.emoji) { 
-      bub.style.display = 'none'; 
-      return; 
-    }
-    
-    if (r.emoji === '😂' && r.senderId !== myPlayer) {
-      playLaughSound();
-    }
-    
+    if (!r || !r.emoji) { bub.style.display = 'none'; return; }
+    if (r.emoji === '😂' && r.senderId !== myPlayer) playLaughSound();
     bub.style.display = 'flex';
     document.getElementById('b-emoji').textContent = r.emoji;
     document.getElementById('b-sender').textContent = r.sender || "Jugador";
@@ -1284,19 +1191,14 @@
   }
 
   const bubble = document.getElementById('bubble');
-  bubble.addEventListener('pointerdown', e => {
-    isDragging = true;
-    bubble.setPointerCapture(e.pointerId);
-  });
+  bubble.addEventListener('pointerdown', e => { isDragging = true; bubble.setPointerCapture(e.pointerId); });
   bubble.addEventListener('pointermove', e => {
     if (!isDragging) return;
     e.preventDefault();
-    let x = e.clientX - 50;
-    let y = e.clientY - 50;
+    let x = e.clientX - 50, y = e.clientY - 50;
     x = Math.max(0, Math.min(window.innerWidth - 100, x));
     y = Math.max(0, Math.min(window.innerHeight - 100, y));
-    bubble.style.left = x + 'px';
-    bubble.style.top = y + 'px';
+    bubble.style.left = x + 'px'; bubble.style.top = y + 'px';
   });
   bubble.addEventListener('pointerup', async e => {
     if (!isDragging) return;
@@ -1314,26 +1216,18 @@
 
   window.leaveGame = async () => {
     document.getElementById('confirm-modal').classList.remove('active');
-    
     showLoading("Saliendo...", "Desconectando de la sala...", false);
     await new Promise(resolve => setTimeout(resolve, 800));
-
     if (unsub) unsub();
     clearSession();
-    if (myPlayer === 1 && roomId) {
-      try { await deleteDoc(doc(db, "games", roomId)); } catch(e) {}
-    }
+    if (myPlayer === 1 && roomId) { try { await deleteDoc(doc(db, "games", roomId)); } catch(e) {} }
     closeModal();
     closeResultOverlay();
-    resetAudioFlags(); // Resetear flags al salir
     showView('view-menu');
     document.getElementById('name-create').value = '';
     document.getElementById('name-join').value = '';
     document.getElementById('code-join').value = '';
-    gameData = null;
-    roomId = null;
-    rematchShown = false;
-    resultOverlayShown = false;
+    gameData = null; roomId = null; rematchShown = false; resultOverlayShown = false;
     document.getElementById('bubble').style.display = 'none';
     document.getElementById('emoji-picker').classList.remove('active');
     document.getElementById('rematch-modal').classList.remove('active');
@@ -1342,13 +1236,8 @@
   (function init(){
     initTheme();
     document.getElementById('board').innerHTML = Array(9).fill('<div class="cell"></div>').join('');
-    if(loadSession()){ 
-      showView('view-game'); 
-      listenGame(); 
-    }
-    else { 
-      showView('view-menu'); 
-    }
+    if(loadSession()){ showView('view-game'); listenGame(); }
+    else { showView('view-menu'); }
     updateReactionsButtonVisibility();
   })();
 </script>
