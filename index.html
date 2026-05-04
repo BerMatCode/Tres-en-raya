@@ -505,8 +505,8 @@
   </div>
 </div>
 
-<!-- MODAL REVANCHA -->
-<div id="rematch-modal" class="modal-overlay" onclick="closeModalOnBackdrop(event, 'rematch-modal')">
+<!-- MODAL REVANCHA (SIN cierre al tocar fondo) -->
+<div id="rematch-modal" class="modal-overlay">
   <div class="modal-content" onclick="event.stopPropagation()">
     <button class="modal-close-btn" onclick="closeRematchModal()">✕</button>
     <div id="rematch-req-content" class="hidden">
@@ -528,7 +528,7 @@
 <div id="opponent-left-modal" class="modal-overlay" onclick="event.stopPropagation()">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-title" id="opponent-left-title">Oponente abandonó</div>
-    <div class="modal-text" id="opponent-left-text">Tu oponente salió de la partida.</div>
+    <div class="modal-text" id="opponent-left-text">Tu oponente salió de la partida. La sala se cerrará automáticamente.</div>
     <div class="modal-buttons">
       <button class="primary" onclick="handleOpponentLeftClose()">Entendido</button>
     </div>
@@ -586,6 +586,7 @@
   let laughAudioPlayed = false;
   let resultOverlayShown = false;
   let previousWinner = null;
+  let isLeaving = false; // 🚪 Flag para evitar modal de "oponente salió" cuando YO salgo
 
   // === REFERENCIAS A LOS AUDIOS ===
   const laughAudio = document.getElementById('laugh-audio');
@@ -769,6 +770,7 @@
     }
   };
 
+  // ✅ SOLO CIERRA CON LA X (NO CON FONDO DIFUMINADO)
   window.closeRematchModal = () => {
     document.getElementById('rematch-modal').classList.remove('active');
   };
@@ -792,6 +794,7 @@
     }
   };
 
+  // ✅ REVANCHA: SOLICITUD DIRECTA Y LIMPIA
   window.requestRematch = async () => {
     if (!gameData || !roomId) return;
     try {
@@ -799,11 +802,6 @@
         rematchReq: myPlayer,
         rematchStat: "requesting"
       });
-      const rematchModal = document.getElementById('rematch-modal');
-      document.getElementById('rematch-req-content').classList.remove('hidden');
-      document.getElementById('rematch-accept-content').classList.add('hidden');
-      rematchModal.classList.add('active');
-      setTimeout(() => { rematchModal.classList.remove('active'); }, 1200);
     } catch(e) {}
   };
 
@@ -966,9 +964,9 @@
     
     unsub = onSnapshot(doc(db, "games", roomId), (snap) => {
       if (!snap.exists()) {
-        // El documento fue eliminado (alguien salió)
-        if (document.getElementById('view-game').classList.contains('active') || 
-            document.getElementById('view-wait').classList.contains('active')) {
+        // 🚪 Solo mostrar modal de "oponente salió" si NO soy yo el que está saliendo
+        if (!isLeaving && (document.getElementById('view-game').classList.contains('active') || 
+            document.getElementById('view-wait').classList.contains('active'))) {
           showOpponentLeftModal();
         }
         return;
@@ -976,7 +974,6 @@
       
       gameData = snap.data();
       
-      // Procesar board
       if (gameData.board) {
         gameData.board = Object.values(gameData.board);
         if (gameData.board.length < 9) {
@@ -986,9 +983,8 @@
         gameData.board = ["", "", "", "", "", "", "", "", ""];
       }
 
-      // Detectar si una nueva partida comienza (winner cambió de un valor a null)
+      // Detectar nueva partida (revancha)
       if (previousWinner !== null && gameData.winner === null) {
-        // Nueva partida (revancha) comienza: resetear estado de resultado
         resultOverlayShown = false;
         closeResultOverlay();
       }
@@ -1011,6 +1007,48 @@
     });
   }
 
+  // ✅ REVANCHA: LÓGICA LIMPIA Y REUTILIZABLE PARA CADA PARTIDA
+  function handleRematchUI() {
+    if (!gameData) return;
+    const modal = document.getElementById('rematch-modal');
+    const reqContent = document.getElementById('rematch-req-content');
+    const accContent = document.getElementById('rematch-accept-content');
+
+    // Si no hay solicitud activa o fue rechazada/reseteada, ocultar y resetear
+    if (!gameData.rematchReq || gameData.rematchStat === "none") {
+      modal.classList.remove('active');
+      rematchShown = false;
+      return;
+    }
+
+    // YO solicité
+    if (gameData.rematchReq === myPlayer && gameData.rematchStat === "requesting") {
+      reqContent.classList.remove('hidden');
+      accContent.classList.add('hidden');
+      modal.classList.add('active');
+      return;
+    }
+
+    // EL OTRO solicitó
+    if (gameData.rematchReq !== myPlayer && gameData.rematchStat === "requesting") {
+      if (!rematchShown) {
+        rematchShown = true;
+        const opponentName = gameData.rematchReq === 1 ? gameData.p1 : gameData.p2;
+        reqContent.classList.add('hidden');
+        accContent.classList.remove('hidden');
+        document.getElementById('rematch-accept-text').textContent = `${opponentName} quiere jugar otra vez. ¿Aceptas?`;
+      }
+      modal.classList.add('active');
+      return;
+    }
+
+    // Si fue aceptada o rechazada, cerrar y resetear
+    if (gameData.rematchStat === "accepted" || gameData.rematchStat === "rejected") {
+      modal.classList.remove('active');
+      rematchShown = false;
+    }
+  }
+
   function handleResultUI() {
     if (!gameData || !gameData.winner) return;
     let resultType;
@@ -1021,23 +1059,6 @@
       resultType = (gameData.winner === myTurnId) ? 'win' : 'lose';
     }
     showResultOverlay(resultType);
-  }
-
-  function handleRematchUI() {
-    if (!gameData || !gameData.rematchReq) return;
-    if (gameData.rematchReq === myPlayer && gameData.rematchStat === "requesting") return;
-    if (gameData.rematchReq !== myPlayer && gameData.rematchStat === "requesting" && !rematchShown) {
-      rematchShown = true;
-      const opponentName = gameData.rematchReq === 1 ? gameData.p1 : gameData.p2;
-      document.getElementById('rematch-req-content').classList.add('hidden');
-      document.getElementById('rematch-accept-content').classList.remove('hidden');
-      document.getElementById('rematch-accept-text').textContent = `${opponentName} quiere jugar otra vez. ¿Aceptas?`;
-      document.getElementById('rematch-modal').classList.add('active');
-    }
-    if (gameData.rematchStat === "accepted" || gameData.rematchStat === "rejected") {
-      document.getElementById('rematch-modal').classList.remove('active');
-      if (gameData.rematchStat === "rejected") rematchShown = false;
-    }
   }
 
   function renderBoard() {
@@ -1103,7 +1124,7 @@
     const board = gameData.board || ["", "", "", "", "", "", "", "", ""];
     if (board[index] !== "") return;
     
-    playMovidaSound(); // ✅ Suena CADA jugada
+    playMovidaSound();
     
     const mySymbol = myPlayer === 1 ? 'X' : 'O';
     const opponentTurn = myPlayer === 1 ? 'p2' : 'p1';
@@ -1213,22 +1234,17 @@
     }
   });
 
-  // === MODAL OPONENTE SALIÓ ===
+  // === MODAL OPONENTE SALIÓ (solo para el que NO salió) ===
   function showOpponentLeftModal() {
     if (unsub) unsub();
     clearSession();
     
-    const titleEl = document.getElementById('opponent-left-title');
-    const textEl = document.getElementById('opponent-left-text');
-    
-    // Determinar quién salió
     const leftName = myPlayer === 1 ? (gameData?.p2 || "Oponente") : (gameData?.p1 || "Oponente");
-    titleEl.textContent = `${leftName} salió`;
-    textEl.textContent = "Tu oponente abandonó la partida. La sala se cerrará automáticamente.";
+    document.getElementById('opponent-left-title').textContent = `${leftName} salió`;
+    document.getElementById('opponent-left-text').textContent = "Tu oponente abandonó la partida. La sala se cerrará automáticamente.";
     
     document.getElementById('opponent-left-modal').classList.add('active');
     
-    // Limpiar datos locales
     roomId = null;
     gameData = null;
     rematchShown = false;
@@ -1248,18 +1264,19 @@
     document.getElementById('code-join').value = '';
   };
 
-  // === SALIR DE LA PARTIDA ===
+  // === SALIR DE LA PARTIDA - MUESTRA "SALIENDO..." Y SALE ===
   window.leaveGame = async () => {
     document.getElementById('confirm-modal').classList.remove('active');
+    isLeaving = true; // 🚪 Marcar que soy yo el que sale
     
-    // Eliminar la sala para que el otro jugador detecte que alguien salió
+    showLoading("Saliendo...", "Desconectando de la sala...", false);
+    await new Promise(resolve => setTimeout(resolve, 800));
+
+    if (unsub) unsub();
+    clearSession();
     if (roomId) {
       try { await deleteDoc(doc(db, "games", roomId)); } catch(e) {}
     }
-    
-    if (unsub) unsub();
-    clearSession();
-    
     closeModal();
     closeResultOverlay();
     
@@ -1275,6 +1292,8 @@
     document.getElementById('bubble').style.display = 'none';
     document.getElementById('emoji-picker').classList.remove('active');
     document.getElementById('rematch-modal').classList.remove('active');
+    
+    isLeaving = false; // 🚪 Resetear flag
   };
 
   (function init(){
